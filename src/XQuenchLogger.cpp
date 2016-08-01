@@ -17,20 +17,47 @@ XQuenchLogger* XQuenchLogger :: GetInstance()
   return instance;
 }
 
-void XQuenchLogger :: Start(Level priority, const std::string& filename)
+void XQuenchLogger :: Start(Level minpriority, const std::string& filename)
 {
   instance->fActive = true;
-  instance->fPriority = priority;
+  instance->fPriority = minpriority;
+
+  if ( filename!=" " ) 
+    instance->fFile.open( filename.c_str() );
 }
 
 void XQuenchLogger :: Stop()
 {
-  std::cout << instance->fActive << std::endl;
+  instance->fActive = false;
+  
+  if ( instance->fFile.is_open() )
+    instance->fFile.close();
 }
 
 void XQuenchLogger :: Write(Level priority, const std::string& message)
 {
+  if ( instance->fActive && priority>=instance->fPriority ) {
+    std::ostream& stream = instance->fFile.is_open() ? instance->fFile : std::cout;
 
+    stream << "["
+           << instance->GetPriorityName(priority)
+           << "]"
+           << ": "
+           << message;
+  }
+}
+
+std::ostream& XQuenchLogger :: GetLogStream(Level priority)
+{
+  if (!instance->fFile.is_open())
+    return std::cout;
+
+  instance->fFile << "["
+                  << instance->GetPriorityName(priority)
+                  << "]"
+                  << ": ";
+
+  return instance->fFile;
 }
 
 const std::string XQuenchLogger :: GetPriorityName(Level level)
