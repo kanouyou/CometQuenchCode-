@@ -110,3 +110,19 @@ double XCoilConstruct :: GetMaterialRatio(const std::string &name) const
     throw except;
   }
 }
+
+double XCoilConstruct :: GetCoil(const std::string &name) const
+{
+  if (name=="z" || name=="Z")
+    return fCoil[0];
+  else if (name=="phi" || name=="Phi")
+    return fCoil[1];
+  else if (name=="r" || name=="R")
+    return fCoil[2];
+  else {
+    QuenchError( XQuenchLogger::ERROR, "there is no such coordinate: " << name );
+    XQuenchExcept except("there is no such coordinate!");
+    throw except;
+  }
+
+}

@@ -56,6 +56,12 @@ class Quench::XCoilConstruct
 
     /*! @brief return material ratio */
     double GetMaterialRatio(const std::string &name) const;
+
+    /*! @brief return coil size */
+    double* GetCoil() const { return fCoil; }
+
+    /*! @brief return coil size */
+    double GetCoil(const std::string &name) const;
     
 
   private:
