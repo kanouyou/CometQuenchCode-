@@ -153,6 +153,10 @@ class XTimeIndependContainer
 
     /*! @brief return residual resistance ratio */
     double GetRRR() const { return fRRR; }
+
+  private:
+    double fRRR;
+    double fRho;
 };
 
 #endif
