@@ -7,9 +7,15 @@
 #ifndef XQuenchContainer_HH
 #define XQuenchContainer_HH
 
+/** @enum
+ *  Quench status
+ */
 enum QuenchStatus {
+  //! superconducting status: operating
   kSuperconduct,
+  //! transition status: start current sharing
   kTransition,
+  //! normal: start quenching
   kNormal
 };
 
@@ -55,7 +61,7 @@ class Quench::XTimeDependContainer
     void SetGeneration(const double* Q); 
 
     /*! setup heat generation */
-    void SetGeneration(const double Qx, const double Qy, const double Qz);
+    void SetGeneration(const double* Qx, const double* Qy, const double* Qz);
 
     /*! return heat generation */
     double* GetGeneration() const { return fHeat; }
@@ -64,7 +70,7 @@ class Quench::XTimeDependContainer
     void SetConductivity(const double* k);
 
     /*! setup thermal conductivity */
-    void SetConductivity(const double kx, const double ky, const double kz);
+    void SetConductivity(const double* kx, const double* ky, const double* kz);
 
     /*! return thermal conductivity */
     double* GetConductivity() const { return fk; }

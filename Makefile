@@ -36,4 +36,4 @@ install:
 	mv -f $(TARGET)
 
 clear:
-	$(RM) -r build *.log
+	$(RM) -r build latex html *.log

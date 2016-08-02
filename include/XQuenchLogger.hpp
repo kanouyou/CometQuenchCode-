@@ -20,7 +20,9 @@ namespace Quench
 class Quench::XQuenchLogger
 {
   public:
-    /*! logging level / priority */
+    /** @enum Level
+     *  logging level
+     */
     enum Level {
       DEBUG,
       CONFIG,
@@ -29,7 +31,9 @@ class Quench::XQuenchLogger
       ERROR
     };
 
-    /*! get instance */
+    /** @fn get instance 
+     *  @return static logging class
+     */
     static XQuenchLogger* GetInstance();
 
     /*! start loging and write message to the file */
@@ -69,7 +73,7 @@ class Quench::XQuenchLogger
 };
 
 
-/// a macro to handle the output of error message
+/// @def a macro to handle the output of error message
 #ifndef _QUENCH_OUTPUT_ERROR
 #define _QUENCH_OUTPUT_ERROR(level, message)                               \
     do {                                                                   \

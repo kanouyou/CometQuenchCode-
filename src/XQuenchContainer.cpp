@@ -22,6 +22,12 @@ XTimeDependContainer :: ~XTimeDependContainer()
 
 void XTimeDependContainer :: SetField(const double &fld)
 {
+  if (fld<0) {
+    QuenchError( XQuenchLogger::WARNING, "field is " << fld );
+    XQuenchExcept except("field is negative!");
+    throw except;
+  }
+
   fField = fld;
 }
 
@@ -32,6 +38,13 @@ void XTimeDependContainer :: SetTemperature(const double &temp)
 
 void XTimeDependContainer :: SetCapacity(const double &C)
 {
+  // check input capacity, if the capacity is negative, then throw it to exception
+  if (C<0) {
+    QuenchError( XQuenchLogger::ERROR, "heat capacity is {" << C );
+    XQuenchExcept except("heat capacity is negative!");
+    throw except;
+  }
+
   fCapacity = C;
 }
 
@@ -44,17 +57,24 @@ void XTimeDependContainer :: SetGeneration(const double* Q)
   fHeat[2] = Q[2];
 }
 
-void XTimeDependContainer :: SetGeneration(const double Qx, const double Qy, const double Qz)
+void XTimeDependContainer :: SetGeneration(const double* Qx, const double* Qy, const double* Qz)
 {
   if (!fHeat)  fHeat = new double[3];
 
-  fHeat[0] = Qx;
-  fHeat[1] = Qy;
-  fHeat[2] = Qz;
+  fHeat[0] = *Qx;
+  fHeat[1] = *Qy;
+  fHeat[2] = *Qz;
 }
 
 void XTimeDependContainer :: SetConductivity(const double* k)
 {
+  if (k[0]<0 || k[1]<0 || k[2]<0) {
+    QuenchError(XQuenchLogger::ERROR, "thermal conductivity is {" << k[0] 
+                << ", " << k[1] << ", " << k[2] << "}" );
+    XQuenchExcept except("thermal conductivity is negative!");
+    throw except;
+  }
+
   if (!fk) fk = new double[3];
 
   fk[0] = k[0];
@@ -62,16 +82,23 @@ void XTimeDependContainer :: SetConductivity(const double* k)
   fk[2] = k[2];
 }
 
-void XTimeDependContainer :: SetConductivity(const double kx, const double ky, const double kz)
+void XTimeDependContainer :: SetConductivity(const double* kx, const double* ky, const double* kz)
 {
+  if (*kx<0 || *ky<0 || *kz<0) {
+    QuenchError(XQuenchLogger::ERROR, "thermal conductivity is {" << *kx
+                << ", " << *ky << ", " << *kz << "}" );
+    XQuenchExcept except("thermal conductivity is negative!");
+    throw except;
+  }
+
   if (!fk)  fk= new double[3];
 
-  fk[0] = kx;
-  fk[1] = ky;
-  fk[2] = kz;
+  fk[0] = *kx;
+  fk[1] = *ky;
+  fk[2] = *kz;
 }
 
-/**************************************/
+/**************************************************/
 
 XDimensionContainer :: XDimensionContainer()
     : fId(NULL), fPos(NULL), fNode(-1)
