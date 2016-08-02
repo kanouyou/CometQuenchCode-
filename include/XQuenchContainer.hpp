@@ -8,14 +8,17 @@
 #define XQuenchContainer_HH
 
 enum QuenchStatus {
-  SUPERCONDUCT,
-  TRANSITION,
-  NORMAL
+  kSuperconduct,
+  kTransition,
+  kNormal
 };
 
 
 namespace Quench
-{ class XTimeDependContainer; }
+{ 
+  class XTimeDependContainer; 
+  class XDimensionContainer;
+}
 
 
 /// class description:
@@ -25,14 +28,100 @@ class Quench::XTimeDependContainer
 {
   public:
     /*! constructor */
-    XTimeDependContainer() {}
+    XTimeDependContainer();
 
     /*! deconstructor */
-    ~XTimeDependContainer() {}
+    ~XTimeDependContainer();
 
     /*! setup magnetic field */
+    void SetField(const double &fld);
 
+    /*! return the magnetic field */
+    double GetField() const { return fField; }
+
+    /*! setup temperature */
+    void SetTemperature(const double &temp);
+
+    /*! return temperature */
+    double GetTemperature() const { return fTemp; }
+
+    /*! setup heat capacity */
+    void SetCapacity(const double &C);
+
+    /*! return heat capacity */
+    double GetCapacity() const { return fCapacity; }
+
+    /*! setup heat generation */
+    void SetGeneration(const double* Q); 
+
+    /*! setup heat generation */
+    void SetGeneration(const double Qx, const double Qy, const double Qz);
+
+    /*! return heat generation */
+    double* GetGeneration() const { return fHeat; }
+
+    /*! setup thermal conductivity */
+    void SetConductivity(const double* k);
+
+    /*! setup thermal conductivity */
+    void SetConductivity(const double kx, const double ky, const double kz);
+
+    /*! return thermal conductivity */
+    double* GetConductivity() const { return fk; }
+
+    /*! setup local resistance */
+    void SetResistance(const double R) { fR = R; }
+
+    /*! return local resistance */
+    double GetResistance() const { return fR; }
+
+  private:
+    double  fField;
+    double  fTemp;
+    double  fCapacity;
+    double* fHeat;
+    double* fk;
+    double  fR;
 };
 
+
+/// class discription:
+/// class to handle the dimensional container
+//
+class XDimensionContainer
+{
+  public:
+    /*! constructor */
+    XDimensionContainer();
+
+    /*! deconstructor */
+    ~XDimensionContainer();
+
+    /*! setup cell id */
+    void SetId(const int* id);
+
+    /*! setup cell id */
+    void SetId(const int* i, const int* j, const int* k);
+
+    /*! return cell id */
+    int* GetId() const { return fId; }
+
+    /*! setup cell position */
+    void SetPosition(const double* pos);
+
+    /*! setup cell position */
+    void SetPosition(const double* x, const double* y, const double* z);
+
+    /*! return cell position */
+    double* GetPosition() const { return fPos; }
+
+    /*! setup node id */
+    void SetNodeId(const int &node);
+
+  private:
+    int* fId;
+    double* fPos;
+    double fNode;
+};
 
 #endif

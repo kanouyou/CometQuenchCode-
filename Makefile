@@ -17,7 +17,7 @@ CXXFLAGS += $(ROOTFLAGS)
 CXXLIBS  += $(ROOTLIBS)
 
 
-.PHONY: all install clean
+.PHONY: all install clean clear
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
@@ -34,3 +34,6 @@ clean:
 install:
 	mkdir -p bin
 	mv -f $(TARGET)
+
+clear:
+	$(RM) -r build *.log

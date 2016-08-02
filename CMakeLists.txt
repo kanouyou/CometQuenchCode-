@@ -8,9 +8,8 @@ project(QuenchCode)
 set(TARGET SimQuench.exe)
 
 # find FindROOT.cmake and append it
-#list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS}/etc/root/cmake)
-#find_package(ROOT REQUIRED)
-#include(${ROOT_USE_FILE})
+find_package(ROOT)
+include_directories(${ROOT_INCLUDE_DIRS})
 
 # include quench inculde files
 include_directories(include)
