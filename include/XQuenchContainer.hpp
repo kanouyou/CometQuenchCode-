@@ -130,4 +130,29 @@ class XDimensionContainer
     double fNode;
 };
 
+/// class description:
+/// class to store the time independ parameters
+//
+class XTimeIndependContainer
+{
+  public:
+    /*! constructor */
+    XTimeIndependContainer() : fRRR(0.), fRho(1.) {}
+
+    /*! deconstructor */
+    ~XTimeIndependContainer() {}
+
+    /*! @brief setup density */
+    void SetDensity(const double &rho) { fRho = rho; }
+
+    /*! @brief setup residual resistance ratio */
+    void SetRRR(const double &RRR) { fRRR = RRR; }
+
+    /*! @brief return the material density */
+    double GetDensity() const { return fRho; }
+
+    /*! @brief return residual resistance ratio */
+    double GetRRR() const { return fRRR; }
+};
+
 #endif
