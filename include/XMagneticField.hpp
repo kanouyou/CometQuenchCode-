@@ -103,8 +103,14 @@ class Quench::XMagneticField
     /*! @brief setup conductor size */
     virtual void SetConductorArea(const double A) = 0;
 
+    /*! @breif run field calculation */
+    virtual void Run() = 0;
+
     /*! @brief update the magnetic field */
     virtual Quench::XFieldContainer* GetFieldEntry(const int iz, const int jr) = 0;
+
+    /*! @brief return field container vector */
+    virtual std::vector<Quench::XFieldContainer*> GetFieldContainer() = 0;
 };
 
 
@@ -136,8 +142,14 @@ class Quench::XBiotSavart : public Quench::XMagneticField
     /*! @brief setup conductor size */
     virtual void SetConductorArea(const double A) { fCdtA = A; }
 
+    /*! @brief calculation field */
+    virtual void Run() { calfield(); }
+
     /*! @brief return field container */
     virtual Quench::XFieldContainer* GetFieldEntry(const int iz, const int jr);
+
+    /*! @brief return field container vector */
+    virtual std::vector<Quench::XFieldContainer*> GetFieldContainer() { return fHC; }
 
 
   protected:

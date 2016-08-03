@@ -11,7 +11,7 @@ void Test() {
   XQuenchLogger* log = XQuenchLogger::GetInstance();
   log->Start(XQuenchLogger::DEBUG, "quench.log");
 
-  XBiotSavart* biot = new XBiotSavart();
+  XMagneticField* biot = new XBiotSavart();
   try {
     biot->SetMapRange(-79.525*cm, 59.525*cm, 672.*mm, 823.65*mm);
     biot->SetSolenoid(-79.525*cm, 59.525*cm, 672.*mm, 823.65*mm);
