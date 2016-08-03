@@ -7,10 +7,17 @@
 #ifndef XMagneticField_HH
 #define XMagneticField_HH
 
+#include <vector>
+
+#ifndef IFdmUnits_HH
+#include "IFdmUnits.hpp"
+#endif
+
 namespace Quench
 {
   class XFieldContainer;
   class XMagneticField;
+  class XBiotSavart;
 }
 
 /// class to contain the magnetic field data
@@ -73,11 +80,64 @@ class Quench::XFieldContainer
 };
 
 
-/// class to calculate the magentic field
+/// base class to handle magnetic field
 //
 class Quench::XMagneticField
 {
+  public:
+    /*! deconstructor */
+    virtual ~XMagneticField() {}
 
+    /*! @brief setup calculation region */
+    virtual void SetMapRange(const double z0, const double z1, const double r0, const double r1) = 0;
+
+    /*! @brief setup regin mesh */
+    virtual void SetMapMesh(const int mz, const int mr, const int mp) = 0;
+
+    /*! @brief setup current */
+    virtual void SetCurrent(const double I) = 0;
+
+    /*! @brief update the magnetic field */
+    virtual XFieldContainer* GetField(const int iz, const int jr) const = 0;
+};
+
+
+/// class to calculate the magentic field
+//
+class Quench::XBiotSavart : public Quench::XMagneticField
+{
+  public:
+    /*! constructor */
+    XBiotSavart();
+
+    /*! deconstructor */
+    virtual ~XBiotSavart();
+
+    /*! @brief setup calculation region */
+    virtual void SetMapRange(const double z0, const double z1, const double r0, const double r1);
+
+    /*! @brief setup regin mesh */
+    virtual void SetMapMesh(const int mz, const int mr, const int mp=50);
+
+    /*! @brief setup current */
+    virtual void SetCurrent(const double I) { fCurrent = I; }
+
+    /*! @brief return field container */
+    virtual Quench::XFieldContainer* GetField(const int iz, const int jr) const;
+
+
+  protected:
+    /*! @brief calculate magnetic field */
+    void calfield();
+
+    /*! @brief calculate vector potential at this position */
+    double calpotential(const double z, const double r) const;
+
+  private:
+    int*    fMapMesh;
+    double* fMapRange;
+    double  fCurrent;
+    std::vector <Quench::XFieldContainer*> fHC;
 };
 
 #endif
