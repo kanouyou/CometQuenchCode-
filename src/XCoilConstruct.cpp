@@ -49,9 +49,11 @@ void XCoilConstruct :: SetMaterialRatio(const double Al, const double Cu, const 
 {
   if (!fRatio)   fRatio  = new double[3];
 
-  fRatio[0] = Al;
-  fRatio[1] = Cu;
-  fRatio[2] = SC;
+  double tot = Al + Cu + SC;
+
+  fRatio[0] = Al / tot;
+  fRatio[1] = Cu / tot;
+  fRatio[2] = SC / tot;
 
   QuenchError( XQuenchLogger::CONFIG, "material ratio: (Al:" << fRatio[0] << ", Cu:" << fRatio[1]
                                                   << ", SC:" << fRatio[2] << ")" );
@@ -124,5 +126,53 @@ double XCoilConstruct :: GetCoil(const std::string &name) const
     XQuenchExcept except("there is no such coordinate!");
     throw except;
   }
+}
 
+double* XCoilConstruct :: GetConductorSize() const
+{
+  double* cdtsize = new double[2];
+  cdtsize[0] = 2*fTape[0] + fStable[0];
+  cdtsize[1] = 2*fTape[1] + fStable[1];
+
+  return cdtsize;
+}
+
+double XCoilConstruct :: GetConductorSize(const std::string &name) const
+{
+  double* size = GetConductorSize();
+
+  if (name=="z" || name=="Z")
+    return size[0];
+  else if (name=="r" || name=="R")
+    return size[1];
+  else {
+    QuenchError( XQuenchLogger::ERROR, "there is no such coordinate: " << name );
+    XQuenchExcept except("there is no such coordinate");
+    throw except;
+  }
+}
+
+double XCoilConstruct :: GetArea(const std::string& name) const
+{
+  double area;
+
+  if (name=="Al" || name=="al")
+    area = fRatio[0] * fStable[0] * fStable[1];
+  else if (name=="Cu" || name=="cu")
+    area = fRatio[1] * fStable[0] * fStable[1];
+  else if (name=="SC" || name=="sc")
+    area = fRatio[2] * fStable[0] * fStable[1];
+  else if (name=="Cdt" || name=="cdt")
+    area = (2*fTape[0] + fStable[0]) * (2*fTape[1] + fStable[1]);
+  else if (name=="Stb" || name=="stb")
+    area = fStable[0] * fStable[1];
+  else if (name=="Tape" || name=="tape")
+    area = (2*fTape[0] + fStable[0]) * (2*fTape[1] + fStable[1]) - fStable[0] * fStable[1];
+  else {
+    QuenchError( XQuenchLogger::ERROR, "did not find this material: " << name );
+    XQuenchExcept except("did not find this material");
+    throw except;
+  }
+
+  return area;
 }

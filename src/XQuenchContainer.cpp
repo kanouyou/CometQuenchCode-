@@ -161,7 +161,7 @@ void XDimensionContainer :: SetPosition(const double* x, const double* y, const 
   fPos[2] = *z;
 }
 
-void XDimensionContainer :: SetNodeId(const int &node)
+void XDimensionContainer :: SetNodeId(const int node)
 {
   if (node<0) {
     QuenchError(XQuenchLogger::ERROR, "node id is " << node);

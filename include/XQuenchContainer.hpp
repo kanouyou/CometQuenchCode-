@@ -122,7 +122,7 @@ class XDimensionContainer
     double* GetPosition() const { return fPos; }
 
     /*! setup node id */
-    void SetNodeId(const int &node);
+    void SetNodeId(const int node);
 
   private:
     int* fId;
@@ -143,10 +143,10 @@ class XTimeIndependContainer
     ~XTimeIndependContainer() {}
 
     /*! @brief setup density */
-    void SetDensity(const double &rho) { fRho = rho; }
+    void SetDensity(const double rho) { fRho = rho; }
 
     /*! @brief setup residual resistance ratio */
-    void SetRRR(const double &RRR) { fRRR = RRR; }
+    void SetRRR(const double RRR) { fRRR = RRR; }
 
     /*! @brief return the material density */
     double GetDensity() const { return fRho; }

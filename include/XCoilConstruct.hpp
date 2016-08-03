@@ -20,6 +20,8 @@ namespace Quench
 //
 class Quench::XCoilConstruct
 {
+  friend class XPreProcess;
+
   public:
     /*! constuctor */
     XCoilConstruct();
@@ -62,6 +64,15 @@ class Quench::XCoilConstruct
 
     /*! @brief return coil size */
     double GetCoil(const std::string &name) const;
+
+    /*! @brief return conductor size */
+    double* GetConductorSize() const;
+
+    /*! @brief return conductor size */
+    double GetConductorSize(const std::string& name) const;
+
+    /*! @brief return area */
+    double GetArea(const std::string& name) const;
     
 
   private:
