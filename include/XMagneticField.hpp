@@ -88,17 +88,23 @@ class Quench::XMagneticField
     /*! deconstructor */
     virtual ~XMagneticField() {}
 
+    /*! @brief setup solenoid size */
+    virtual void SetSolenoid(const double z0, const double z1, const double r0, const double r1) = 0;
+
     /*! @brief setup calculation region */
     virtual void SetMapRange(const double z0, const double z1, const double r0, const double r1) = 0;
 
     /*! @brief setup regin mesh */
-    virtual void SetMapMesh(const int mz, const int mr, const int mp) = 0;
+    virtual void SetMapMesh(const int mz, const int mr) = 0;
 
     /*! @brief setup current */
     virtual void SetCurrent(const double I) = 0;
 
+    /*! @brief setup conductor size */
+    virtual void SetConductorArea(const double A) = 0;
+
     /*! @brief update the magnetic field */
-    virtual XFieldContainer* GetField(const int iz, const int jr) const = 0;
+    virtual Quench::XFieldContainer* GetFieldEntry(const int iz, const int jr) = 0;
 };
 
 
@@ -106,6 +112,8 @@ class Quench::XMagneticField
 //
 class Quench::XBiotSavart : public Quench::XMagneticField
 {
+  friend class XFieldHandle;
+
   public:
     /*! constructor */
     XBiotSavart();
@@ -113,17 +121,23 @@ class Quench::XBiotSavart : public Quench::XMagneticField
     /*! deconstructor */
     virtual ~XBiotSavart();
 
+    /*! @brief setup solenoid size */
+    virtual void SetSolenoid(const double z0, const double z1, const double r0, const double r1);
+
     /*! @brief setup calculation region */
     virtual void SetMapRange(const double z0, const double z1, const double r0, const double r1);
 
     /*! @brief setup regin mesh */
-    virtual void SetMapMesh(const int mz, const int mr, const int mp=50);
+    virtual void SetMapMesh(const int mz, const int mr);
 
     /*! @brief setup current */
-    virtual void SetCurrent(const double I) { fCurrent = I; }
+    virtual void SetCurrent(const double I) { fCurrent = I / fCdtA; }
+
+    /*! @brief setup conductor size */
+    virtual void SetConductorArea(const double A) { fCdtA = A; }
 
     /*! @brief return field container */
-    virtual Quench::XFieldContainer* GetField(const int iz, const int jr) const;
+    virtual Quench::XFieldContainer* GetFieldEntry(const int iz, const int jr);
 
 
   protected:
@@ -136,7 +150,10 @@ class Quench::XBiotSavart : public Quench::XMagneticField
   private:
     int*    fMapMesh;
     double* fMapRange;
-    double  fCurrent;
+    double  fCurrent;  /// current density
+    double  fCdtA;
+    int* fAMsh;       /// mesh to calculate potential
+    double* fSolenoid;
     std::vector <Quench::XFieldContainer*> fHC;
 };
 
