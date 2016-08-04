@@ -103,16 +103,19 @@ void XMaterialContainer :: SetConductivity(const double* kx, const double* ky, c
 /**************************************************/
 
 XDimensionContainer :: XDimensionContainer()
-    : fId(NULL), fPos(NULL), fNode(-1)
+    : fId(NULL), fPos(NULL), fNode(-1),
+      fCell(NULL), fDistance(NULL)
 {
-  fId  = new int[3];
-  fPos = new double[3];
+  //fId  = new int[3];
+  //fPos = new double[3];
 }
 
 XDimensionContainer :: ~XDimensionContainer()
 {
-  if (fId)  delete [] fId;
-  if (fPos) delete [] fPos;
+  if (fId)   delete [] fId;
+  if (fPos)  delete [] fPos;
+  if (fCell) delete [] fCell;
+  if (fDistance) delete [] fDistance;
 }
 
 void XDimensionContainer :: SetId(const int* id)
@@ -172,4 +175,22 @@ void XDimensionContainer :: SetNodeId(const int node)
   }
 
   fNode = node;
+}
+
+void XDimensionContainer :: SetCellSize(const double lx, const double ly, const double lz)
+{
+  if (!fCell) fCell = new double[3];
+
+  fCell[0] = lx;
+  fCell[1] = ly;
+  fCell[2] = lz;
+}
+
+void XDimensionContainer :: SetDistance(const double dx, const double dy, const double dz)
+{
+  if (!fDistance)  fDistance = new double[3];
+
+  fDistance[0] = dx;
+  fDistance[1] = dy;
+  fDistance[2] = dz;
 }

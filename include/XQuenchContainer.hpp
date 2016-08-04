@@ -145,10 +145,28 @@ class Quench::XDimensionContainer
     /*! setup node id */
     void SetNodeId(const int node);
 
+    /*! @brief return the node id */
+    int GetNodeId() const { return fNode; }
+
+    /*! @brief set cell size */
+    void SetCellSize(const double lx, const double ly, const double lz); 
+
+    /*! @brief return cell size */
+    double* GetCellSize() const { return fCell; }
+
+    /*! @brief setup distance between two node */
+    void SetDistance(const double dx, const double dy, const double dz);
+
+    /*! @brief return distance between two node */
+    double* GetDistance() const { return fDistance; }
+
+
   private:
     int* fId;
     double* fPos;
     double fNode;
+    double* fCell;
+    double* fDistance;
 };
 
 

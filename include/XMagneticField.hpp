@@ -1,5 +1,5 @@
 /**
- *  @file   XCoilConstruct.hpp
+ *  @file   XMagneticField.hpp
  *  @author Y.Yang (Kyushu University)
  *  @date   3 Aug 2016
  */

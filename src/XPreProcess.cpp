@@ -18,7 +18,7 @@ XPreProcess :: XPreProcess(const std::string& name)
 {}
 
 
-XPreProcess :: XPreProcess(const std::string& name, const XCoilConstruct* coil)
+XPreProcess :: XPreProcess(const std::string& name, const XCoilHandle* coil)
     : fName(name), fCoilPar(coil), fMsh(NULL)
 {}
 
@@ -49,10 +49,14 @@ void XPreProcess :: init(const int mz, const int mp, const int mr)
   XMaterialContainer* mat = NULL;
   XDimensionContainer* dim = NULL;
 
+  /// initial temperature:
+  const double temp = 4.5;
+
   for (int i=0; i<mr+2; i++) {
     for (int j=0; j<mp+2; j++) {
       for (int k=0; k<mz+2; k++) {
         mat = new XMaterialContainer();
+        mat->SetTemperature( temp );
         fMatCollect.push_back(mat);
 
         dim = new XDimensionContainer();
@@ -66,7 +70,7 @@ void XPreProcess :: init(const int mz, const int mp, const int mr)
 }
 
 
-void XPreProcess :: SetCoilHandler(const XCoilConstruct* coil)
+void XPreProcess :: SetCoilHandler(const XCoilHandle* coil)
 {
   if (!fCoilPar) fCoilPar = coil;
   QuenchError( XQuenchLogger::CONFIG, "setup coil handler." );
@@ -110,3 +114,20 @@ void XPreProcess :: SetFieldHandler(XFieldHandle* fld)
   }
 }
 
+
+void XPreProcess :: SetLayerInfo(const int layer, const Geometry geo)
+{
+  if (layer > fMsh[2]) {
+    QuenchError( XQuenchLogger::ERROR, "layer id is over the range." );
+    XQuenchExcept except("layer id is out of range.");
+    throw except;
+  }
+  else {
+
+  }
+}
+
+
+void XPreProcess :: setstrip(const int layer)
+{
+}

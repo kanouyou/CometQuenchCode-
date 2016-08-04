@@ -1,11 +1,11 @@
 /**
- *  @file   XCoilConstruct.hpp
+ *  @file   XCoilHandle.hpp
  *  @author Y.Yang (Kyushu University)
  *  @date   2 Aug 2016
  */
 
-#ifndef XCoilConstruct_HH
-#define XCoilConstruct_HH
+#ifndef XCoilHandle_HH
+#define XCoilHandle_HH
 
 #include <string>
 
@@ -13,21 +13,32 @@
 #include "IFdmUnits.hpp"
 #endif
 
+/// @eum coil geometry
+enum Geometry
+{
+  /// conductor
+  kConductor,
+  /// Al strip
+  kStrip,
+  /// shell structure
+  kShell
+};
+
 namespace Quench
-{ class XCoilConstruct; }
+{ class XCoilHandle; }
 
 /// class to handle the information of coil
 //
-class Quench::XCoilConstruct
+class Quench::XCoilHandle
 {
   friend class XPreProcess;
 
   public:
     /*! constuctor */
-    XCoilConstruct();
+    XCoilHandle();
 
     /*! @brief deconstructor */
-    ~XCoilConstruct();
+    ~XCoilHandle();
 
     /*! @brief setup stabilizer size */
     void SetStabilizer(const double lz, const double lr);

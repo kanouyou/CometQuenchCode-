@@ -1,5 +1,5 @@
 /**
- *  @file   XCoilConstruct.hpp
+ *  @file   XCoilHandle.hpp
  *  @author Y.Yang (Kyushu University)
  *  @date   2 Aug 2016
  */
@@ -11,8 +11,8 @@
 #include <string>
 #include "XQuenchContainer.hpp"
 
-#ifndef XCoilConstruct_HH
-#include "XCoilConstruct.hpp"
+#ifndef XCoilHandle_HH
+#include "XCoilHandle.hpp"
 #endif
 
 #ifndef XFieldHandle_HH
@@ -34,7 +34,7 @@ class Quench::XPreProcess
     XPreProcess(const std::string& name);
 
     /*! constructor */
-    XPreProcess(const std::string& name, const XCoilConstruct* coil);
+    XPreProcess(const std::string& name, const XCoilHandle* coil);
 
     /*! deconstructor */
     ~XPreProcess();
@@ -43,7 +43,7 @@ class Quench::XPreProcess
     void Initialize();
 
     /*! @brief set dimension handler */
-    void SetCoilHandler(const XCoilConstruct* coil);
+    void SetCoilHandler(const XCoilHandle* coil);
 
     /*! @brief setup name */
     void SetName(const std::string& name) { fName = name; }
@@ -63,13 +63,20 @@ class Quench::XPreProcess
     /*! @brief setup magnetic field handler */
     void SetFieldHandler(XFieldHandle* fld);
 
+    /*! @brief setup material for each layer */
+    void SetLayerInfo(const int layer, const Geometry geo);
+
+
   protected:
     /*! @brief initialize */
     void init(const int mz, const int mp, const int mr);
 
+    /*! @brief set strip property and size */
+    void setstrip(const int layer);
+
   private:
     std::string fName;
-    const Quench::XCoilConstruct* fCoilPar;
+    const Quench::XCoilHandle* fCoilPar;
     int* fMsh;
     std::vector<XMaterialContainer*>  fMatCollect;
     std::vector<XDimensionContainer*> fDimCollect;

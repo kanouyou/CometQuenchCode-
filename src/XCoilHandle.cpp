@@ -1,12 +1,12 @@
 #include <iostream>
 #include "XQuenchLogger.hpp"
 #include "XQuenchExcept.hpp"
-#include "XCoilConstruct.hpp"
+#include "XCoilHandle.hpp"
 
 using Quench::XQuenchLogger;
-using Quench::XCoilConstruct;
+using Quench::XCoilHandle;
 
-XCoilConstruct :: XCoilConstruct()
+XCoilHandle :: XCoilHandle()
     : fStable(NULL), fTape(NULL),
       fRatio(NULL), fCoil(NULL)
 {
@@ -16,7 +16,7 @@ XCoilConstruct :: XCoilConstruct()
   //if (!fCoil)    fCoil   = new double[3];
 }
 
-XCoilConstruct :: ~XCoilConstruct()
+XCoilHandle :: ~XCoilHandle()
 {
   if (fStable)  delete [] fStable;
   if (fTape)    delete [] fTape;
@@ -24,7 +24,7 @@ XCoilConstruct :: ~XCoilConstruct()
   if (fCoil)    delete [] fCoil;
 }
 
-void XCoilConstruct :: SetStabilizer(const double lz, const double lr)
+void XCoilHandle :: SetStabilizer(const double lz, const double lr)
 {
   if (!fStable) fStable = new double[2];
 
@@ -35,7 +35,7 @@ void XCoilConstruct :: SetStabilizer(const double lz, const double lr)
                                                            << ", " << fStable[1] << "}" );
 }
 
-void XCoilConstruct :: SetTape(const double lz, const double lr)
+void XCoilHandle :: SetTape(const double lz, const double lr)
 {
   if (!fTape)  fTape = new double[2];
 
@@ -45,7 +45,7 @@ void XCoilConstruct :: SetTape(const double lz, const double lr)
   QuenchError( XQuenchLogger::CONFIG, "tape size: {" << fTape[0] << ", " << fTape[1] << "}" );
 }
 
-void XCoilConstruct :: SetMaterialRatio(const double Al, const double Cu, const double SC)
+void XCoilHandle :: SetMaterialRatio(const double Al, const double Cu, const double SC)
 {
   if (!fRatio)   fRatio  = new double[3];
 
@@ -59,7 +59,7 @@ void XCoilConstruct :: SetMaterialRatio(const double Al, const double Cu, const 
                                                   << ", SC:" << fRatio[2] << ")" );
 }
 
-void XCoilConstruct :: SetCoil(const double lz, const double lp, const double lr)
+void XCoilHandle :: SetCoil(const double lz, const double lp, const double lr)
 {
   if (!fCoil)    fCoil   = new double[3];
 
@@ -71,7 +71,7 @@ void XCoilConstruct :: SetCoil(const double lz, const double lp, const double lr
                                             << ", lr:" << fCoil[2] );
 }
 
-double XCoilConstruct :: GetStabilizer(const std::string &name) const
+double XCoilHandle :: GetStabilizer(const std::string &name) const
 {
   if (name=="z" || name=="Z")
     return fStable[0];
@@ -84,7 +84,7 @@ double XCoilConstruct :: GetStabilizer(const std::string &name) const
   }
 }
 
-double XCoilConstruct :: GetTape(const std::string &name) const
+double XCoilHandle :: GetTape(const std::string &name) const
 {
   if (name=="z" || name=="Z")
     return fTape[0];
@@ -98,7 +98,7 @@ double XCoilConstruct :: GetTape(const std::string &name) const
 
 }
 
-double XCoilConstruct :: GetMaterialRatio(const std::string &name) const
+double XCoilHandle :: GetMaterialRatio(const std::string &name) const
 {
   if (name=="Al" || name=="al")
     return fRatio[0];
@@ -113,7 +113,7 @@ double XCoilConstruct :: GetMaterialRatio(const std::string &name) const
   }
 }
 
-double XCoilConstruct :: GetCoil(const std::string &name) const
+double XCoilHandle :: GetCoil(const std::string &name) const
 {
   if (name=="z" || name=="Z")
     return fCoil[0];
@@ -128,7 +128,7 @@ double XCoilConstruct :: GetCoil(const std::string &name) const
   }
 }
 
-double* XCoilConstruct :: GetConductorSize() const
+double* XCoilHandle :: GetConductorSize() const
 {
   double* cdtsize = new double[2];
   cdtsize[0] = 2*fTape[0] + fStable[0];
@@ -137,7 +137,7 @@ double* XCoilConstruct :: GetConductorSize() const
   return cdtsize;
 }
 
-double XCoilConstruct :: GetConductorSize(const std::string &name) const
+double XCoilHandle :: GetConductorSize(const std::string &name) const
 {
   double* size = GetConductorSize();
 
@@ -152,7 +152,7 @@ double XCoilConstruct :: GetConductorSize(const std::string &name) const
   }
 }
 
-double XCoilConstruct :: GetArea(const std::string& name) const
+double XCoilHandle :: GetArea(const std::string& name) const
 {
   double area;
 

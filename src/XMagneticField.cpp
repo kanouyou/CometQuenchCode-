@@ -91,8 +91,10 @@ void XBiotSavart :: calfield()
           fHC.push_back(fld);
         }
         else {
-          B[0] = -(A[i][j] - 0.) / dz;    // Br
-          B[1] = A[i][j] / R + (A[i][j] - 0.) / dr;      // Bz
+          //B[0] = -(A[i][j] - 0.) / dz;                   // Br
+          //B[1] = A[i][j] / R + (A[i][j] - 0.) / dr;      // Bz
+          B[0] = 0.;
+          B[1] = 0.;
         }
       }
     }
