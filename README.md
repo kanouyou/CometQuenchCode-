@@ -4,8 +4,8 @@
 
 # Author
 
-*Ye YANG (Kyushu University)
-*Email: kanouyou@kune2a.nucl.kyushu-u.ac.jp
+* Ye YANG (Kyushu University)
+* Email: kanouyou@kune2a.nucl.kyushu-u.ac.jp
 
 # Overview
 QuenchCode is a Toolkit for calculation of magnet quench with quench propagator.
