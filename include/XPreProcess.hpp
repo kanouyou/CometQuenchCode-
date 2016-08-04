@@ -31,6 +31,9 @@ class Quench::XPreProcess
 {
   public:
     /*! constructor */
+    XPreProcess();
+
+    /*! constructor */
     XPreProcess(const std::string& name);
 
     /*! constructor */
@@ -45,6 +48,9 @@ class Quench::XPreProcess
     /*! @brief set dimension handler */
     void SetCoilHandler(const XCoilHandle* coil);
 
+    /*! @brief return coil handler */
+    const XCoilHandle* GetCoilHandler() { return fCoil; }
+
     /*! @brief setup name */
     void SetName(const std::string& name) { fName = name; }
 
@@ -54,17 +60,11 @@ class Quench::XPreProcess
     /*! @brief return the id number of cell */
     const int id(const int i, const int j, const int k);
 
-    /*! @brief setup 3 dimensional mesh */
-    void SetMesh(const int mz, const int mp, const int mr);
-
-    /*! @brief return the mesh */
-    int* GetMesh() const { return fMsh; }
-
     /*! @brief setup magnetic field handler */
     void SetFieldHandler(XFieldHandle* fld);
 
-    /*! @brief setup material for each layer */
-    void SetLayerInfo(const int layer, const Geometry geo);
+    /*! @brief return the material collection */
+    std::vector<XMaterialContainer*> GetMaterialCollection() { return fMatCollect; }
 
 
   protected:
@@ -76,8 +76,10 @@ class Quench::XPreProcess
 
   private:
     std::string fName;
-    const Quench::XCoilHandle* fCoilPar;
-    int* fMsh;
+    int fMshZ;
+    int fMshP;
+    int fMshR;
+    const Quench::XCoilHandle* fCoil;
     std::vector<XMaterialContainer*>  fMatCollect;
     std::vector<XDimensionContainer*> fDimCollect;
 };

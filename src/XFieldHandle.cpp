@@ -1,3 +1,4 @@
+#include <iostream>
 #include "XQuenchLogger.hpp"
 #include "XFieldHandle.hpp"
 
@@ -59,8 +60,8 @@ void XFieldHandle :: SetMesh(const std::string& name, const int mz, const int mr
 {
   if (is_exist(name)) {
     for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
-      if (fHC[i]->GetName() == name) {
-        fHC[i]->SetMesh(mz, mr);
+      if (fHC.at(i)->GetName() == name) {
+        fHC.at(i)->SetMesh(mz, mr);
         break;
       }
     }
@@ -73,8 +74,8 @@ void XFieldHandle :: SetMesh(const std::string& name, const int mz, const int mr
 XMagnetInfoContainer* XFieldHandle :: GetInfoEntry(const std::string& name)
 {
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
-    if ( fHC[i]->GetName()==name )
-      return fHC[i];
+    if ( fHC.at(i)->GetName()==name )
+      return fHC.at(i);
   }
   
   QuenchError( XQuenchLogger::WARNING, "magnet: " << name << " did not exist." );
@@ -89,9 +90,9 @@ void XFieldHandle :: calfield(const std::string& name)
   /// find this magnet
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
     if ( fHC[i]->GetName()==name ) {
-      fld->SetMapRange( fHC[i]->GetDimension()[0], fHC[i]->GetDimension()[1],
-                        fHC[i]->GetDimension()[2], fHC[i]->GetDimension()[3] );
-      fld->SetMapMesh( fHC[i]->GetMesh()[0], fHC[i]->GetMesh()[1] );
+      fld->SetMapRange( fHC.at(i)->GetDimension()[0], fHC.at(i)->GetDimension()[1],
+                        fHC.at(i)->GetDimension()[2], fHC.at(i)->GetDimension()[3] );
+      fld->SetMapMesh( fHC.at(i)->GetMesh()[0], fHC.at(i)->GetMesh()[1] );
       break;
     }
   }
@@ -100,7 +101,7 @@ void XFieldHandle :: calfield(const std::string& name)
   double B[2];
 
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
-    QuenchError( XQuenchLogger::DEBUG, "calculating magnet: " << fHC[i]->GetName() );
+    QuenchError( XQuenchLogger::DEBUG, "calculating magnet: " << fHC.at(i)->GetName() );
     fld->SetSolenoid( fHC[i]->GetDimension()[0], fHC[i]->GetDimension()[1],
                       fHC[i]->GetDimension()[2], fHC[i]->GetDimension()[3] );
     fld->SetCurrent( fCurrent );
@@ -112,13 +113,19 @@ void XFieldHandle :: calfield(const std::string& name)
     else {
       /// mutal field
       for (std::vector<int>::size_type i=0; i<fCollect.size(); i++) {
-        B[0] = fCollect[i]->GetField()[0] + fld->GetFieldContainer()[i]->GetField()[0];
-        B[1] = fCollect[i]->GetField()[1] + fld->GetFieldContainer()[i]->GetField()[1];
-        fCollect[i]->SetField( B[0], B[1] );
+        B[0] = fCollect.at(i)->GetField()[0] + fld->GetFieldContainer()[i]->GetField()[0];
+        B[1] = fCollect.at(i)->GetField()[1] + fld->GetFieldContainer()[i]->GetField()[1];
+        fCollect.at(i)->SetField( B[0], B[1] );
       }
     }
 
   }
+}
+
+void XFieldHandle :: Run()
+{
+  if ( is_exist(fTarget) )
+    calfield(fTarget);
 }
 
 
@@ -138,18 +145,27 @@ Quench::XFieldContainer* XFieldHandle :: GetFieldEntry(const std::string& name, 
 }
 
 
+Quench::XFieldContainer* XFieldHandle :: GetFieldEntry(const int z, const int r)
+{
+  const int mz = GetInfoEntry(fTarget)->GetMesh()[1];
+  const int id = r*mz + z;
+
+  return fieldentry(fTarget, id);
+}
+
+
 Quench::XFieldContainer* XFieldHandle :: fieldentry(const std::string& name, const int id)
 {
-  if ( is_exist(name) )
-    calfield(name);
+  //if ( is_exist(name) && fCollect.size()==0 )
+  //  calfield(name);
 
-  return fCollect[id];
+  return fCollect.at(id);
 }
 
 std::vector<Quench::XFieldContainer*> XFieldHandle :: fieldcollection(const std::string& name)
 {
-  if ( is_exist(name) )
-    calfield(name);
+  //if ( is_exist(name) && fCollect.size()==0 )
+  //  calfield(name);
 
   return fCollect;
 }

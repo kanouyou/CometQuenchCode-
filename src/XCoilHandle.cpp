@@ -7,17 +7,16 @@ using Quench::XQuenchLogger;
 using Quench::XCoilHandle;
 
 XCoilHandle :: XCoilHandle()
-    : fStable(NULL), fTape(NULL),
-      fRatio(NULL), fCoil(NULL)
-{
-  //if (!fStable)  fStable = new double[2];
-  //if (!fTape)    fTape   = new double[2];
-  //if (!fRatio)   fRatio  = new double[3];
-  //if (!fCoil)    fCoil   = new double[3];
-}
+    : fMsh(NULL), fLayer(NULL), 
+      fStable(NULL), fTape(NULL),
+      fRatio(NULL), fCoil(NULL),
+      fStrip(1.*mm), fShell(10.*cm)
+{}
 
 XCoilHandle :: ~XCoilHandle()
 {
+  if (fMsh)     delete [] fMsh;
+  if (fLayer)   delete [] fLayer;
   if (fStable)  delete [] fStable;
   if (fTape)    delete [] fTape;
   if (fRatio)   delete [] fRatio;
@@ -69,6 +68,30 @@ void XCoilHandle :: SetCoil(const double lz, const double lp, const double lr)
 
   QuenchError( XQuenchLogger::CONFIG, "lz:" << fCoil[0] << ", lp:" << fCoil[1]
                                             << ", lr:" << fCoil[2] );
+}
+
+void XCoilHandle :: SetMesh(const int mz, const int mp, const int mr)
+{
+  if (!fMsh) fMsh = new int[3];
+
+  fMsh[0] = mz;
+  fMsh[1] = mp;
+  fMsh[2] = mr;
+
+  if (fLayer) fLayer = new int[mr];
+}
+
+void XCoilHandle :: AddLayer(const int layer, const Geometry geo)
+{
+  if (!fMsh) {
+    QuenchError( XQuenchLogger::ERROR, "please set the mesh first!" );
+    XQuenchExcept except("please set the mesh first!");
+    throw except;
+  }
+
+  if (!fLayer) fLayer = new int[fMsh[2]];
+
+  fLayer[layer] = geo;
 }
 
 double XCoilHandle :: GetStabilizer(const std::string &name) const

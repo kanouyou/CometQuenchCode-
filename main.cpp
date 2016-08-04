@@ -3,6 +3,7 @@
 #include "XQuenchExcept.hpp"
 //#include "XQuenchContainer.hpp"
 #include "XFieldHandle.hpp"
+#include "XCoilHandle.hpp"
 #include "XPreProcess.hpp"
 #include "IFdmUnits.hpp"
 
@@ -12,18 +13,26 @@ void Test() {
   XQuenchLogger* log = XQuenchLogger::GetInstance();
   log->Start(XQuenchLogger::DEBUG, "quench.log");
 
-  XPreProcess* pre = new XPreProcess("CS1");
+  XPreProcess* pre  = new XPreProcess("CS1");
+
   XFieldHandle* fld = new XFieldHandle();
+  XCoilHandle* coil = new XCoilHandle();
+  coil->SetMesh(20, 2, 3);
+
   try {
     fld->AddCoil("CS1", -79.525*cm, 59.525*cm, 672.*mm, 823.65*mm);
     fld->SetCurrent(2700.);
 
-    pre->SetMesh(270, 2, 9);
+    pre->SetCoilHandler( coil );
     pre->Initialize();
     pre->SetFieldHandler(fld);
+    double B = pre->GetMaterialCollection().at(125)->GetField();
+    std::cout << B << std::endl;
   }
   catch (XQuenchExcept except) {
     delete fld;
+    delete pre;
+    delete coil;
     std::cerr << " ERROR: " << except.what() << std::endl;
   }
 

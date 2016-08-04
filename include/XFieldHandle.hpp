@@ -105,6 +105,9 @@ class Quench::XFieldHandle
     /*! @brief setup solenoid mesh */
     void SetMesh(const std::string& name, const int mz, const int mr);
 
+    /*! @brief run field simulation */
+    void Run();
+
     /*! @brief return the magnet info container */
     std::vector<Quench::XMagnetInfoContainer*> GetInfoCollection() { return fHC; }
 
@@ -122,6 +125,9 @@ class Quench::XFieldHandle
     
     /*! @brief return the field container with the input id */
     Quench::XFieldContainer* GetFieldEntry(const int id) { return fieldentry(fTarget, id); }
+
+    /*! @brief return the field entry */
+    Quench::XFieldContainer* GetFieldEntry(const int z, const int r);
 
 
   protected:

@@ -31,8 +31,6 @@ namespace Quench
 //
 class Quench::XCoilHandle
 {
-  friend class XPreProcess;
-
   public:
     /*! constuctor */
     XCoilHandle();
@@ -51,6 +49,15 @@ class Quench::XCoilHandle
 
     /*! @brief setup coil size */
     void SetCoil(const double lz, const double lp, const double lr);
+
+    /*! @brief setup mesh */
+    void SetMesh(const int mz, const int mp, const int mr);
+
+    /*! @brief get mesh */
+    int* GetMesh() const { return fMsh; }
+
+    /*! @brief add layer */
+    void AddLayer(const int layer, const Geometry geo);
 
     /*! @brief return stabilizer size */
     double* GetStabilizer() const { return fStable; }
@@ -84,13 +91,29 @@ class Quench::XCoilHandle
 
     /*! @brief return area */
     double GetArea(const std::string& name) const;
+
+    /*! @brief setup strip size */
+    void SetStrip(const double lr) { fStrip = lr; }
+
+    /*! @brief return strip size */
+    double GetStrip() const { return fStrip; }
+
+    /*! @brief setup shell size */
+    void SetShell(const double lr) { fShell = lr; }
+
+    /*! @brief return shell size */
+    double GetShell() const { return fShell; }
     
 
   private:
+    int*    fMsh;
+    int*    fLayer;
     double* fStable;
     double* fTape;
     double* fRatio;
     double* fCoil;
+    double fStrip;
+    double fShell;
 };
 
 #endif

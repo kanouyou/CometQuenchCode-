@@ -34,5 +34,6 @@ fld->AddCoil("MS1", -2121.375*mm, -653.625*mm, 672.*mm, 756.25*mm);
 fld->SetMesh("MS1", 285, 10);
 
 fld->SetTarget("CS1");
+fld->Run();
 cs1 = fld->GetFieldCollection();
 ```
