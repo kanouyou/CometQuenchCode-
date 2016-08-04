@@ -77,10 +77,19 @@ class Quench::XFieldHandle
     /*! constructor */
     XFieldHandle();
 
+    /*! constructor */
+    XFieldHandle(const std::string& name);
+
     /*! deconstructor */
     ~XFieldHandle();
 
-    /*! check this magnet exists or not */
+    /*! @brief set target magnet */
+    void SetTarget(const std::string& name) { fTarget = name; }
+
+    /*! @brirf get target magnet */
+    std::string GetTarget() const { return fTarget; }
+
+    /*! @brief check this magnet exists or not */
     bool is_exist(const std::string& name) const;
 
     /*! @brief setup current */
@@ -97,23 +106,36 @@ class Quench::XFieldHandle
     void SetMesh(const std::string& name, const int mz, const int mr);
 
     /*! @brief return the magnet info container */
-    std::vector<Quench::XMagnetInfoContainer*> GetContainer() { return fHC; }
+    std::vector<Quench::XMagnetInfoContainer*> GetInfoCollection() { return fHC; }
 
     /*! @brief return the magnet with this name */
-    Quench::XMagnetInfoContainer* GetContainerEntry(const std::string& name);
+    Quench::XMagnetInfoContainer* GetInfoEntry(const std::string& name);
 
     /*! @brief return the field container */
     std::vector<Quench::XFieldContainer*> GetFieldCollection(const std::string& name);
+    
+    /*! @brief return the field container */
+    std::vector<Quench::XFieldContainer*> GetFieldCollection() { return fieldcollection(fTarget); }
 
     /*! @brief return the field container with the input id */
-    Quench::XFieldContainer* GetFieldContainer(const std::string& name, const int id);
+    Quench::XFieldContainer* GetFieldEntry(const std::string& name, const int id);
+    
+    /*! @brief return the field container with the input id */
+    Quench::XFieldContainer* GetFieldEntry(const int id) { return fieldentry(fTarget, id); }
 
 
   protected:
     /*! @brief calculate field map */
     void calfield(const std::string& name);
+    
+    /*! @brief return id-th entry of field container */
+    Quench::XFieldContainer* fieldentry(const std::string& name, const int id);
+
+    /*! @brief return the field collection */
+    std::vector<Quench::XFieldContainer*> fieldcollection(const std::string& name);
 
   private:
+    std::string fTarget;
     double fCurrent;
     std::vector<Quench::XMagnetInfoContainer*> fHC;
     std::vector<Quench::XFieldContainer*> fCollect;

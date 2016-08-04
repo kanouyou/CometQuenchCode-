@@ -22,22 +22,21 @@ enum QuenchStatus {
 
 namespace Quench
 { 
-  class XTimeDependContainer; 
+  class XMaterialContainer; 
   class XDimensionContainer;
 }
 
 
-/// class description:
-/// class to store the time dependent parameter
+/// class to store the material parameter
 //
-class Quench::XTimeDependContainer
+class Quench::XMaterialContainer
 {
   public:
     /*! constructor */
-    XTimeDependContainer();
+    XMaterialContainer();
 
     /*! deconstructor */
-    ~XTimeDependContainer();
+    ~XMaterialContainer();
 
     /*! setup magnetic field */
     void SetField(const double &fld);
@@ -81,6 +80,25 @@ class Quench::XTimeDependContainer
     /*! return local resistance */
     double GetResistance() const { return fR; }
 
+    /*! @brief setup material density */
+    void SetDensity(const double rho) { fRho = rho; }
+
+    /*! @brief return material density */
+    double GetDensity() const { return fRho; }
+
+    /*! @brief setup residual resistance ratio */
+    void SetRRR(const double RRR) { fRRR = RRR; }
+
+    /*! @brief return residual resistance ratio */
+    double GetRRR() const { return fRRR; }
+
+    /*! @brief setup the superconducting status */
+    void SetStatus(const QuenchStatus status) { fStatus = status; }
+
+    /*! @brief return the superconducting status */
+    QuenchStatus GetStatus() const { return fStatus; }
+
+
   private:
     double  fField;
     double  fTemp;
@@ -88,13 +106,16 @@ class Quench::XTimeDependContainer
     double* fHeat;
     double* fk;
     double  fR;
+    double  fRho;
+    double  fRRR;
+    QuenchStatus fStatus;
 };
 
 
 /// class discription:
 /// class to handle the dimensional container
 //
-class XDimensionContainer
+class Quench::XDimensionContainer
 {
   public:
     /*! constructor */
@@ -130,33 +151,34 @@ class XDimensionContainer
     double fNode;
 };
 
-/// class description:
-/// class to store the time independ parameters
+
+// class description:
+// class to store the time independ parameters
 //
-class XTimeIndependContainer
-{
-  public:
+//class XTimeIndependContainer
+//{
+//  public:
     /*! constructor */
-    XTimeIndependContainer() : fRRR(0.), fRho(1.) {}
+//    XTimeIndependContainer() : fRRR(0.), fRho(1.) {}
 
     /*! deconstructor */
-    ~XTimeIndependContainer() {}
+//    ~XTimeIndependContainer() {}
 
     /*! @brief setup density */
-    void SetDensity(const double rho) { fRho = rho; }
+//    void SetDensity(const double rho) { fRho = rho; }
 
     /*! @brief setup residual resistance ratio */
-    void SetRRR(const double RRR) { fRRR = RRR; }
+//    void SetRRR(const double RRR) { fRRR = RRR; }
 
     /*! @brief return the material density */
-    double GetDensity() const { return fRho; }
+//    double GetDensity() const { return fRho; }
 
     /*! @brief return residual resistance ratio */
-    double GetRRR() const { return fRRR; }
+//    double GetRRR() const { return fRRR; }
 
-  private:
-    double fRRR;
-    double fRho;
-};
+//  private:
+//    double fRRR;
+//    double fRho;
+//};
 
 #endif

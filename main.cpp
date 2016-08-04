@@ -1,8 +1,9 @@
 #include <iostream>
 #include "XQuenchLogger.hpp"
 #include "XQuenchExcept.hpp"
-#include "XQuenchContainer.hpp"
-#include "XMagneticField.hpp"
+//#include "XQuenchContainer.hpp"
+#include "XFieldHandle.hpp"
+#include "XPreProcess.hpp"
 #include "IFdmUnits.hpp"
 
 using namespace Quench;
@@ -11,16 +12,18 @@ void Test() {
   XQuenchLogger* log = XQuenchLogger::GetInstance();
   log->Start(XQuenchLogger::DEBUG, "quench.log");
 
-  XMagneticField* biot = new XBiotSavart();
+  XPreProcess* pre = new XPreProcess("CS1");
+  XFieldHandle* fld = new XFieldHandle();
   try {
-    biot->SetMapRange(-79.525*cm, 59.525*cm, 672.*mm, 823.65*mm);
-    biot->SetSolenoid(-79.525*cm, 59.525*cm, 672.*mm, 823.65*mm);
-    biot->SetMapMesh(270, 9);
-    biot->SetCurrent(2700.);
-    std::cout << biot->GetFieldEntry(0,0)->GetField()[0] << std::endl;
-    std::cout << biot->GetFieldEntry(1,1)->GetField()[0] << std::endl;
+    fld->AddCoil("CS1", -79.525*cm, 59.525*cm, 672.*mm, 823.65*mm);
+    fld->SetCurrent(2700.);
+
+    pre->SetMesh(270, 2, 9);
+    pre->Initialize();
+    pre->SetFieldHandler(fld);
   }
   catch (XQuenchExcept except) {
+    delete fld;
     std::cerr << " ERROR: " << except.what() << std::endl;
   }
 

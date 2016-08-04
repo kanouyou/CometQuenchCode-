@@ -3,24 +3,26 @@
 #include "XQuenchLogger.hpp"
 #include "XQuenchContainer.hpp"
 
-using Quench::XTimeDependContainer;
+using Quench::XMaterialContainer;
+using Quench::XDimensionContainer;
 using Quench::XQuenchLogger;
 
-XTimeDependContainer :: XTimeDependContainer()
+XMaterialContainer :: XMaterialContainer()
     : fField(0.), fTemp(0.), fCapacity(1.),
-      fHeat(NULL), fk(NULL)
+      fHeat(NULL), fk(NULL), fRho(1.), fRRR(),
+      fStatus(kSuperconduct)
 {
   fHeat = new double[3];
   fk    = new double[3];
 }
 
-XTimeDependContainer :: ~XTimeDependContainer()
+XMaterialContainer :: ~XMaterialContainer()
 {
   if (fHeat)  delete [] fHeat;
   if (fk)     delete [] fk;
 }
 
-void XTimeDependContainer :: SetField(const double &fld)
+void XMaterialContainer :: SetField(const double &fld)
 {
   if (fld<0) {
     QuenchError( XQuenchLogger::WARNING, "field is " << fld );
@@ -31,12 +33,12 @@ void XTimeDependContainer :: SetField(const double &fld)
   fField = fld;
 }
 
-void XTimeDependContainer :: SetTemperature(const double &temp)
+void XMaterialContainer :: SetTemperature(const double &temp)
 {
   fTemp = temp;
 }
 
-void XTimeDependContainer :: SetCapacity(const double &C)
+void XMaterialContainer :: SetCapacity(const double &C)
 {
   // check input capacity, if the capacity is negative, then throw it to exception
   if (C<0) {
@@ -48,7 +50,7 @@ void XTimeDependContainer :: SetCapacity(const double &C)
   fCapacity = C;
 }
 
-void XTimeDependContainer :: SetGeneration(const double* Q)
+void XMaterialContainer :: SetGeneration(const double* Q)
 {
   if (!fHeat) fHeat = new double[3];
 
@@ -57,7 +59,7 @@ void XTimeDependContainer :: SetGeneration(const double* Q)
   fHeat[2] = Q[2];
 }
 
-void XTimeDependContainer :: SetGeneration(const double* Qx, const double* Qy, const double* Qz)
+void XMaterialContainer :: SetGeneration(const double* Qx, const double* Qy, const double* Qz)
 {
   if (!fHeat)  fHeat = new double[3];
 
@@ -66,7 +68,7 @@ void XTimeDependContainer :: SetGeneration(const double* Qx, const double* Qy, c
   fHeat[2] = *Qz;
 }
 
-void XTimeDependContainer :: SetConductivity(const double* k)
+void XMaterialContainer :: SetConductivity(const double* k)
 {
   if (k[0]<0 || k[1]<0 || k[2]<0) {
     QuenchError(XQuenchLogger::ERROR, "thermal conductivity is {" << k[0] 
@@ -82,7 +84,7 @@ void XTimeDependContainer :: SetConductivity(const double* k)
   fk[2] = k[2];
 }
 
-void XTimeDependContainer :: SetConductivity(const double* kx, const double* ky, const double* kz)
+void XMaterialContainer :: SetConductivity(const double* kx, const double* ky, const double* kz)
 {
   if (*kx<0 || *ky<0 || *kz<0) {
     QuenchError(XQuenchLogger::ERROR, "thermal conductivity is {" << *kx

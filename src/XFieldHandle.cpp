@@ -7,8 +7,16 @@ using Quench::XMagnetInfoContainer;
 using Quench::XFieldContainer;
 
 XFieldHandle :: XFieldHandle()
-    : fCurrent(2700.)
+    : fTarget(), fCurrent(2700.)
 {}
+
+
+XFieldHandle :: XFieldHandle(const std::string& name)
+    : fTarget(name), fCurrent(2700.)
+{
+  QuenchError( XQuenchLogger::INFO, "calculate the field of magnet: " << name );
+}
+
 
 XFieldHandle :: ~XFieldHandle()
 {}
@@ -62,7 +70,7 @@ void XFieldHandle :: SetMesh(const std::string& name, const int mz, const int mr
   }
 } 
 
-XMagnetInfoContainer* XFieldHandle :: GetContainerEntry(const std::string& name)
+XMagnetInfoContainer* XFieldHandle :: GetInfoEntry(const std::string& name)
 {
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
     if ( fHC[i]->GetName()==name )
@@ -92,6 +100,7 @@ void XFieldHandle :: calfield(const std::string& name)
   double B[2];
 
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
+    QuenchError( XQuenchLogger::DEBUG, "calculating magnet: " << fHC[i]->GetName() );
     fld->SetSolenoid( fHC[i]->GetDimension()[0], fHC[i]->GetDimension()[1],
                       fHC[i]->GetDimension()[2], fHC[i]->GetDimension()[3] );
     fld->SetCurrent( fCurrent );
@@ -115,17 +124,32 @@ void XFieldHandle :: calfield(const std::string& name)
 
 std::vector<Quench::XFieldContainer*> XFieldHandle :: GetFieldCollection(const std::string& name)
 {
-  if ( is_exist(name) )
-    calfield(name);
+  fTarget = name;
 
-  return fCollect;
+  return fieldcollection(fTarget);
 }
 
 
-Quench::XFieldContainer* XFieldHandle :: GetFieldContainer(const std::string& name, const int id)
+Quench::XFieldContainer* XFieldHandle :: GetFieldEntry(const std::string& name, const int id)
+{
+  fTarget = name;
+
+  return fieldentry(fTarget, id);
+}
+
+
+Quench::XFieldContainer* XFieldHandle :: fieldentry(const std::string& name, const int id)
 {
   if ( is_exist(name) )
     calfield(name);
 
   return fCollect[id];
+}
+
+std::vector<Quench::XFieldContainer*> XFieldHandle :: fieldcollection(const std::string& name)
+{
+  if ( is_exist(name) )
+    calfield(name);
+
+  return fCollect;
 }
