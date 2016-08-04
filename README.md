@@ -19,7 +19,7 @@ The code is wriiten in C++ and depends on the libraries:
 Magnetic field of coil is calculated by using the Biot-Savart Law for solenoids.
 The simple way to obtain the magnetic field for coil is to use the `XFieldHandle` class.
 
-!cpp
+```cpp
 std::vector<Quench::XFieldContainer*> cs1;
 XFieldHandle* fld = new XFieldHandle();
 
@@ -35,3 +35,4 @@ fld->SetMesh("MS1", 285, 10);
 
 fld->SetTarget("CS1");
 cs1 = fld->GetFieldCollection();
+```
