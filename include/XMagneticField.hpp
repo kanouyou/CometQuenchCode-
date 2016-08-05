@@ -106,7 +106,7 @@ class Quench::XMagneticField
     /*! @brief setup conductor size */
     virtual void SetConductorArea(const double A) = 0;
 
-    /*! @breif run field calculation */
+    /*! @brief run field calculation */
     virtual void Run() = 0;
 
     /*! @brief update the magnetic field */

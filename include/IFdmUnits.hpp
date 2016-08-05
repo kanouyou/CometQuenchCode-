@@ -24,4 +24,6 @@ static const double msec = 0.001*sec;
 static const double Ohm = 1.;
 static const double mu0 = 4. * M_PI * 1e-7;
 
+static const double Lwf = 2.44e-8;
+
 #endif

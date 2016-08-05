@@ -86,7 +86,7 @@ class Quench::XFieldHandle
     /*! @brief set target magnet */
     void SetTarget(const std::string& name) { fTarget = name; }
 
-    /*! @brirf get target magnet */
+    /*! @brief get target magnet */
     std::string GetTarget() const { return fTarget; }
 
     /*! @brief check this magnet exists or not */
