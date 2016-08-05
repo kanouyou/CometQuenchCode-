@@ -1,8 +1,10 @@
 #include <iostream>
+#include <TApplication.h>
 #include "XQuenchLogger.hpp"
 #include "XQuenchExcept.hpp"
 //#include "XQuenchContainer.hpp"
 #include "XFieldHandle.hpp"
+#include "XPostField.hpp"
 #include "XCoilHandle.hpp"
 #include "XPreProcess.hpp"
 #include "IFdmUnits.hpp"
@@ -13,6 +15,7 @@ void Test() {
   XQuenchLogger* log = XQuenchLogger::GetInstance();
   log->Start(XQuenchLogger::DEBUG, "quench.log");
 
+  XPostField* post = new XPostField();
   XPreProcess* pre  = new XPreProcess("CS1");
 
   XFieldHandle* fld = new XFieldHandle();
@@ -26,8 +29,8 @@ void Test() {
     pre->SetCoilHandler( coil );
     pre->Initialize();
     pre->SetFieldHandler(fld);
-    double B = pre->GetMaterialCollection().at(273*3*10)->GetField();
-    std::cout << B << std::endl;
+    post->SetFieldHandler(fld);
+    post->Plot();
   }
   catch (XQuenchExcept except) {
     delete fld;
@@ -41,7 +44,11 @@ void Test() {
 
 int main(int argc, char** argv)
 {
+  TApplication* app = new TApplication("app", &argc, argv);
+
   Test();
+
+  app->Run();
 
   return 0;
 }

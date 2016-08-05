@@ -33,6 +33,12 @@ class XPostField
     /*! @brief setup field handler */
     void SetFieldHandler(Quench::XFieldHandle* fld);
 
+    /*! @brief plot */
+    void Plot();
+
+  protected:
+    /*! @brief plot the 2d hist */
+    void plot2d(TH2F* hist);
 
   private:
     std::string fMagnet;
