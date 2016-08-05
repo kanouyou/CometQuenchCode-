@@ -48,15 +48,16 @@ double XMatAluminium :: evalresist(double* par) const
 }
 
 
-void XMatAluminium :: calmagres(double &res) const
+double XMatAluminium :: calmagres(double res) const
 {
   // fitting parameter for Al magnetoresistance
   const int nb = 5;
   const double pb[nb] = {3.62857, 2.90419e-5, 3.79649e+6, 10975.9, 0.761609};
 
   const double h    = fFld * 10. * fRhoRT / res;
-  const double rhoB = h*h*(pb[0] - pb[1]*h)*res / (pb[2] + pb[3]*h + pb[4]*h*h) + res;
-  res  = rhoB;
+  res += h*h*(pb[0] - pb[1]*h)*res / (pb[2] + pb[3]*h + pb[4]*h*h);
+
+  return res;
 }
 
 
@@ -65,7 +66,7 @@ double XMatAluminium :: GetResistivity() const
   double res = calresist();
 
   if ( fFld>0. )
-    calmagres(res);
+    res = calmagres(res);
 
   return res;
 }

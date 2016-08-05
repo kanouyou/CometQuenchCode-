@@ -3,10 +3,12 @@
 #include "XQuenchLogger.hpp"
 #include "XQuenchExcept.hpp"
 //#include "XQuenchContainer.hpp"
+#include "XMatAluminium.hpp"
 #include "XFieldHandle.hpp"
 #include "XPostField.hpp"
 #include "XCoilHandle.hpp"
 #include "XPreProcess.hpp"
+#include "XPlotMaterial.hpp"
 #include "IFdmUnits.hpp"
 
 using namespace Quench;
@@ -15,7 +17,20 @@ void Test() {
   XQuenchLogger* log = XQuenchLogger::GetInstance();
   log->Start(XQuenchLogger::DEBUG, "quench.log");
 
-  XPostField* post = new XPostField();
+  //XPostField* post = new XPostField();
+  XPlotMaterial* mat = new XPlotMaterial();
+  mat->SetOption("R");
+  mat->SetRange(4.5, 300.);
+  XMatAluminium* al = new XMatAluminium();
+  al->SetMaterialProperty(4.3, 500, 5);
+
+  mat->SetMaterial(al);
+  mat->Add("B", 4.);
+  mat->Add("B", 3.);
+  mat->Add("B", 2.);
+  mat->Add("B", 1.);
+  mat->Plot();
+
   XPreProcess* pre  = new XPreProcess("CS1");
 
   XFieldHandle* fld = new XFieldHandle();
@@ -29,8 +44,8 @@ void Test() {
     pre->SetCoilHandler( coil );
     pre->Initialize();
     pre->SetFieldHandler(fld);
-    post->SetFieldHandler(fld);
-    post->Plot();
+    //post->SetFieldHandler(fld);
+    //post->Plot();
   }
   catch (XQuenchExcept except) {
     delete fld;

@@ -39,7 +39,7 @@ class XMatAluminium : public XMaterial
     double evalresist(double* par) const;
 
     /*! @brief calculate magnetoresistance */
-    void calmagres(double &res) const;
+    double calmagres(double res) const;
 
     /*! @brief calculate heat capacity */
     double calcapacity(const double T) const;

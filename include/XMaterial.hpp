@@ -10,10 +10,10 @@
 /// @enum material
 enum Material
 {
-  kAluminium,
-  kCopper,
-  kNbTi,
-  kKapton
+  iAluminium,
+  iCopper,
+  iNbTi,
+  iKapton
 };
 
 
@@ -35,7 +35,7 @@ class XMaterial
     void SetRRR(const double RRR) { fRRR = RRR; }
 
     /*! @brief setup magnetic field */
-    void SetField(const double B) { fFld = B; }
+    virtual void SetField(const double B) { fFld = B; }
 
     /*! @brief return material density */
     virtual double GetDensity() const = 0;

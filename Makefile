@@ -8,7 +8,7 @@ SRCS   = $(wildcard $(VPATH)/*.cpp) $(MAIN)
 OBJS   = $(SRCS:.cpp=.o)
 
 CXXFLAGS = -Wall -O3 -I include
-CXXLIBS  = 
+CXXLIBS  = -lpython2.7
 
 ROOTFLAGS = $(shell root-config --cflags)
 ROOTLIBS  = $(shell root-config --glibs)

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <TMultiGraph.h>
 #include <TCanvas.h>
+#include <TStyle.h>
 #include <TGraph.h>
 #include "XQuenchLogger.hpp"
 #include "XPlotMaterial.hpp"
@@ -66,13 +67,17 @@ void XPlotMaterial :: Add(const std::string& opt, const double var)
 void XPlotMaterial :: Plot()
 {
   if (fOpt=="R" || fOpt=="resist")
-    fMg->SetTitle("; Temperature [K]; Resistivity [#Omega m]");
+    fMg->SetTitle("; Temperature [K]; Resistivity [#Omega #upoint m]");
   else if (fOpt=="k" || fOpt=="conduct")
     fMg->SetTitle("; Temperature [K]; Thermal Conductivity [W/m/K]");
 
   TCanvas* c0 = new TCanvas("mat", "mat", 650, 480);
   c0->SetTicks(1,1);
   c0->SetLogy();
+
+  gStyle->SetTitleSize(0.043, "xy");
+  gStyle->SetLabelSize(0.043, "xy");
+  gStyle->SetTitleOffset(1.3, "y");
 
   fMg->Draw("a");
 }
