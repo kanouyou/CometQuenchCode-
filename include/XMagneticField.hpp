@@ -91,6 +91,9 @@ class Quench::XMagneticField
     /*! @brief setup solenoid size */
     virtual void SetSolenoid(const double z0, const double z1, const double r0, const double r1) = 0;
 
+    /*! @brief setup solenoid mesh */
+    virtual void SetSolenoidMesh(const int mz, const int mp, const int mr) = 0;
+
     /*! @brief setup calculation region */
     virtual void SetMapRange(const double z0, const double z1, const double r0, const double r1) = 0;
 
@@ -129,6 +132,9 @@ class Quench::XBiotSavart : public Quench::XMagneticField
 
     /*! @brief setup solenoid size */
     virtual void SetSolenoid(const double z0, const double z1, const double r0, const double r1);
+
+    /*! @brief setup solenoid mesh */
+    virtual void SetSolenoidMesh(const int mz, const int mp, const int mr);
 
     /*! @brief setup calculation region */
     virtual void SetMapRange(const double z0, const double z1, const double r0, const double r1);

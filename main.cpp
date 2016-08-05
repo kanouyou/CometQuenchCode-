@@ -17,7 +17,7 @@ void Test() {
 
   XFieldHandle* fld = new XFieldHandle();
   XCoilHandle* coil = new XCoilHandle();
-  coil->SetMesh(20, 2, 3);
+  coil->SetMesh(270, 2, 9);
 
   try {
     fld->AddCoil("CS1", -79.525*cm, 59.525*cm, 672.*mm, 823.65*mm);
@@ -26,7 +26,7 @@ void Test() {
     pre->SetCoilHandler( coil );
     pre->Initialize();
     pre->SetFieldHandler(fld);
-    double B = pre->GetMaterialCollection().at(125)->GetField();
+    double B = pre->GetMaterialCollection().at(273*3*10)->GetField();
     std::cout << B << std::endl;
   }
   catch (XQuenchExcept except) {

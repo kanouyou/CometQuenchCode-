@@ -26,6 +26,15 @@ XBiotSavart :: ~XBiotSavart()
   if (fSolenoid) delete [] fSolenoid;
 }
 
+void XBiotSavart :: SetSolenoidMesh(const int mz, const int mp, const int mr)
+{
+  if (!fAMsh) fAMsh = new int[3];
+
+  fAMsh[0] = mr;
+  fAMsh[1] = mp;
+  fAMsh[2] = mz;
+}
+
 void XBiotSavart :: SetSolenoid(const double z0, const double z1,
                                 const double r0, const double r1)
 {

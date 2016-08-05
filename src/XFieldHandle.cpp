@@ -90,9 +90,9 @@ void XFieldHandle :: calfield(const std::string& name)
   /// find this magnet
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
     if ( fHC[i]->GetName()==name ) {
-      fld->SetMapRange( fHC.at(i)->GetDimension()[0], fHC.at(i)->GetDimension()[1],
-                        fHC.at(i)->GetDimension()[2], fHC.at(i)->GetDimension()[3] );
-      fld->SetMapMesh( fHC.at(i)->GetMesh()[0], fHC.at(i)->GetMesh()[1] );
+      fld->SetMapRange( fHC.at(i)->GetDimension()[2], fHC.at(i)->GetDimension()[3],
+                        fHC.at(i)->GetDimension()[0], fHC.at(i)->GetDimension()[1] );
+      fld->SetMapMesh( fHC.at(i)->GetMesh()[1], fHC.at(i)->GetMesh()[0] );
       break;
     }
   }
@@ -102,8 +102,9 @@ void XFieldHandle :: calfield(const std::string& name)
 
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
     QuenchError( XQuenchLogger::DEBUG, "calculating magnet: " << fHC.at(i)->GetName() );
-    fld->SetSolenoid( fHC[i]->GetDimension()[0], fHC[i]->GetDimension()[1],
-                      fHC[i]->GetDimension()[2], fHC[i]->GetDimension()[3] );
+    fld->SetSolenoid( fHC.at(i)->GetDimension()[2], fHC.at(i)->GetDimension()[3],
+                      fHC.at(i)->GetDimension()[0], fHC.at(i)->GetDimension()[1] );
+    fld->SetSolenoidMesh( fHC.at(i)->GetMesh()[1], 50, fHC.at(i)->GetMesh()[0] );
     fld->SetCurrent( fCurrent );
     fld->Run();
 
