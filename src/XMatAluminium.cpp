@@ -61,7 +61,7 @@ double XMatAluminium :: calmagres(double res) const
 }
 
 
-double XMatAluminium :: GetResistivity() const
+double XMatAluminium :: GetResistivity()
 {
   double res = calresist();
 
@@ -72,7 +72,7 @@ double XMatAluminium :: GetResistivity() const
 }
 
 
-double XMatAluminium :: GetConductivity() const
+double XMatAluminium :: GetConductivity()
 {
   const double res = GetResistivity();
   const double k   = Lwf * fTemp / res;
@@ -81,7 +81,7 @@ double XMatAluminium :: GetConductivity() const
 }
 
 
-double XMatAluminium :: GetCapacity() const
+double XMatAluminium :: GetCapacity()
 {
   const double C = calcapacity(fTemp);
 

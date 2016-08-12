@@ -41,13 +41,13 @@ class XMaterial
     virtual double GetDensity() const = 0;
 
     /*! @brief return material capacity */
-    virtual double GetCapacity() const = 0;
+    virtual double GetCapacity() = 0;
 
     /*! @brief return material resistivity */
-    virtual double GetResistivity() const = 0;
+    virtual double GetResistivity() = 0;
 
     /*! @brief return material thermal conductivity */
-    virtual double GetConductivity() const = 0;
+    virtual double GetConductivity() = 0;
 
     /*! @brief print out the information */
     void Print();

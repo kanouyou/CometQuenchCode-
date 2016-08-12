@@ -15,14 +15,14 @@ XMatCopper :: ~XMatCopper()
 {}
 
 
-double XMatCopper :: GetCapacity() const
+double XMatCopper :: GetCapacity()
 {
   const double C = calcapacity(fTemp);
 
   return C;
 }
 
-double XMatCopper :: GetConductivity() const
+double XMatCopper :: GetConductivity()
 {
   const double k = calconduct(fTemp);
 
@@ -32,7 +32,7 @@ double XMatCopper :: GetConductivity() const
   return k;
 }
 
-double XMatCopper :: GetResistivity() const
+double XMatCopper :: GetResistivity()
 {
   const double res = calresist(fTemp);
 
@@ -93,7 +93,10 @@ double XMatCopper :: calconduct(const double T) const
 
 double XMatCopper :: calmagcdt(double k) const
 {
-  const double res = GetResistivity();
+  const double res = calresist(fTemp);
+  if ( fFld>0. )
+    calmagresist(res, fFld);
+
   const double zero = calresist(fTemp);
   k = zero * k / res;
 

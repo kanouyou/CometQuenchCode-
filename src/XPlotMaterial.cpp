@@ -3,6 +3,7 @@
 #include <TCanvas.h>
 #include <TStyle.h>
 #include <TGraph.h>
+#include <TLegend.h>
 #include "XQuenchLogger.hpp"
 #include "XPlotMaterial.hpp"
 
@@ -10,8 +11,19 @@ using Quench::XQuenchLogger;
 
 XPlotMaterial :: XPlotMaterial()
     : fOpt("R"), fRange(NULL),
-      fMat(NULL), fMg(new TMultiGraph())
-{}
+      fMat(NULL), fMg(new TMultiGraph()),
+      fPlots(0),
+      fLg(NULL)
+{
+  fLg = new TLegend(0.6, 0.6, 0.89, 0.89);
+  fLg->SetBorderSize(0);
+  fLg->SetFillStyle(0);
+  fLg->SetTextSize(0.043);
+
+  gStyle->SetTitleSize(0.043, "xy");
+  gStyle->SetLabelSize(0.043, "xy");
+  gStyle->SetTitleOffset(1.3, "y");
+}
 
 
 XPlotMaterial :: ~XPlotMaterial()
@@ -19,6 +31,7 @@ XPlotMaterial :: ~XPlotMaterial()
   if (fRange)  delete [] fRange;
   if (fMat)    delete fMat;
   if (fMg)     delete fMg;
+  if (fLg)     delete fLg;
 }
 
 
@@ -33,14 +46,19 @@ void XPlotMaterial :: SetRange(const double min, const double max)
 
 void XPlotMaterial :: Add(const std::string& opt, const double var)
 {
-  if (opt=="RRR")
-    fMat->SetRRR(var);
-  else if (opt=="B" || opt=="field")
-    fMat->SetField(var);
-  else 
-    QuenchError( XQuenchLogger::WARNING, "this option " << opt << " did not exist." );
-
   TGraph* gr = new TGraph();
+
+  if (opt=="RRR") {
+    fMat->SetRRR(var);
+    fLg->AddEntry( gr, Form("RRR: %.1f", var), "l" );
+  }
+  else if (opt=="B" || opt=="field") {
+    fMat->SetField(var);
+    fLg->AddEntry( gr, Form("B = %.1f Tesla", var), "l" );
+  }
+  else { 
+    QuenchError( XQuenchLogger::WARNING, "this option " << opt << " did not exist." );
+  }
 
   const double T0 = fRange[0];
   const double Tf = fRange[1];
@@ -60,7 +78,10 @@ void XPlotMaterial :: Add(const std::string& opt, const double var)
     T += dT;
   }
 
+  gr->SetLineWidth(2.);
+  gr->SetLineColor(fPlots+kSpring+1);
   fMg->Add(gr, "l");
+  fPlots++;
 }
 
 
@@ -80,5 +101,6 @@ void XPlotMaterial :: Plot()
   gStyle->SetTitleOffset(1.3, "y");
 
   fMg->Draw("a");
+  fLg->Draw();
 }
 

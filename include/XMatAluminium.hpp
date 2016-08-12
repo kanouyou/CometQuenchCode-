@@ -22,13 +22,13 @@ class XMatAluminium : public XMaterial
     virtual double GetDensity() const { return 2700.; }
 
     /*! @brief return material thermal conductivity */
-    virtual double GetConductivity() const;
+    virtual double GetConductivity();
 
     /*! @brief return material electric resistivity */
-    virtual double GetResistivity() const;
+    virtual double GetResistivity();
 
     /*! @brief return material heat capacity */
-    virtual double GetCapacity() const;
+    virtual double GetCapacity();
 
 
   protected:

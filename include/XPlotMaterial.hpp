@@ -11,6 +11,7 @@
 #include "XMaterial.hpp"
 
 class TMultiGraph;
+class TLegend;
 
 /// class to plot the material property
 //
@@ -35,6 +36,12 @@ class XPlotMaterial
     /*! @brief add graph */
     void Add(const std::string& opt, const double var);
 
+    /*! @brief return the multigraph class */
+    TMultiGraph* GetMultiGraph() { return fMg; }
+
+    /*! @brief return the legend */
+    TLegend* GetLegend() { return fLg; }
+
     /*! @brief plot */
     void Plot();
 
@@ -48,6 +55,8 @@ class XPlotMaterial
     double* fRange;
     XMaterial* fMat;
     TMultiGraph* fMg;
+    int fPlots;
+    TLegend* fLg;
 };
 
 #endif

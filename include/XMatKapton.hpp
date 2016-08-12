@@ -14,6 +14,26 @@ class XMatKapton : public XMaterial
   public:
     /*! constructor */
     XMatKapton();
+
+    /*! deconstructor */
+    ~XMatKapton() {}
+
+    /*! return the heat capacity */
+    virtual double GetCapacity();
+
+    /*! return the thermal conductivity */
+    virtual double GetConductivity();
+
+    /*! return the density */
+    virtual double GetDensity() const { return 1420.; }
+
+
+  protected:
+    /*! calculate thermal conductivity */
+    void calconductivity(double &k);
+
+    /*! calculate capacity */
+    void calcapacity(double &C);
 };
 
 #endif
