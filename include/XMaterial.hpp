@@ -52,6 +52,13 @@ class XMaterial
     /*! @brief print out the information */
     void Print();
 
+    /*! @brief calculate the average thermal conductivity as serial circuit */
+    double GetSerialk(const double l1, const double k1, const double l2, const double k2) const;
+
+    /*! @brief calculate the avarage thermal conductivity as parallel circuit */
+    double GetParallelk(const double A1, const double k1, const double A2, const double k2) const;
+
+
   protected:
     double fTemp;
     double fRRR;

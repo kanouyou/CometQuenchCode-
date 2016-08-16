@@ -1,6 +1,10 @@
 #include <iostream>
 #include "XQuenchExcept.hpp"
 #include "XMaterial.hpp"
+#include "XMatKapton.hpp"
+#include "XMatAluminium.hpp"
+#include "XMatCopper.hpp"
+#include "XMatNbTi.hpp"
 #include "XPreProcess.hpp"
 
 #ifndef XQuenchLogger_HH
@@ -137,6 +141,62 @@ void XPreProcess :: SetFieldHandler(XFieldHandle* fld)
 }
 
 
+void XPreProcess :: SetStripProperty(const int i)
+{
+  XMatAluminium mat;
+  XMatKapton tape;
+  double T = fMatCollect[i]->GetTemperature();
+  double B = fMatCollect[i]->GetField();
+  double RRR = fMatCollect[i]->GetRRR();
+
+  mat.SetMaterialProperty( T, RRR, B);
+
+  // calculate avg thermal conductivity
+  tape.SetTemperature(T);
+  double kins = tape.GetConductivity();
+  double kzp  = mat.GetConductivity();
+  double kr = mat.GetSerialk( fCoil->GetTape()[1], kins, fCoil->GetStrip(), kzp );
+
+  // fill
+  fMatCollect[i]->SetConductivity(&kzp, &kr, &kzp);
+  fMatCollect[i]->SetResistance(0.);       // strip is not connected to the current supply
+  fMatCollect[i]->SetCapacity( mat.GetCapacity() );
+  fMatCollect[i]->SetDensity( mat.GetDensity() );
+}
+
+
+void XPreProcess :: SetConductorProperty(const int i)
+{
+  XMatKapton    tape;
+  XMatAluminium al;
+  XMatCopper    cu;
+  XMatNbTi      sc;
+  const double rho = 4000.;
+
+  double T = fMatCollect[i]->GetTemperature();
+  double B = fMatCollect[i]->GetField();
+  double RRR = fMatCollect[i]->GetRRR();
+
+  al.SetMaterialProperty(T, RRR, B);
+  cu.SetMaterialProperty(T, RRR, B);
+  sc.SetTemperature(T);
+  sc.SetField(B);
+  tape.SetTemperature(T);
+
+  // average capacity
+  double C_Al = fCoil->GetMaterialRatio("Al") * al.GetDensity() * al.GetCapacity() / rho;
+  double C_Cu = fCoil->GetMaterialRatio("Cu") * cu.GetDensity() * cu.GetCapacity() / rho;
+  double C_Sc = fCoil->GetMaterialRatio("Sc") * sc.GetDensity() * sc.GetCapacity() / rho;
+  double C_Avg = C_Al + C_Cu + C_Sc;
+
+  // average thermal conductivity
+  double k_ins = tape.GetConductivity();
+  double k_cdt = al.GetConductivity();
+  
+  // fill
+}
+
+
 void XPreProcess :: setstrip(const int layer)
 {
   int n = 0;
@@ -144,7 +204,13 @@ void XPreProcess :: setstrip(const int layer)
   for (int j=0; j<fMshP+2; j++) {
     for (int k=0; k<fMshZ+2; k++) {
       n = id(k, j, layer);
-      fMatCollect[n]->SetDensity(2700.);
+      SetStripProperty(n);
     }
   }
+}
+
+
+void XPreProcess :: setconductor(const int layer)
+{
+
 }

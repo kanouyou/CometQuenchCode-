@@ -23,6 +23,12 @@ class XMatNbTi : public XMaterial
     /*! @brief return the density */
     virtual double GetDensity() const { return 6538.; }
 
+    /*! @brief return the resistivity */
+    virtual double GetResistivity() { return 1.; }
+
+    /*! @brief return the conductivity */
+    virtual double GetConductivity() { return 1.; }
+
     /*! @brief return the heat capacity */
     virtual double GetCapacity();
 

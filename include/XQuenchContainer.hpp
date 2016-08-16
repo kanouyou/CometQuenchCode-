@@ -45,25 +45,31 @@ class Quench::XMaterialContainer
     double GetField() const { return fField; }
 
     /*! setup temperature */
-    void SetTemperature(const double &temp);
+    void SetTemperature(const double temp);
 
     /*! return temperature */
     double GetTemperature() const { return fTemp; }
 
     /*! setup heat capacity */
-    void SetCapacity(const double &C);
+    void SetCapacity(const double C);
 
     /*! return heat capacity */
     double GetCapacity() const { return fCapacity; }
 
     /*! setup heat generation */
-    void SetGeneration(const double* Q); 
+    void SetHeatFlux(const double* Q); 
 
-    /*! setup heat generation */
-    void SetGeneration(const double* Qx, const double* Qy, const double* Qz);
+    /*! @brief setup the heat flux */
+    void SetHeatFlux(const double* Qx, const double* Qy, const double* Qz);
 
     /*! return heat generation */
-    double* GetGeneration() const { return fHeat; }
+    double* GetHeatFlux() const { return fHeat; }
+
+    /*! @brief setup the heat generation */
+    void SetHeat(const double gen) { fGen = gen; }
+
+    /*! @brief return the heat generation */
+    double GetHeat() const { return fGen; }
 
     /*! setup thermal conductivity */
     void SetConductivity(const double* k);
@@ -109,6 +115,7 @@ class Quench::XMaterialContainer
     double  fRho;
     double  fRRR;
     QuenchStatus fStatus;
+    double  fGen;
 };
 
 

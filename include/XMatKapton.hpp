@@ -24,8 +24,11 @@ class XMatKapton : public XMaterial
     /*! return the thermal conductivity */
     virtual double GetConductivity();
 
-    /*! return the density */
+    /*! @brief return the density */
     virtual double GetDensity() const { return 1420.; }
+
+    /*! @brief return the resistivity */
+    virtual double GetResistivity() { return 1.; }
 
 
   protected:

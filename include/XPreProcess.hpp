@@ -74,6 +74,15 @@ class Quench::XPreProcess
     /*! @brief set strip property and size */
     void setstrip(const int layer);
 
+    /*! @brief set strip material, it can be modified by user */
+    virtual void SetStripProperty(const int i);
+
+    /*! @brief setup conductor material */
+    virtual void SetConductorProperty(const int i);
+
+    /*! @brief set conductor property */
+    void setconductor(const int layer);
+
   private:
     std::string fName;
     int fMshZ;

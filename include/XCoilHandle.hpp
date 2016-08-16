@@ -49,6 +49,9 @@ class Quench::XCoilHandle
 
     /*! @brief setup coil size */
     void SetCoil(const double lz, const double lp, const double lr);
+    
+    /*! @brief return coil size */
+    double* GetCoil() const { return fCoil; }
 
     /*! @brief setup mesh */
     void SetMesh(const int mz, const int mp, const int mr);
@@ -76,9 +79,6 @@ class Quench::XCoilHandle
 
     /*! @brief return material ratio */
     double GetMaterialRatio(const std::string &name) const;
-
-    /*! @brief return coil size */
-    double* GetCoil() const { return fCoil; }
 
     /*! @brief return coil size */
     double GetCoil(const std::string &name) const;

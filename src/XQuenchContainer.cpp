@@ -10,7 +10,7 @@ using Quench::XQuenchLogger;
 XMaterialContainer :: XMaterialContainer()
     : fField(0.), fTemp(0.), fCapacity(1.),
       fHeat(NULL), fk(NULL), fRho(1.), fRRR(),
-      fStatus(kSuperconduct)
+      fStatus(kSuperconduct), fGen(0.)
 {
   fHeat = new double[3];
   fk    = new double[3];
@@ -33,12 +33,12 @@ void XMaterialContainer :: SetField(const double &fld)
   fField = fld;
 }
 
-void XMaterialContainer :: SetTemperature(const double &temp)
+void XMaterialContainer :: SetTemperature(const double temp)
 {
   fTemp = temp;
 }
 
-void XMaterialContainer :: SetCapacity(const double &C)
+void XMaterialContainer :: SetCapacity(const double C)
 {
   // check input capacity, if the capacity is negative, then throw it to exception
   if (C<0) {
@@ -50,7 +50,7 @@ void XMaterialContainer :: SetCapacity(const double &C)
   fCapacity = C;
 }
 
-void XMaterialContainer :: SetGeneration(const double* Q)
+void XMaterialContainer :: SetHeatFlux(const double* Q)
 {
   if (!fHeat) fHeat = new double[3];
 
@@ -59,7 +59,7 @@ void XMaterialContainer :: SetGeneration(const double* Q)
   fHeat[2] = Q[2];
 }
 
-void XMaterialContainer :: SetGeneration(const double* Qx, const double* Qy, const double* Qz)
+void XMaterialContainer :: SetHeatFlux(const double* Qx, const double* Qy, const double* Qz)
 {
   if (!fHeat)  fHeat = new double[3];
 
