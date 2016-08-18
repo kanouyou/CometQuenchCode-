@@ -2,27 +2,20 @@
  *  @file   XCoilHandle.hpp
  *  @author Y.Yang (Kyushu University)
  *  @date   2 Aug 2016
- */
+ **/
 
 #ifndef XCoilHandle_HH
 #define XCoilHandle_HH
 
+#include <map>
 #include <string>
+#include "XMaterial.hpp"
+#include "XCoilBase.hpp"
 
 #ifndef IFdmUnits_HH
 #include "IFdmUnits.hpp"
 #endif
 
-/// @eum coil geometry
-enum Geometry
-{
-  /// conductor
-  kConductor,
-  /// Al strip
-  kStrip,
-  /// shell structure
-  kShell
-};
 
 namespace Quench
 { class XCoilHandle; }
@@ -32,88 +25,86 @@ namespace Quench
 class Quench::XCoilHandle
 {
   public:
-    /*! constuctor */
+    /// @brief constuctor
     XCoilHandle();
 
-    /*! @brief deconstructor */
-    ~XCoilHandle();
+    /// @brief deconstructor
+    virtual ~XCoilHandle();
 
-    /*! @brief setup stabilizer size */
-    void SetStabilizer(const double lz, const double lr);
+    /// @brief setup the name of this magnet
+    /// @param name magnet name
+    void SetName(const std::string& name) { fName = name; }
 
-    /*! @brief setup tape size */
-    void SetTape(const double lz, const double lr);
+    /// @brief return the name of the magnet
+    std::string GetName() const { return fName; }
 
-    /*! @brief setup conductor material ratio */
-    void SetMaterialRatio(const double Al, const double Cu, const double SC);
+    /// @brief  setup material ratio in the conductor
+    /// @detail the default ratio is \f$ Al:Cu:SC = 7.3:1:0.9 \f$
+    void SetMaterialRatio(const double Al=7.3, const double Cu=1., const double SC=0.9);
 
-    /*! @brief setup coil size */
-    void SetCoil(const double lz, const double lp, const double lr);
+    /// @brief  setup conductor material percent ratio
+    /// @detail noting that the ratio inputed in here must be \f$ \frac{r_{mat}}{r_{tot}} \f$
+    void SetAlPercent(const double perc);
+    void SetCuPercent(const double perc);
+    void SetScPercent(const double perc);
+
+    /// @brief  return material ratio
+    /// @param  mat please using the enumeration: Material::iAluminium/iCopper/iNbTi
+    /// @return percent value of the inputed material in this conductor
+    double  GetMaterialRatio(const Material mat) const;
+    std::map<const Material, double> GetMaterialRatio() const { return fRatio; }
+
+    /// @brief  setup coil's size
+    /// @detail length along the axis z and r will not be used in calculation.
+    ///         thus it can be set to a arbitrary value
+    void SetCoilSize(const double lz, const double lp, const double lr);
     
-    /*! @brief return coil size */
-    double* GetCoil() const { return fCoil; }
+    /// @brief return coil size
+    /// @param dim enumeration value: Coil::iZ/iPhi/iR
+    double  GetCoilSize(const Coil dim) const;
+    double* GetCoilSize() const { return fCoil; }
 
-    /*! @brief setup mesh */
+    /// @brief setup coil mesh
     void SetMesh(const int mz, const int mp, const int mr);
 
-    /*! @brief get mesh */
+    /// @brief return coil mesh
+    /// @param dim enumeration value: Coil::iZ/iPhi/iR
+    int  GetMesh(const Coil dim) const;
     int* GetMesh() const { return fMsh; }
 
-    /*! @brief add layer */
+    /// @brief setup coil total layers and turns
+    /// @param layer layer of conductor, not included the shell and strip 
+    void SetCoilLayout(const int turn, const int layer);
+    void SetCoilLayers(const int layer);
+    void SetCoilTurns(const int turn);
+
+    /// @brief returns the coil layer which not includes the strip and shell
+    int GetCoilLayers() const { return fLayer; }
+
+    /// @brief returns the coil turns
+    int GetCoilTurns() const { return fTurn; }
+
+    /// @brief add the layer's information
     void AddLayer(const int layer, const Geometry geo);
 
-    /*! @brief return stabilizer size */
-    double* GetStabilizer() const { return fStable; }
 
-    /*! @brief return stabilizer size */
-    double GetStabilizer(const std::string &name) const;
+  protected:
+    /// @brief returns the name of geometry
+    std::string GetGeometryName(const Geometry geo);
 
-    /*! @brief return tape size */
-    double* GetTape() const { return fTape; }
+    /// @brief returns the name of the material
+    std::string GetMaterialName(const Material mat);
 
-    /*! @brief return tape size */
-    double GetTape(const std::string &name) const;
-
-    /*! @brief return material ratio */
-    double* GetMaterialRatio() const { return fRatio; }
-
-    /*! @brief return material ratio */
-    double GetMaterialRatio(const std::string &name) const;
-
-    /*! @brief return coil size */
-    double GetCoil(const std::string &name) const;
-
-    /*! @brief return conductor size */
-    double* GetConductorSize() const;
-
-    /*! @brief return conductor size */
-    double GetConductorSize(const std::string& name) const;
-
-    /*! @brief return area */
-    double GetArea(const std::string& name) const;
-
-    /*! @brief setup strip size */
-    void SetStrip(const double lr) { fStrip = lr; }
-
-    /*! @brief return strip size */
-    double GetStrip() const { return fStrip; }
-
-    /*! @brief setup shell size */
-    void SetShell(const double lr) { fShell = lr; }
-
-    /*! @brief return shell size */
-    double GetShell() const { return fShell; }
-    
 
   private:
-    int*    fMsh;
-    int*    fLayer;
-    double* fStable;
-    double* fTape;
-    double* fRatio;
+    std::string fName;
     double* fCoil;
-    double fStrip;
-    double fShell;
+    int*    fMsh;
+    int     fLayer;
+    int     fTurn;
+    std::map<const int, const Geometry> fLayerGeo;
+    std::map<const Material, double> fRatio;
 };
+
 
 #endif

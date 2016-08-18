@@ -3,7 +3,6 @@
 #include "XQuenchLogger.hpp"
 #include "XMaterial.hpp"
 
-//using Quench::XQuenchExcept;
 using Quench::XQuenchLogger;
 
 void XMaterial :: SetMaterialProperty(const double T, const double RRR, const double B)

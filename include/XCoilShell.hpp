@@ -1,52 +1,51 @@
 /**
- *  @file   XCoilStrip.hpp
+ *  @file   XCoilShell.hpp
  *  @author Y.Yang (Kyushu University)
- *  @date   15 Aug 2016
- */
+ *  @date   16 Aug 2016
+ *          18 Aug 2016 - modified by Y.Yang
+ **/
 
-#ifndef XCoilStrip_HH
-#define XCoilStrip_HH
+#ifndef XCoilShell_HH
+#define XCoilShell_HH
 
 #include "XCoilBase.hpp"
 
 namespace Quench
-{ class XCoilStrip; }
+{ class XCoilShell; }
 
-/// abstract class to define the quench propagator strip parameters */
-//
-class Quench::XCoilStrip : public Quench::XCoilBase
+class Quench::XCoilShell : public Quench::XCoilBase
 {
   public:
     /*! constructor */
-    XCoilStrip();
+    XCoilShell();
 
     /*! deconstructor */
-    virtual ~XCoilStrip();
+    virtual ~XCoilShell();
 
-    /// @brief setup dimension of strip only
+    /*! @brief setup the dimension of shell */
     virtual void SetDimension(const double lz, const double lr);
 
-    /// @brief returns the array of dimension of strip only
+    /*! @brief return the dimension of shell */
     virtual double* GetDimension() { return fSize; }
     virtual double  GetDimension(const Coil dim) const;
 
     /*! @brief setup the insulation thickness */
     virtual void SetInsSize(const double lz, const double lr);
 
-    /*! @brief returns the insulation thickness */
+    /*! @brief return the insulation thickness */
     virtual double* GetInsSize() { return fIns; }
     virtual double  GetInsSize(const Coil dim) const;
 
-    /*! @brief calculate the total area of strip */
+    /*! @brief calculate the total area of shell */
     virtual double GetTotalArea() const;
 
-    /*! @brief calculate the strip area only */
+    /*! @brief calculate the shell area only */
     virtual double GetArea() const;
 
-    /*! @brief calculate the area of insulation for strip */
+    /*! @brief calculate the insulation area */
     virtual double GetInsArea() const;
 
-    /// @brief return the enumeration of the type
+    /// @brief return the type
     virtual Geometry GetType() const { return fType; }
 
 

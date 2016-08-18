@@ -7,195 +7,173 @@ using Quench::XQuenchLogger;
 using Quench::XCoilHandle;
 
 XCoilHandle :: XCoilHandle()
-    : fMsh(NULL), fLayer(NULL), 
-      fStable(NULL), fTape(NULL),
-      fRatio(NULL), fCoil(NULL),
-      fStrip(1.*mm), fShell(10.*cm)
-{}
+    : fName(""),
+      fCoil(NULL),
+      fMsh(NULL),
+      fLayer(0),
+      fTurn(0)
+{
+  // initialize the material ratio
+  fRatio.insert( std::map<const Material, double>::value_type(iAluminium, 7.) );
+  fRatio.insert( std::map<const Material, double>::value_type(   iCopper, 1.) );
+  fRatio.insert( std::map<const Material, double>::value_type(     iNbTi, 1.) );
+}
 
 XCoilHandle :: ~XCoilHandle()
 {
-  if (fMsh)     delete [] fMsh;
-  if (fLayer)   delete [] fLayer;
-  if (fStable)  delete [] fStable;
-  if (fTape)    delete [] fTape;
-  if (fRatio)   delete [] fRatio;
-  if (fCoil)    delete [] fCoil;
+  if (fCoil) delete [] fCoil;
+  if (fMsh ) delete [] fMsh;
 }
 
-void XCoilHandle :: SetStabilizer(const double lz, const double lr)
-{
-  if (!fStable) fStable = new double[2];
-
-  fStable[0] = lz;
-  fStable[1] = lr;
-
-  QuenchError( XQuenchLogger::CONFIG, "stabilizer size: {" << fStable[0]
-                                                           << ", " << fStable[1] << "}" );
-}
-
-void XCoilHandle :: SetTape(const double lz, const double lr)
-{
-  if (!fTape)  fTape = new double[2];
-
-  fTape[0] = lz;
-  fTape[1] = lr;
-
-  QuenchError( XQuenchLogger::CONFIG, "tape size: {" << fTape[0] << ", " << fTape[1] << "}" );
-}
 
 void XCoilHandle :: SetMaterialRatio(const double Al, const double Cu, const double SC)
 {
-  if (!fRatio)   fRatio  = new double[3];
-
   double tot = Al + Cu + SC;
+  fRatio[iAluminium] = Al / tot;
+  fRatio[   iCopper] = Cu / tot;
+  fRatio[     iNbTi] = SC / tot;
 
-  fRatio[0] = Al / tot;
-  fRatio[1] = Cu / tot;
-  fRatio[2] = SC / tot;
-
-  QuenchError( XQuenchLogger::CONFIG, "material ratio: (Al:" << fRatio[0] << ", Cu:" << fRatio[1]
-                                                  << ", SC:" << fRatio[2] << ")" );
+  QuenchError( XQuenchLogger::INFO, "material ratio :: Al:Cu:SC = " << fRatio[iAluminium] 
+                                                             << ":" << fRatio[iCopper]
+                                                             << ":" << fRatio[iNbTi] );
 }
 
-void XCoilHandle :: SetCoil(const double lz, const double lp, const double lr)
+
+void XCoilHandle :: SetAlPercent(const double perc)
 {
-  if (!fCoil)    fCoil   = new double[3];
-
-  fCoil[0] = lz;
-  fCoil[1] = lp;
-  fCoil[2] = lr;
-
-  QuenchError( XQuenchLogger::CONFIG, "lz:" << fCoil[0] << ", lp:" << fCoil[1]
-                                            << ", lr:" << fCoil[2] );
+  fRatio[iAluminium] = perc;
+  QuenchError( XQuenchLogger::INFO, "material ratio :: Al = " << fRatio[iAluminium] );
 }
+
+
+void XCoilHandle :: SetCuPercent(const double perc)
+{
+  fRatio[iCopper] = perc;
+  QuenchError( XQuenchLogger::INFO, "material ratio :: Cu = " << fRatio[iCopper] );
+}
+
+
+void XCoilHandle :: SetScPercent(const double perc)
+{
+  fRatio[iNbTi] = perc;
+  QuenchError( XQuenchLogger::INFO, "material ratio :: SC = " << fRatio[iNbTi] );
+}
+
+
+double XCoilHandle :: GetMaterialRatio(const Material mat) const
+{
+  if (fRatio.find(mat)==fRatio.end()) {
+    QuenchError( XQuenchLogger::ERROR, "not found material: " << mat );
+    XQuenchExcept except("XCoilHandle: not found this material.");
+    throw except;
+  }
+  else {
+    return fRatio.find(mat)->second;
+  }
+}
+
+
+void XCoilHandle :: SetCoilSize(const double lz, const double lp, const double lr)
+{
+  if (!fCoil) fCoil = new double[3];
+  fCoil[  iZ] = lz;
+  fCoil[iPhi] = lp;
+  fCoil[  iR] = lr;
+
+  QuenchError( XQuenchLogger::INFO, "coil size :: lz:" << fCoil[iZ] << ", lp:" << fCoil[iPhi]
+                                            << ", lr:" << fCoil[iR] );
+}
+
+
+double XCoilHandle :: GetCoilSize(const Coil dim) const
+{
+  if (dim>=3) {
+    QuenchError( XQuenchLogger::ERROR, "the dimension" << dim << " is not correct." );
+    XQuenchExcept except("XCoilHandle: the coil dimension is not correct.");
+    throw except;
+  }
+  else {
+    return fCoil[dim];
+  }
+}
+
 
 void XCoilHandle :: SetMesh(const int mz, const int mp, const int mr)
 {
   if (!fMsh) fMsh = new int[3];
+  fMsh[  iZ] = mz;
+  fMsh[iPhi] = mp;
+  fMsh[  iR] = mr;
 
-  fMsh[0] = mz;
-  fMsh[1] = mp;
-  fMsh[2] = mr;
-
-  if (fLayer) fLayer = new int[mr];
+  QuenchError( XQuenchLogger::INFO, "coil mesh :: z:" << fMsh[iZ] << ", phi:" << fMsh[iPhi]
+                                            << ", r:" << fMsh[iR] );
 }
+
+
+int XCoilHandle :: GetMesh(const Coil dim) const
+{
+  if (dim>=3) {
+    QuenchError( XQuenchLogger::ERROR, "mesh dimension " << dim << " is wrong." );
+    XQuenchExcept except("XCoilHandle: the mesh dimension is not right.");
+    throw except;
+  }
+  else {
+    return fMsh[dim];
+  }
+}
+
+
+void XCoilHandle :: SetCoilLayout(const int turn, const int layer)
+{
+  SetCoilTurns(turn);
+  SetCoilLayers(layer);
+}
+
+
+void XCoilHandle :: SetCoilLayers(const int layer)
+{
+  fLayer = layer;
+  QuenchError( XQuenchLogger::INFO, "coil layer: " << fLayer );
+}
+
+
+void XCoilHandle :: SetCoilTurns(const int turn)
+{
+  fTurn = turn;
+  QuenchError( XQuenchLogger::INFO, "coil turns: " << fTurn );
+}
+
 
 void XCoilHandle :: AddLayer(const int layer, const Geometry geo)
 {
-  if (!fMsh) {
-    QuenchError( XQuenchLogger::ERROR, "please set the mesh first!" );
-    XQuenchExcept except("please set the mesh first!");
-    throw except;
-  }
-
-  if (!fLayer) fLayer = new int[fMsh[2]];
-
-  fLayer[layer] = geo;
+  fLayerGeo.insert( std::map<const int, const Geometry>::value_type(layer, geo) );
+  QuenchError( XQuenchLogger::INFO, "coil layer = " << layer << ", geometry = " << GetGeometryName(geo) );
 }
 
-double XCoilHandle :: GetStabilizer(const std::string &name) const
-{
-  if (name=="z" || name=="Z")
-    return fStable[0];
-  else if (name=="r" || name=="R")
-    return fStable[1];
-  else {
-    QuenchError( XQuenchLogger::ERROR, "there is no such material: " << name );
-    XQuenchExcept except("there is no such material!");
-    throw except;
-  }
-}
 
-double XCoilHandle :: GetTape(const std::string &name) const
+std::string XCoilHandle :: GetGeometryName(const Geometry geo)
 {
-  if (name=="z" || name=="Z")
-    return fTape[0];
-  else if (name=="r" || name=="R")
-    return fTape[1];
-  else {
-    QuenchError( XQuenchLogger::ERROR, "there is no such material: " << name );
-    XQuenchExcept except("there is no such material!");
-    throw except;
+  std::string name = "";
+  switch (geo) {
+    case kConductor: name = "Conductor"; break;
+    case     kStrip: name = "Strip";     break;
+    case     kShell: name = "Shell";     break;
+    default: break;
   }
 
+  return name;
 }
 
-double XCoilHandle :: GetMaterialRatio(const std::string &name) const
+
+std::string XCoilHandle :: GetMaterialName(const Material mat)
 {
-  if (name=="Al" || name=="al")
-    return fRatio[0];
-  else if (name=="Cu" || name=="cu")
-    return fRatio[1];
-  else if (name=="SC" || name=="sc")
-    return fRatio[2];
-  else {
-    QuenchError( XQuenchLogger::ERROR, "there is no such material: " << name );
-    XQuenchExcept except("there is no such material!");
-    throw except;
-  }
-}
-
-double XCoilHandle :: GetCoil(const std::string &name) const
-{
-  if (name=="z" || name=="Z")
-    return fCoil[0];
-  else if (name=="phi" || name=="Phi")
-    return fCoil[1];
-  else if (name=="r" || name=="R")
-    return fCoil[2];
-  else {
-    QuenchError( XQuenchLogger::ERROR, "there is no such coordinate: " << name );
-    XQuenchExcept except("there is no such coordinate!");
-    throw except;
-  }
-}
-
-double* XCoilHandle :: GetConductorSize() const
-{
-  double* cdtsize = new double[2];
-  cdtsize[0] = 2*fTape[0] + fStable[0];
-  cdtsize[1] = 2*fTape[1] + fStable[1];
-
-  return cdtsize;
-}
-
-double XCoilHandle :: GetConductorSize(const std::string &name) const
-{
-  double* size = GetConductorSize();
-
-  if (name=="z" || name=="Z")
-    return size[0];
-  else if (name=="r" || name=="R")
-    return size[1];
-  else {
-    QuenchError( XQuenchLogger::ERROR, "there is no such coordinate: " << name );
-    XQuenchExcept except("there is no such coordinate");
-    throw except;
-  }
-}
-
-double XCoilHandle :: GetArea(const std::string& name) const
-{
-  double area;
-
-  if (name=="Al" || name=="al")
-    area = fRatio[0] * fStable[0] * fStable[1];
-  else if (name=="Cu" || name=="cu")
-    area = fRatio[1] * fStable[0] * fStable[1];
-  else if (name=="SC" || name=="sc")
-    area = fRatio[2] * fStable[0] * fStable[1];
-  else if (name=="Cdt" || name=="cdt")
-    area = (2*fTape[0] + fStable[0]) * (2*fTape[1] + fStable[1]);
-  else if (name=="Stb" || name=="stb")
-    area = fStable[0] * fStable[1];
-  else if (name=="Tape" || name=="tape")
-    area = (2*fTape[0] + fStable[0]) * (2*fTape[1] + fStable[1]) - fStable[0] * fStable[1];
-  else {
-    QuenchError( XQuenchLogger::ERROR, "did not find this material: " << name );
-    XQuenchExcept except("did not find this material");
-    throw except;
+  std::string name = "";
+  switch (mat) {
+    case iAluminium: name = "Aluminium"; break;
+    case    iCopper: name = "Copper";    break;
+    case      iNbTi: name = "NbTi";      break;
+    default: break;
   }
 
-  return area;
+  return name;
 }
