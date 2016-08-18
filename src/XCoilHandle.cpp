@@ -11,7 +11,10 @@ XCoilHandle :: XCoilHandle()
       fCoil(NULL),
       fMsh(NULL),
       fLayer(0),
-      fTurn(0)
+      fTurn(0),
+      fCdt(NULL),
+      fStrip(NULL),
+      fShell(NULL)
 {
   // initialize the material ratio
   fRatio.insert( std::map<const Material, double>::value_type(iAluminium, 7.) );
@@ -23,6 +26,9 @@ XCoilHandle :: ~XCoilHandle()
 {
   if (fCoil) delete [] fCoil;
   if (fMsh ) delete [] fMsh;
+  if (fCdt)  delete fCdt;
+  if (fStrip) delete fStrip;
+  if (fShell) delete fShell;
 }
 
 
@@ -33,30 +39,31 @@ void XCoilHandle :: SetMaterialRatio(const double Al, const double Cu, const dou
   fRatio[   iCopper] = Cu / tot;
   fRatio[     iNbTi] = SC / tot;
 
-  QuenchError( XQuenchLogger::INFO, "material ratio :: Al:Cu:SC = " << fRatio[iAluminium] 
-                                                             << ":" << fRatio[iCopper]
-                                                             << ":" << fRatio[iNbTi] );
+  QuenchError( XQuenchLogger::INFO, "Magnet: " << fName << " : material ratio :: Al:Cu:SC = " 
+                                                        << fRatio[iAluminium] 
+                                                        << ":" << fRatio[iCopper]
+                                                        << ":" << fRatio[iNbTi] );
 }
 
 
 void XCoilHandle :: SetAlPercent(const double perc)
 {
   fRatio[iAluminium] = perc;
-  QuenchError( XQuenchLogger::INFO, "material ratio :: Al = " << fRatio[iAluminium] );
+  QuenchError( XQuenchLogger::INFO, fName << " : material ratio :: Al = " << fRatio[iAluminium] );
 }
 
 
 void XCoilHandle :: SetCuPercent(const double perc)
 {
   fRatio[iCopper] = perc;
-  QuenchError( XQuenchLogger::INFO, "material ratio :: Cu = " << fRatio[iCopper] );
+  QuenchError( XQuenchLogger::INFO, fName << " : material ratio :: Cu = " << fRatio[iCopper] );
 }
 
 
 void XCoilHandle :: SetScPercent(const double perc)
 {
   fRatio[iNbTi] = perc;
-  QuenchError( XQuenchLogger::INFO, "material ratio :: SC = " << fRatio[iNbTi] );
+  QuenchError( XQuenchLogger::INFO, fName << " : material ratio :: SC = " << fRatio[iNbTi] );
 }
 
 
@@ -80,7 +87,8 @@ void XCoilHandle :: SetCoilSize(const double lz, const double lp, const double l
   fCoil[iPhi] = lp;
   fCoil[  iR] = lr;
 
-  QuenchError( XQuenchLogger::INFO, "coil size :: lz:" << fCoil[iZ] << ", lp:" << fCoil[iPhi]
+  QuenchError( XQuenchLogger::INFO, "coil " << fName << " size :: lz:" << fCoil[iZ] 
+                                            << ", lp:" << fCoil[iPhi]
                                             << ", lr:" << fCoil[iR] );
 }
 
@@ -123,7 +131,7 @@ int XCoilHandle :: GetMesh(const Coil dim) const
 }
 
 
-void XCoilHandle :: SetCoilLayout(const int turn, const int layer)
+void XCoilHandle :: SetCoilParameters(const int turn, const int layer)
 {
   SetCoilTurns(turn);
   SetCoilLayers(layer);
@@ -144,10 +152,83 @@ void XCoilHandle :: SetCoilTurns(const int turn)
 }
 
 
+const Quench::XCoilBase* XCoilHandle :: GetCoilParts(const Geometry geo)
+{
+  switch (geo) {
+    case kConductor: return fCdt;
+    case kStrip: return fStrip;
+    case kShell: return fShell;
+    default: return NULL;
+  }
+}
+
+
 void XCoilHandle :: AddLayer(const int layer, const Geometry geo)
 {
-  fLayerGeo.insert( std::map<const int, const Geometry>::value_type(layer, geo) );
-  QuenchError( XQuenchLogger::INFO, "coil layer = " << layer << ", geometry = " << GetGeometryName(geo) );
+  if ( !is_exist(layer) || !IsOutRange(layer) ) {
+    fLayerGeo.insert( std::map<const int, const Geometry>::value_type(layer, geo) );
+    QuenchError( XQuenchLogger::INFO, "coil layer = " << layer << ", geometry = " << GetGeometryName(geo) );
+  }
+  else {
+    QuenchError( XQuenchLogger::ERROR, "input layer: " << layer << " did already exist." );
+  }
+}
+
+
+const Quench::XCoilBase* XCoilHandle :: GetCoilLayout(const int layer)
+{
+  if (is_exist(layer)) {
+    switch ( fLayerGeo.find(layer)->second ) {
+      case kConductor:  return fCdt;
+      case kStrip:  return fStrip;
+      case kShell:  return fShell;
+      default: return NULL;
+    }
+  }
+  else {
+    QuenchError( XQuenchLogger::ERROR, "this layer: " << layer << " does not exist." );
+    XQuenchExcept except("this layer does not exist.");
+    throw except;
+  }
+}
+
+
+bool XCoilHandle :: IsOutRange(const int layer) const
+{
+   bool outrange = false;
+   if (layer>fMsh[iR])  outrange = true;
+
+   return outrange;
+}
+
+
+bool XCoilHandle :: is_out_range() const
+{
+  bool outrange = false;
+
+  for (std::map<const int, const Geometry>::const_iterator it=fLayerGeo.begin(); it!=fLayerGeo.end(); it++) {
+    if ( IsOutRange(it->first) )  {
+      outrange = true;
+      break;
+    }
+  }
+
+  return outrange;
+}
+
+
+bool XCoilHandle :: is_exist(const int layer) const
+{
+  bool exist = false;
+
+  for (std::map<const int, const Geometry>::const_iterator it=fLayerGeo.begin(); it!=fLayerGeo.end(); it++) {
+    if (it->first==layer) {
+      exist = true;
+      break;
+    }
+  }
+
+  return exist;
 }
 
 

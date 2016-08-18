@@ -79,7 +79,7 @@ class Quench::XQuenchLogger
     do {                                                                   \
       XQuenchLogger* log = XQuenchLogger::GetInstance();                   \
       log->GetLogStream(level) << message << "  "                          \
-          << " # file: " << __FILE__                                       \
+          << " ||    file: " << __FILE__                                   \
           << " - line: " << __LINE__                                       \
           << std::setprecision(6) << std::setw(0)                          \
           << std::setfill(' ')    << std::endl;                            \

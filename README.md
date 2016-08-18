@@ -37,3 +37,42 @@ fld->SetTarget("CS1");
 fld->Run();
 cs1 = fld->GetFieldCollection();
 ```
+
+# Demo for Coil Construction
+```cpp
+void SetConductor(XCoilHandle* hand)
+{
+  XCoilConductor* cdt = new XCoilConductor();
+  cdt->SetDimension(4.73*mm, 15.*mm);
+  cdt->SetInsSize(0.3*mm, 0.3*mm);
+  hand->SetConductor( dynamic_cast<XCoilBase*>(cdt) );
+}
+
+void SetStrip(XCoilHandle* hand)
+{
+  XCoilStrip* strip = new XCoilStrip();
+  strip->SetDimension(4.73*mm+0.3*2*mm, 15.*mm);
+  strip->SetInsSize(0.0, 0.3*mm);
+  hand->SetConductor( dynamic_cast<XCoilBase*>(strip) );
+}
+
+void Construct()
+{
+  XCoilHandle* hand = new XCoilHandle();
+  try {
+    hand->SetName("CS1");
+    hand->SetCoilSize(0., 0.672*m, 0.);
+    hand->SetMesh(270, 4, 19);
+    hand->SetCoilLayers(9);
+    hand->SetCoilTurns(270);
+    hand->SetMaterialRatio(7.3, 1., 0.9);
+    SetConductor(hand);
+    SetStrip(hand);
+    hand->AddLayer(1, kStrip);
+    hand->AddLayer(2, kConductor);
+  }
+  catch (XQuenchExcept except) {
+    delete hand;
+  }
+}
+```

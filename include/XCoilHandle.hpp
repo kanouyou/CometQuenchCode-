@@ -74,9 +74,17 @@ class Quench::XCoilHandle
 
     /// @brief setup coil total layers and turns
     /// @param layer layer of conductor, not included the shell and strip 
-    void SetCoilLayout(const int turn, const int layer);
+    void SetCoilParameters(const int turn, const int layer);
     void SetCoilLayers(const int layer);
     void SetCoilTurns(const int turn);
+
+    /// @brief setup the conductor/strip/shell
+    void SetConductor(const XCoilBase* cdt) { fCdt = cdt; }
+    void SetStrip(const XCoilBase* strip) { fStrip = strip; }
+    void SetShell(const XCoilBase* shell) { fShell = shell; }
+
+    /// @brief return the coil class, which consists of conductor/strip/shell
+    const Quench::XCoilBase* GetCoilParts(const Geometry geo);
 
     /// @brief returns the coil layer which not includes the strip and shell
     int GetCoilLayers() const { return fLayer; }
@@ -86,6 +94,19 @@ class Quench::XCoilHandle
 
     /// @brief add the layer's information
     void AddLayer(const int layer, const Geometry geo);
+
+    /// @brief return the coil layout
+    std::map<const int, const Geometry> GetCoilLayout() { return fLayerGeo; }
+    const Quench::XCoilBase* GetCoilLayout(const int layer);
+
+    /// @brief check the layer is out of mesh or not
+    /// @detail if the set layer is out of range, then return true
+    ///         otherwise, return false
+    bool is_out_range() const;
+    bool IsOutRange(const int layer) const;
+
+    /// @brief check the layer is exist or not
+    bool is_exist(const int layer) const;
 
 
   protected:
@@ -102,6 +123,9 @@ class Quench::XCoilHandle
     int*    fMsh;
     int     fLayer;
     int     fTurn;
+    const XCoilBase* fCdt;
+    const XCoilBase* fStrip;
+    const XCoilBase* fShell;
     std::map<const int, const Geometry> fLayerGeo;
     std::map<const Material, double> fRatio;
 };
