@@ -135,7 +135,7 @@ class Quench::XDimensionContainer
     void SetId(const int* id);
 
     /*! setup cell id */
-    void SetId(const int* i, const int* j, const int* k);
+    void SetId(const int i, const int j, const int k);
 
     /*! return cell id */
     int* GetId() const { return fId; }
@@ -144,7 +144,7 @@ class Quench::XDimensionContainer
     void SetPosition(const double* pos);
 
     /*! setup cell position */
-    void SetPosition(const double* x, const double* y, const double* z);
+    void SetPosition(const double x, const double y, const double z);
 
     /*! return cell position */
     double* GetPosition() const { return fPos; }
@@ -167,6 +167,12 @@ class Quench::XDimensionContainer
     /*! @brief return distance between two node */
     double* GetDistance() const { return fDistance; }
 
+    /// @brief setup the static data of heat generation from radiation
+    void SetDeposit(const double dose) { fDose = dose; }
+
+    /// @brief return the energy deposit data
+    double GetDeposit() { return fDose; }
+
 
   private:
     int* fId;
@@ -174,6 +180,7 @@ class Quench::XDimensionContainer
     double fNode;
     double* fCell;
     double* fDistance;
+    double  fDose;
 };
 
 

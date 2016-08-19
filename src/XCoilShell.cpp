@@ -41,6 +41,18 @@ double XCoilShell :: GetDimension(const Coil dim) const
 }
 
 
+double XCoilShell :: GetTotalLength(const Coil dim) const
+{
+  switch (dim) {
+    case iZ: return fSize[0];
+    case iR: return fSize[1] + fIns[1];
+    default:
+      QuenchError( XQuenchLogger::WARNING, "no this dimension: " << dim );
+      return 0.;
+  }
+}
+
+
 void XCoilShell :: SetInsSize(const double lz, const double lr)
 {
   if (!fIns)  fIns = new double[2];;

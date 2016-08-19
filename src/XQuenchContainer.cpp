@@ -104,7 +104,8 @@ void XMaterialContainer :: SetConductivity(const double* kx, const double* ky, c
 
 XDimensionContainer :: XDimensionContainer()
     : fId(NULL), fPos(NULL), fNode(-1),
-      fCell(NULL), fDistance(NULL)
+      fCell(NULL), fDistance(NULL),
+      fDose(0.)
 {
   //fId  = new int[3];
   //fPos = new double[3];
@@ -133,19 +134,19 @@ void XDimensionContainer :: SetId(const int* id)
   fId[2] = id[2];
 }
 
-void XDimensionContainer :: SetId(const int* i, const int* j, const int* k)
+void XDimensionContainer :: SetId(const int i, const int j, const int k)
 {
-  if (*i<0 || *j<0 || *k<0) {
-    QuenchError(XQuenchLogger::ERROR, "cell id is {" << *i << ", " << *j << ", " << *k << "}" );
+  if (i<0 || j<0 || k<0) {
+    QuenchError(XQuenchLogger::ERROR, "cell id is {" << i << ", " << j << ", " << k << "}" );
     XQuenchExcept except("cell id is negative!");
     throw except;
   }
 
   if (!fId)  fId = new int[3];
 
-  fId[0] = *i;
-  fId[1] = *j;
-  fId[2] = *k;
+  fId[0] = i;
+  fId[1] = j;
+  fId[2] = k;
 }
 
 void XDimensionContainer :: SetPosition(const double* pos)
@@ -157,13 +158,13 @@ void XDimensionContainer :: SetPosition(const double* pos)
   fPos[2] = pos[2];
 }
 
-void XDimensionContainer :: SetPosition(const double* x, const double* y, const double* z)
+void XDimensionContainer :: SetPosition(const double x, const double y, const double z)
 {
   if (!fPos)  fPos = new double[3];
 
-  fPos[0] = *x;
-  fPos[1] = *y;
-  fPos[2] = *z;
+  fPos[0] = x;
+  fPos[1] = y;
+  fPos[2] = z;
 }
 
 void XDimensionContainer :: SetNodeId(const int node)

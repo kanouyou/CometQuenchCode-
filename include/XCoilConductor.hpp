@@ -31,6 +31,9 @@ class Quench::XCoilConductor : public Quench::XCoilBase
     virtual double* GetDimension() { return fSize; }
     virtual double  GetDimension(const Coil dim) const;
 
+    /// @brief returns the total length along r and z direction
+    virtual double GetTotalLength(const Coil dim) const;
+
     /// @brief setup the insulation size along the z and r direction respectively
     virtual void SetInsSize(const double lz, const double lr);
 

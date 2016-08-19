@@ -43,6 +43,18 @@ double XCoilStrip :: GetDimension(const Coil dim) const
 }
 
 
+double XCoilStrip :: GetTotalLength(const Coil dim) const
+{
+  switch (dim) {
+    case iZ: return fSize[0];
+    case iR: return fSize[1] + 2*fIns[1];
+    default:
+      QuenchError( XQuenchLogger::WARNING, "no this dimension: " << dim );
+      return 0.;
+  }
+}
+
+
 double XCoilStrip :: GetInsSize(const Coil dim) const
 {
   switch (dim) {

@@ -99,6 +99,9 @@ class Quench::XCoilHandle
     std::map<const int, const Geometry> GetCoilLayout() { return fLayerGeo; }
     const Quench::XCoilBase* GetCoilLayout(const int layer);
 
+    /// @brief return the size of layout container
+    int GetLayoutEntries() const { return fLayerGeo.size(); }
+
     /// @brief check the layer is out of mesh or not
     /// @detail if the set layer is out of range, then return true
     ///         otherwise, return false

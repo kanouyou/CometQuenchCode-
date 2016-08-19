@@ -53,6 +53,18 @@ double XCoilConductor :: GetDimension(const Coil dim) const
 }
 
 
+double XCoilConductor :: GetTotalLength(const Coil dim) const
+{
+  switch (dim) {
+    case iZ: return fSize[0] + 2*fTape[0];
+    case iR: return fSize[1] + 2*fTape[1];
+    default:
+      QuenchError( XQuenchLogger::WARNING, "no this dimension: " << dim );
+      return 0.;
+  }
+}
+
+
 void XCoilConductor :: SetInsSize(const double lz, const double lr)
 {
   if (!fTape) fTape = new double[2];

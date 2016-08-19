@@ -29,6 +29,9 @@ class Quench::XCoilShell : public Quench::XCoilBase
     virtual double* GetDimension() { return fSize; }
     virtual double  GetDimension(const Coil dim) const;
 
+    /// @brief returns the total length
+    virtual double GetTotalLength(const Coil dim) const;
+
     /*! @brief setup the insulation thickness */
     virtual void SetInsSize(const double lz, const double lr);
 
