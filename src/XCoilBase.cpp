@@ -16,3 +16,4 @@ std::string XCoilBase :: GetTypeName()
 
   return name;
 }
+

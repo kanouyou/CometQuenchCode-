@@ -33,7 +33,7 @@ namespace Quench
 class Quench::XCoilBase
 {
   public:
-    /// @deconstructor
+    /// @brief deconstructor
     virtual ~XCoilBase() {}
 
     /// @brief setup the dimension for conductor/strip/shell

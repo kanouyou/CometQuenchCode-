@@ -180,9 +180,9 @@ const Quench::XCoilBase* XCoilHandle :: GetCoilLayout(const int layer)
   if (is_exist(layer)) {
     switch ( fLayerGeo.find(layer)->second ) {
       case kConductor:  return fCdt;
-      case kStrip:  return fStrip;
-      case kShell:  return fShell;
-      default: return NULL;
+      case kStrip:      return fStrip;
+      case kShell:      return fShell;
+      default: throw;
     }
   }
   else {

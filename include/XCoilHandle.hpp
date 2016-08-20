@@ -16,7 +16,6 @@
 #include "IFdmUnits.hpp"
 #endif
 
-
 namespace Quench
 { class XCoilHandle; }
 
