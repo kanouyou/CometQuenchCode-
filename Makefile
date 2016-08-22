@@ -1,7 +1,7 @@
 
 NAME   = SimQuench
 TARGET = $(NAME).exe
-GXX    = g++
+CXX    = g++
 VPATH  = src
 MAIN   = main.cpp
 
@@ -11,7 +11,7 @@ LIBOBJS = $(LIBSRCS:.cpp=.o)
 MAINSRC = $(MAIN)
 MAINOBJ = $(MAINSRC:.cpp=.o)
 
-SRCS   = $(wildcard $(VPATH)/*.cpp) $(MAIN)
+SRCS   = $(wildcard $(VPATH)/*.cpp) #$(MAIN)
 OBJS   = $(SRCS:.cpp=.o)
 
 ARFLAGS = rv
@@ -33,13 +33,13 @@ CXXLIBS  += $(ROOTLIBS) $(BOOSTLIBS) #$(PYLIBS)
 
 
 .PHONY: all install clean clear
-all: $(TARGET) lib$(NAME).a
+all: lib$(NAME).a
 
 #$(TARGET): $(MAINOBJS) $(NAME).a
 #	$(CXX) $(CXXLIBS) $^ -o $@
 
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXLIBS) $^ -o $@
+#$(TARGET): $(OBJS)
+#	$(CXX) $(CXXLIBS) $^ -o $@
 
 lib$(NAME).a: $(LIBOBJS)
 	$(AR) $(ARFLAGS) $@ $^

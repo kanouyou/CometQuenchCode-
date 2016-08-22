@@ -110,6 +110,12 @@ class Quench::XCoilHandle
     /// @brief check the layer is exist or not
     bool is_exist(const int layer) const;
 
+    /// @brief returns the minimum layer
+    int min_layer() const;
+
+    /// @brief returns the maximum layer
+    int max_layer() const;
+
 
   protected:
     /// @brief returns the name of geometry

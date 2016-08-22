@@ -4,8 +4,11 @@
  *  @date   1st. Aug. 2016
  */
 
-#ifndef XQuenchContainer_HH
-#define XQuenchContainer_HH
+#ifndef XQuenchInfo_HH
+#define XQuenchInfo_HH
+
+#include <array>
+#include "XCoilBase.hpp"
 
 /** @enum
  *  Quench status
@@ -22,21 +25,21 @@ enum QuenchStatus {
 
 namespace Quench
 { 
-  class XMaterialContainer; 
-  class XDimensionContainer;
+  class XMaterialInfo; 
+  class XDimensionInfo;
 }
 
 
 /// class to store the material parameter
 //
-class Quench::XMaterialContainer
+class Quench::XMaterialInfo
 {
   public:
     /*! constructor */
-    XMaterialContainer();
+    XMaterialInfo();
 
     /*! deconstructor */
-    ~XMaterialContainer();
+    ~XMaterialInfo();
 
     /*! setup magnetic field */
     void SetField(const double &fld);
@@ -104,6 +107,12 @@ class Quench::XMaterialContainer
     /*! @brief return the superconducting status */
     QuenchStatus GetStatus() const { return fStatus; }
 
+    /// @brief setup the static data of heat generation from radiation
+    void SetDeposit(const double dose) { fDose = dose; }
+
+    /// @brief return the energy deposit data
+    double GetDeposit() { return fDose; }
+
 
   private:
     double  fField;
@@ -116,101 +125,79 @@ class Quench::XMaterialContainer
     double  fRRR;
     QuenchStatus fStatus;
     double  fGen;
+    double  fDose;
 };
 
 
 /// class discription:
 /// class to handle the dimensional container
 //
-class Quench::XDimensionContainer
+class Quench::XDimensionInfo
 {
   public:
-    /*! constructor */
-    XDimensionContainer();
+    /// @brief deconstructor
+    ~XDimensionInfo() {}
 
-    /*! deconstructor */
-    ~XDimensionContainer();
-
-    /*! setup cell id */
-    void SetId(const int* id);
-
-    /*! setup cell id */
+    /// @brief setup cell id
     void SetId(const int i, const int j, const int k);
 
-    /*! return cell id */
-    int* GetId() const { return fId; }
+    /// @brief return cell id
+    /// @param dim input the enumeration of dimension: iZ/iPhi/iR
+    int GetId(const Coil dim) const { return fId.at(dim); }
+    std::array<int,3> GetId() const { return fId; }
 
-    /*! setup cell position */
-    void SetPosition(const double* pos);
+    /// @brief setup pre position
+    void SetPrePosition(const double x, const double y, const double z);
 
-    /*! setup cell position */
+    /// @brief returns the pre position
+    double GetPrePosition(const Coil dim) const { return fPrePos.at(dim); }
+    std::array<double,3> GetPrePosition() const { return fPrePos; }
+
+    /// @brief setup cell position
     void SetPosition(const double x, const double y, const double z);
 
-    /*! return cell position */
-    double* GetPosition() const { return fPos; }
+    /// @brief return cell position
+    double GetPosition(const Coil dim) const { return fPos.at(dim); }
+    std::array<double,3> GetPosition() const { return fPos; }
 
-    /*! setup node id */
+    /// @brief setup post position
+    void SetPostPosition(const double x, const double y, const double z);
+
+    /// @brief return post position
+    double GetPostPosition(const Coil dim) const { return fPostPos.at(dim); }
+    std::array<double,3> GetPostPosition() const { return fPostPos; }
+
+    /// @brief setup node id
     void SetNodeId(const int node);
 
-    /*! @brief return the node id */
+    /// @brief return the node id
     int GetNodeId() const { return fNode; }
 
-    /*! @brief set cell size */
+    /// @brief  set cell size
+    /// @detail cell size is equal to the size of conductor or strip.
     void SetCellSize(const double lx, const double ly, const double lz); 
 
-    /*! @brief return cell size */
-    double* GetCellSize() const { return fCell; }
+    /// @brief return cell size
+    double GetCellSize(const Coil dim) const { return fCell.at(dim); }
+    std::array<double,3> GetCellSize() const { return fCell; }
 
-    /*! @brief setup distance between two node */
+    /// @brief setup distance between two node
     void SetDistance(const double dx, const double dy, const double dz);
 
-    /*! @brief return distance between two node */
-    double* GetDistance() const { return fDistance; }
-
-    /// @brief setup the static data of heat generation from radiation
-    void SetDeposit(const double dose) { fDose = dose; }
-
-    /// @brief return the energy deposit data
-    double GetDeposit() { return fDose; }
+    /// @brief return distance between two node
+    double GetDistance(const Coil dim) const { return fDistance.at(dim); }
+    std::array<double,3> GetDistance() const { return fDistance; }
 
 
   private:
-    int* fId;
-    double* fPos;
+    std::array<   int, 3> fId;
+    std::array<double, 3> fPos;
+    std::array<double, 3> fPrePos;
+    std::array<double, 3> fPostPos;
+    std::array<double, 3> fCell;
     double fNode;
-    double* fCell;
-    double* fDistance;
-    double  fDose;
+    std::array<double, 3> fDistance;
 };
 
-
-// class description:
-// class to store the time independ parameters
-//
-//class XTimeIndependContainer
-//{
-//  public:
-    /*! constructor */
-//    XTimeIndependContainer() : fRRR(0.), fRho(1.) {}
-
-    /*! deconstructor */
-//    ~XTimeIndependContainer() {}
-
-    /*! @brief setup density */
-//    void SetDensity(const double rho) { fRho = rho; }
-
-    /*! @brief setup residual resistance ratio */
-//    void SetRRR(const double RRR) { fRRR = RRR; }
-
-    /*! @brief return the material density */
-//    double GetDensity() const { return fRho; }
-
-    /*! @brief return residual resistance ratio */
-//    double GetRRR() const { return fRRR; }
-
-//  private:
-//    double fRRR;
-//    double fRho;
-//};
 
 #endif

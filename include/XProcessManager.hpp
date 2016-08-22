@@ -8,11 +8,11 @@
 #define XProcessManager_HH
 
 #include <vector>
-#include "XQuenchContainer.hpp"
+#include "XQuenchInfo.hpp"
 #include "XMeshLoop.hpp"
+#include "XCoilHandle.hpp"
 
 class XFieldHandle;
-class XCoilHandle;
 
 namespace Quench
 { class XProcessManager; }
@@ -41,7 +41,13 @@ class Quench::XProcessManager : public XMeshLoop
     void Initialize();
 
     /// @brief returns the dimensional container
-    std::vector<XDimensionContainer*> GetDimensionContainer() { return fDC; }
+    std::vector<XDimensionInfo*> GetDimensionContainer() { return fDC; }
+
+    /// @brief returns the size of dimensional container
+    size_t GetDimensionEntries() const { return fDC.size(); }
+
+    /// @brief returns the dimensional container's entry
+    XDimensionInfo* GetDimensionEntry(const int entry) { return fDC.at(entry); }
 
 
   protected:
@@ -57,8 +63,8 @@ class Quench::XProcessManager : public XMeshLoop
 
   private:
     XCoilHandle* fCoil;
-    std::vector<XDimensionContainer*> fDC;
-    std::vector<XMaterialContainer*> fMC;
+    std::vector<XDimensionInfo*> fDC;
+    std::vector<XMaterialInfo*> fMC;
 };
 
 #endif

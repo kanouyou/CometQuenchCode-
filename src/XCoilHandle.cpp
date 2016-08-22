@@ -232,6 +232,32 @@ bool XCoilHandle :: is_exist(const int layer) const
 }
 
 
+int XCoilHandle :: min_layer() const
+{
+  int min = 99999999;
+
+  for (std::map<const int, const Geometry>::const_iterator it=fLayerGeo.begin(); it!=fLayerGeo.end(); it++) {
+    if (it->first<min)
+      min = it->first;
+  }
+
+  return min;
+}
+
+
+int XCoilHandle :: max_layer() const
+{
+  int max = -99999999;
+
+  for (std::map<const int, const Geometry>::const_iterator it=fLayerGeo.begin(); it!=fLayerGeo.end(); it++) {
+    if (it->first>max)
+      max = it->first;
+  }
+
+  return max;
+}
+
+
 std::string XCoilHandle :: GetGeometryName(const Geometry geo)
 {
   std::string name = "";
