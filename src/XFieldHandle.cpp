@@ -22,6 +22,7 @@ XFieldHandle :: XFieldHandle(const std::string& name)
 XFieldHandle :: ~XFieldHandle()
 {}
 
+
 bool XFieldHandle :: is_exist(const std::string& name) const
 {
   bool exist = false;
@@ -36,20 +37,20 @@ bool XFieldHandle :: is_exist(const std::string& name) const
   return exist;
 }
 
+
 void XFieldHandle :: AddCoil(const std::string& name, const double z0, const double z1,
                                                       const double r0, const double r1)
 {
-  if (!is_exist(name)) {
-    XMagnetInfoContainer* mag = new XMagnetInfoContainer();
-    mag->SetName( name );
-    mag->SetDimension( z0, z1, r0, r1 );
-    fHC.push_back(mag);
-    //delete mag;
-  }
-  else {
+  if ( is_exist(name) )
     QuenchError( XQuenchLogger::WARNING, "magnet: " << name << " is already defined." );
-  }
+        
+  XMagnetInfoContainer* mag = new XMagnetInfoContainer();
+  mag->SetName( name );
+  mag->SetDimension( z0, z1, r0, r1 );
+  fHC.push_back(mag);
+  //delete mag;
 }
+
 
 void XFieldHandle :: AddCoil(XMagnetInfoContainer* mag)
 {
@@ -57,20 +58,20 @@ void XFieldHandle :: AddCoil(XMagnetInfoContainer* mag)
     fHC.push_back(mag);
 }
 
+
 void XFieldHandle :: SetMesh(const std::string& name, const int mz, const int mr)
 {
-  if (is_exist(name)) {
-    for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
-      if (fHC.at(i)->GetName() == name) {
-        fHC.at(i)->SetMesh(mz, mr);
-        break;
-      }
+  if ( !is_exist(name) )
+    QuenchError( XQuenchLogger::WARNING, "magnet: " << name << " did not exist." );
+
+  for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
+    if (fHC.at(i)->GetName() == name) {
+      fHC.at(i)->SetMesh(mz, mr);
+      break;
     }
   }
-  else {
-    QuenchError( XQuenchLogger::WARNING, "magnet: " << name << " did not exist." );
-  }
 } 
+
 
 XMagnetInfoContainer* XFieldHandle :: GetInfoEntry(const std::string& name)
 {
@@ -84,13 +85,14 @@ XMagnetInfoContainer* XFieldHandle :: GetInfoEntry(const std::string& name)
   return NULL;
 }
 
+
 void XFieldHandle :: calfield(const std::string& name)
 {
   XMagneticField* fld = new XBiotSavart();  
 
   /// find this magnet
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
-    if ( fHC[i]->GetName()==name ) {
+    if ( fHC.at(i)->GetName()==name ) {
       fld->SetMapRange( fHC.at(i)->GetDimension()[2], fHC.at(i)->GetDimension()[3],
                         fHC.at(i)->GetDimension()[0], fHC.at(i)->GetDimension()[1] );
       fld->SetMapMesh( fHC.at(i)->GetMesh()[1], fHC.at(i)->GetMesh()[0] );
@@ -99,10 +101,11 @@ void XFieldHandle :: calfield(const std::string& name)
   }
 
   /// calculate self field and mutal field
-  double B[2];
+  double Bx, By;
 
   for (std::vector<int>::size_type i=0; i<fHC.size(); i++) {
     QuenchError( XQuenchLogger::DEBUG, "calculating magnet: " << fHC.at(i)->GetName() );
+    
     fld->SetSolenoid( fHC.at(i)->GetDimension()[2], fHC.at(i)->GetDimension()[3],
                       fHC.at(i)->GetDimension()[0], fHC.at(i)->GetDimension()[1] );
     fld->SetSolenoidMesh( fHC.at(i)->GetMesh()[1], 50, fHC.at(i)->GetMesh()[0] );
@@ -114,14 +117,14 @@ void XFieldHandle :: calfield(const std::string& name)
       fCollect = fld->GetFieldContainer();
     else {
       /// mutal field
-      for (std::vector<int>::size_type i=0; i<fCollect.size(); i++) {
-        B[0] = fCollect.at(i)->GetField()[0] + fld->GetFieldContainer()[i]->GetField()[0];
-        B[1] = fCollect.at(i)->GetField()[1] + fld->GetFieldContainer()[i]->GetField()[1];
-        fCollect.at(i)->SetField( B[0], B[1] );
+      for (std::vector<int>::size_type j=0; j<fCollect.size(); j++) {
+        Bx = fCollect.at(j)->GetField().at(0) + fld->GetFieldContainer().at(j)->GetField().at(0);
+        By = fCollect.at(j)->GetField().at(1) + fld->GetFieldContainer().at(j)->GetField().at(1);
+        fCollect.at(j)->SetField( Bx, By );
       }
     }
-
   }
+
 }
 
 void XFieldHandle :: Run()

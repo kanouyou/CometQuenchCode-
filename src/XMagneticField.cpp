@@ -79,32 +79,31 @@ void XBiotSavart :: calfield()
     QuenchError( XQuenchLogger::DEBUG, "clear the field container." );
     fHC.clear();
   }
-  else {
-    for (int i=0; i<fMapMesh[0]+1; i++) {
-      R = fMapRange[0] + i*dr + dr/2.;
+  
+  for (int i=0; i<fMapMesh[0]+1; i++) {
+    R = fMapRange[0] + i*dr + dr/2.;
 
-      for (int j=0; j<fMapMesh[1]+1; j++) {
-        Z = fMapRange[2] + j*dz + dz/2.;
-        // calculate A_phi
-        A[i][j] = calpotential(Z, R);
+    for (int j=0; j<fMapMesh[1]+1; j++) {
+      Z = fMapRange[2] + j*dz + dz/2.;
+      // calculate A_phi
+      A[i][j] = calpotential(Z, R);
 
-        if (i>0 && j>0) {
-          B[0] = -(A[i][j] - A[i][j-1]) / dz;                    // Br
-          B[1] = A[i][j] / R + (A[i][j] - A[i-1][j]) / dr;       // Bz
+      if (i>0 && j>0) {
+        B[0] = -(A[i][j] - A[i][j-1]) / dz;                    // Br
+        B[1] = A[i][j] / R + (A[i][j] - A[i-1][j]) / dr;       // Bz
 
-          fld = new XFieldContainer();
-          fld->SetId(j, i);
-          fld->SetPosition(Z, R);
-          fld->SetField(B[1], B[0]);
-          fld->SetPotential(A[i][j]);
-          fHC.push_back(fld);
-        }
-        else {
-          //B[0] = -(A[i][j] - 0.) / dz;                   // Br
-          //B[1] = A[i][j] / R + (A[i][j] - 0.) / dr;      // Bz
-          B[0] = 0.;
-          B[1] = 0.;
-        }
+        fld = new XFieldContainer();
+        fld->SetId(j, i);
+        fld->SetPosition(Z, R);
+        fld->SetField(B[1], B[0]);
+        fld->SetPotential(A[i][j]);
+        fHC.push_back(fld);
+      }
+      else {
+        //B[0] = -(A[i][j] - 0.) / dz;                   // Br
+        //B[1] = A[i][j] / R + (A[i][j] - 0.) / dr;      // Bz
+        B[0] = 0.;
+        B[1] = 0.;
       }
     }
   }

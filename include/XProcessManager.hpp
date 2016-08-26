@@ -12,8 +12,7 @@
 #include "XQuenchInfo.hpp"
 #include "XMeshLoop.hpp"
 #include "XCoilHandle.hpp"
-
-class XFieldHandle;
+#include "XFieldHandle.hpp"
 
 namespace Quench
 { class XProcessManager; }
@@ -48,6 +47,12 @@ class Quench::XProcessManager : public XMeshLoop
     /// @brief initialization
     void Initialize();
 
+    /// @brief initialization
+    void Initialize(XCoilHandle* coil, XFieldHandle* fld);
+
+    /// @brief initialize the material information
+    void SetMaterial();
+
     /// @brief returns the dimensional container
     std::vector<XDimensionInfo*> GetDimensionContainer() { return fDC; }
 
@@ -76,8 +81,6 @@ class Quench::XProcessManager : public XMeshLoop
 
     /// @brief calculate the position and fill it into container
     void InitPosition();
-
-    /// @brief initialize the 
 
 
   private:

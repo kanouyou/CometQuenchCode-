@@ -2,7 +2,6 @@
 #include <cmath>
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
-#include "XFieldHandle.hpp"
 #include "XProcessManager.hpp"
 
 using Quench::XQuenchLogger;
@@ -53,6 +52,12 @@ void XProcessManager :: SetFieldHandler(XFieldHandle* hand)
   if (!hand) {
     QuenchError( XQuenchLogger::ERROR, "null field handler." );
     XQuenchExcept except("null field handler.");
+    throw except;
+  }
+  
+  if (!fCoil) {
+    QuenchError( XQuenchLogger::ERROR, "no coil handler set." );
+    XQuenchExcept except("please set the coil handler first.");
     throw except;
   }
 
@@ -108,6 +113,36 @@ void XProcessManager :: Initialize()
   init();
   InitTemp(T);
   InitPosition();
+}
+
+
+void XProcessManager :: Initialize(XCoilHandle* coil, XFieldHandle* fld)
+{
+  const double T = 4.5;
+
+  SetCoilHandler(coil);
+  init();
+  InitTemp(T);
+  InitPosition();
+  SetFieldHandler(fld);
+}
+
+
+void XProcessManager :: SetMaterial()
+{
+  if (fMC.size()<3) {
+    QuenchError( XQuenchLogger::ERROR, "container is not set." );
+    XQuenchExcept except("please check the handler setup.");
+    throw except;
+  }
+
+  for (int k=0; k<fMshR+2; k++) {
+    for (int j=0; j<fMshP+2; j++) {
+      for (int i=0; i<fMshZ+2; i++) {
+
+      }
+    }
+  }
 }
 
 
