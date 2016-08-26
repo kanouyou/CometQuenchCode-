@@ -1,6 +1,8 @@
 #include <iostream>
+#include <cmath>
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
+#include "XFieldHandle.hpp"
 #include "XProcessManager.hpp"
 
 using Quench::XQuenchLogger;
@@ -9,7 +11,8 @@ using Quench::XProcessManager;
 
 XProcessManager :: XProcessManager()
     : XMeshLoop(), 
-      fCoil(NULL)
+      fCoil(NULL),
+      fName("")
 {}
 
 
@@ -27,6 +30,67 @@ void XProcessManager :: SetCoilHandler(XCoilHandle* handler)
   const int p = fCoil->GetMesh(iPhi);
   const int r = fCoil->GetMesh(iR);
   SetMesh(z, p, r);
+
+  fName = fCoil->GetName();
+}
+
+
+void XProcessManager :: SetUniformField(const double fld)
+{
+  for (int k=1; k<fMshR+1; k++) {
+    for (int j=1; j<fMshP+1; j++) {
+      for (int i=1; i<fMshZ+1; i++)
+        fMC.at( Id(i,j,k) )->SetField(fld);
+    }
+  }
+
+  QuenchInfo( "set the uniform magnetic field: " << fld << " Tesla." );
+}
+
+
+void XProcessManager :: SetFieldHandler(XFieldHandle* hand)
+{
+  if (!hand) {
+    QuenchError( XQuenchLogger::ERROR, "null field handler." );
+    XQuenchExcept except("null field handler.");
+    throw except;
+  }
+
+  double Bz, Br, Btot;
+
+  // fill the magnetic field into the container
+  for (int k=1; k<fMshR+1; k++) {
+    for (int j=1; j<fMshP+1; j++) {
+      for (int i=1; i<fMshZ+1; i++) {
+        Bz   = hand->GetFieldEntry(i-1, k-1)->GetField().at(0);
+        Br   = hand->GetFieldEntry(i-1, k-1)->GetField().at(1);
+        Btot = sqrt( pow(Bz,2) + pow(Br,2) );
+        fMC.at( Id(i,j,k) )->SetField( Btot );
+      }
+    }
+  }
+
+  QuenchInfo( "set the calculated magnetic field." );
+}
+
+
+void XProcessManager :: SetUniformRRR(const Geometry part, const double RRR)
+{
+  std::vector<int> id = fCoil->GetLayerId(part);
+
+  if ( id.size()==0 ) {
+    QuenchError( XQuenchLogger::WARNING, "layer id size is zero." );
+    throw;
+  }
+
+  for (std::vector<int>::iterator it=id.begin(); it!=id.end(); ++it) {
+    for (int j=0; j<fMshR+2; j++) {
+      for (int i=0; i<fMshZ+2; i++) 
+        fMC.at( Id(i,j,*it) )->SetRRR( RRR );
+    }
+  }
+
+  QuenchInfo( "set the uniform RRR value: " << RRR << " for " << fCoil->GetGeometryName(part) );
 }
 
 
@@ -72,7 +136,6 @@ void XProcessManager :: InitTemp(const double T)
         fDC.at( Id(i,j,k) )->SetPosition(0., 0., 0.);
         fDC.at( Id(i,j,k) )->SetPrePosition(0., 0., 0.);
         fDC.at( Id(i,j,k) )->SetPostPosition(0., 0., 0.);
-        fDC.at( Id(i,j,k) )->SetDistance(0., 0., 0.);
         fMC.at( Id(i,j,k) )->SetTemperature(T);
       }
     }
@@ -126,7 +189,6 @@ void XProcessManager :: InitPosition()
         fDC.at( Id(i,j,k) )->SetPrePosition(preZ, preP, preR);
         fDC.at( Id(i,j,k) )->SetPosition(z, p, r);
         fDC.at( Id(i,j,k) )->SetCellSize(lz, lp, lr);
-        fDC.at( Id(i,j,k) )->SetDistance(dz, dp, dr);
 
         preZ = z;
         z += lz/2.;
@@ -139,5 +201,6 @@ void XProcessManager :: InitPosition()
   }
 
 }
+
 
 

@@ -39,7 +39,7 @@ class Quench::XMaterialInfo
     XMaterialInfo();
 
     /*! deconstructor */
-    ~XMaterialInfo();
+    ~XMaterialInfo() {}
 
     /*! setup magnetic field */
     void SetField(const double &fld);
@@ -59,14 +59,13 @@ class Quench::XMaterialInfo
     /*! return heat capacity */
     double GetCapacity() const { return fCapacity; }
 
-    /*! setup heat generation */
-    void SetHeatFlux(const double* Q); 
+    /// @brief setup the heat flux 
+    void SetHeatFlux(const double Qx, const double Qy, const double Qz);
 
-    /*! @brief setup the heat flux */
-    void SetHeatFlux(const double* Qx, const double* Qy, const double* Qz);
-
-    /*! return heat generation */
-    double* GetHeatFlux() const { return fHeat; }
+    /// @brief return heat generation
+    /// @param dim enumeration of dimension: iZ/iPhi/iR
+    double GetHeatFlux(const Coil dim) const { return fHeat.at(dim); }
+    std::array<double,3> GetHeatFlux() const { return fHeat; }
 
     /*! @brief setup the heat generation */
     void SetHeat(const double gen) { fGen = gen; }
@@ -74,14 +73,12 @@ class Quench::XMaterialInfo
     /*! @brief return the heat generation */
     double GetHeat() const { return fGen; }
 
-    /*! setup thermal conductivity */
-    void SetConductivity(const double* k);
+    /// setup thermal conductivity
+    void SetConductivity(const double kx, const double ky, const double kz);
 
-    /*! setup thermal conductivity */
-    void SetConductivity(const double* kx, const double* ky, const double* kz);
-
-    /*! return thermal conductivity */
-    double* GetConductivity() const { return fk; }
+    /// @brief return thermal conductivity 
+    double GetConductivity(const Coil dim) const { return fk.at(dim); }
+    std::array<double,3> GetConductivity() const { return fk; }
 
     /*! setup local resistance */
     void SetResistance(const double R) { fR = R; }
@@ -115,11 +112,11 @@ class Quench::XMaterialInfo
 
 
   private:
+    std::array<double, 3> fHeat;
+    std::array<double, 3> fk;
     double  fField;
     double  fTemp;
     double  fCapacity;
-    double* fHeat;
-    double* fk;
     double  fR;
     double  fRho;
     double  fRRR;
@@ -173,6 +170,13 @@ class Quench::XDimensionInfo
     /// @brief return the node id
     int GetNodeId() const { return fNode; }
 
+    /// @brief setup the geometry of this cell
+    /// @param geo geometry enumeration: kConductor/kStrip/kShell
+    void SetGeometry(const Geometry geo);
+
+    /// @brief return the geometry of this cell
+    Geometry GetGeometry() const { return fGeo; }
+
     /// @brief  set cell size
     /// @detail cell size is equal to the size of conductor or strip.
     void SetCellSize(const double lx, const double ly, const double lz); 
@@ -195,6 +199,7 @@ class Quench::XDimensionInfo
     std::array<double, 3> fPrePos;
     std::array<double, 3> fPostPos;
     std::array<double, 3> fCell;
+    Geometry fGeo;
     double fNode;
     std::array<double, 3> fDistance;
 };

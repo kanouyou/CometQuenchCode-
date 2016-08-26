@@ -31,12 +31,11 @@ class Quench::XQuenchLogger
       ERROR
     };
 
-    /** @fn get instance 
-     *  @return static logging class
-     */
+    /// @fn get instance 
+    /// @return static logging class
     static XQuenchLogger* GetInstance();
 
-    /*! start loging and write message to the file */
+    /// @brief start loging and write message to the file.
     static void Start(Level minpriority, const std::string& filename);
 
     /*! stop the logging */
@@ -86,12 +85,12 @@ class Quench::XQuenchLogger
     } while(0)
 #endif
 
-/// turn on or off the error output
+/// @def turn on or off the error output
 #ifndef QUENCH_ERROR_OUTPUT
 #define QUENCH_ERROR_OUTPUT true
 #endif
 
-/// error output
+/// @def error output
 #ifndef QuenchError
 #define QuenchError(level, message)            \
     do {                                       \
@@ -100,5 +99,38 @@ class Quench::XQuenchLogger
       }                                        \
     } while(0)
 #endif
+
+/// @def logger for debug level
+#ifndef QuenchDebug
+#define QuenhcDebug(message)                        \
+    do {                                            \
+      QuenchError( XQuenchLogger::DEBUG, message);  \
+    } while(0)
+#endif
+
+/// @def logger for fatal error level
+#ifndef QuenchFatal
+#define QuenchFatal(message)                       \
+    do {                                           \
+      QuenchError( XQuenchLogger::ERROR, message); \
+    } while(0)
+#endif
+
+/// @def logger for warning level
+#ifndef QuenchWarning
+#define QuenchWarning(message)                        \
+    do {                                              \
+      QuenchError( XQuenchLogger::WARNING, message);  \
+    } while(0)
+#endif
+
+/// @def logger for info level
+#ifndef QuenchInfo
+#define QuenchInfo(message)                        \
+    do {                                           \
+      QuenchError( XQuenchLogger::INFO, message);  \
+    } while(0)
+#endif
+
 
 #endif

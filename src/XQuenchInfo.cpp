@@ -8,20 +8,16 @@ using Quench::XDimensionInfo;
 using Quench::XQuenchLogger;
 
 XMaterialInfo :: XMaterialInfo()
-    : fField(0.), fTemp(0.), fCapacity(1.),
-      fHeat(NULL), fk(NULL), fRho(1.), fRRR(),
-      fStatus(kSuperconduct), fGen(0.),
+    : fField(0.), 
+      fTemp(0.), 
+      fCapacity(1.),
+      fRho(1.), 
+      fRRR(100.),
+      fStatus(kSuperconduct), 
+      fGen(0.),
       fDose(0.)
-{
-  fHeat = new double[3];
-  fk    = new double[3];
-}
+{}
 
-XMaterialInfo :: ~XMaterialInfo()
-{
-  if (fHeat)  delete [] fHeat;
-  if (fk)     delete [] fk;
-}
 
 void XMaterialInfo :: SetField(const double &fld)
 {
@@ -51,55 +47,30 @@ void XMaterialInfo :: SetCapacity(const double C)
   fCapacity = C;
 }
 
-void XMaterialInfo :: SetHeatFlux(const double* Q)
-{
-  if (!fHeat) fHeat = new double[3];
 
-  fHeat[0] = Q[0];
-  fHeat[1] = Q[1];
-  fHeat[2] = Q[2];
+void XMaterialInfo :: SetHeatFlux(const double Qx, const double Qy, const double Qz)
+{
+  fHeat.at(0) = Qx;
+  fHeat.at(1) = Qy;
+  fHeat.at(2) = Qz;
 }
 
-void XMaterialInfo :: SetHeatFlux(const double* Qx, const double* Qy, const double* Qz)
-{
-  if (!fHeat)  fHeat = new double[3];
 
-  fHeat[0] = *Qx;
-  fHeat[1] = *Qy;
-  fHeat[2] = *Qz;
-}
-
-void XMaterialInfo :: SetConductivity(const double* k)
+void XMaterialInfo :: SetConductivity(const double kx, const double ky, const double kz)
 {
-  if (k[0]<0 || k[1]<0 || k[2]<0) {
-    QuenchError(XQuenchLogger::ERROR, "thermal conductivity is {" << k[0] 
-                << ", " << k[1] << ", " << k[2] << "}" );
+  if (kx<0 || ky<0 || kz<0) {
+    QuenchError(XQuenchLogger::ERROR, "thermal conductivity is {" << kx
+                << ", " << ky << ", " << kz << "}" );
     XQuenchExcept except("thermal conductivity is negative!");
     throw except;
   }
 
-  if (!fk) fk = new double[3];
-
-  fk[0] = k[0];
-  fk[1] = k[1];
-  fk[2] = k[2];
+  fk.at(0) = kx;
+  fk.at(1) = ky;
+  fk.at(2) = kz;
 }
 
-void XMaterialInfo :: SetConductivity(const double* kx, const double* ky, const double* kz)
-{
-  if (*kx<0 || *ky<0 || *kz<0) {
-    QuenchError(XQuenchLogger::ERROR, "thermal conductivity is {" << *kx
-                << ", " << *ky << ", " << *kz << "}" );
-    XQuenchExcept except("thermal conductivity is negative!");
-    throw except;
-  }
 
-  if (!fk)  fk= new double[3];
-
-  fk[0] = *kx;
-  fk[1] = *ky;
-  fk[2] = *kz;
-}
 
 /*****************************************************************************************************/
 void XDimensionInfo :: SetId(const int i, const int j, const int k)
@@ -151,6 +122,13 @@ void XDimensionInfo :: SetNodeId(const int node)
   fNode = node;
 }
 
+
+void XDimensionInfo :: SetGeometry(const Geometry geo)
+{
+  fGeo = geo;
+}
+
+
 void XDimensionInfo :: SetCellSize(const double lx, const double ly, const double lz)
 {
   fCell.at(0) = lx;
@@ -164,3 +142,5 @@ void XDimensionInfo :: SetDistance(const double dx, const double dy, const doubl
   fDistance.at(1) = dy;
   fDistance.at(2) = dz;
 }
+
+

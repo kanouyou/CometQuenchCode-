@@ -8,6 +8,7 @@
 #define XMagneticField_HH
 
 #include <vector>
+#include <array>
 
 #ifndef IFdmUnits_HH
 #include "IFdmUnits.hpp"
@@ -26,12 +27,11 @@ class Quench::XFieldContainer
 {
   public:
     /*! constructor */
-    XFieldContainer() : fPos(NULL), fField(NULL), fId(NULL) {}
+    XFieldContainer() : fPos(NULL), fId(NULL) {}
 
     /*! deconstructor */
     ~XFieldContainer() {
       if (fPos)   delete [] fPos;
-      if (fField) delete [] fField;
       if (fId)    delete [] fId;
     }
 
@@ -51,9 +51,8 @@ class Quench::XFieldContainer
 
     /*! @brief setup magnetic field */
     void SetField(const double Bz, const double Br) {
-      if (!fField)  fField = new double[2];
-      fField[0] = Bz;
-      fField[1] = Br;
+      fField.at(0) = Bz;
+      fField.at(1) = Br;
     }
 
     /*! @brief setup vector potential */
@@ -65,8 +64,8 @@ class Quench::XFieldContainer
     /*! @brief return cell position */
     double* GetPosition() const { return fPos; }
 
-    /*! @brief return magnetic field array */
-    double* GetField() const { return fField; }
+    /// @brief return magnetic field array
+    std::array<double,2> GetField() const { return fField; }
 
     /*! @brief return magnetic vector potential */
     double GetPotential() const { return fVector; }
@@ -74,9 +73,9 @@ class Quench::XFieldContainer
     
   private:
     double* fPos;
-    double* fField;
     int*    fId;
     double  fVector;
+    std::array<double, 2> fField;
 };
 
 

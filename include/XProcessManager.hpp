@@ -8,6 +8,7 @@
 #define XProcessManager_HH
 
 #include <vector>
+#include <string>
 #include "XQuenchInfo.hpp"
 #include "XMeshLoop.hpp"
 #include "XCoilHandle.hpp"
@@ -32,10 +33,17 @@ class Quench::XProcessManager : public XMeshLoop
     void SetCoilHandler(XCoilHandle* handler);
 
     /// @brief setup the field handler
-    void SetFieldHandler(XFieldHandle* hand) {}
+    void SetFieldHandler(XFieldHandle* hand);
 
     /// @brief return the coil handler
     const XCoilHandle* GetCoilHandler() { return fCoil; }
+
+    /// @brief setup uniform RRR for strip
+    /// @param part enumeration of geometry: kShell/kConductor/kStrip
+    void SetUniformRRR(const Geometry part, const double RRR);
+
+    /// @brief setup the uniform field
+    void SetUniformField(const double fld);
 
     /// @brief initialization
     void Initialize();
@@ -49,6 +57,15 @@ class Quench::XProcessManager : public XMeshLoop
     /// @brief returns the dimensional container's entry
     XDimensionInfo* GetDimensionEntry(const int entry) { return fDC.at(entry); }
 
+    /// @brief returns the material container
+    std::vector<XMaterialInfo*> GetMaterialContainer() { return fMC; }
+
+    /// @brief returns the size of material container
+    size_t GetMaterialEntries() const { return fMC.size(); }
+
+    /// @brief return this material container
+    XMaterialInfo* GetMaterialEntry(const int entry) { return fMC.at(entry); }
+
 
   protected:
     /// @brief initialize the container vector
@@ -60,9 +77,12 @@ class Quench::XProcessManager : public XMeshLoop
     /// @brief calculate the position and fill it into container
     void InitPosition();
 
+    /// @brief initialize the 
+
 
   private:
     XCoilHandle* fCoil;
+    std::string fName;
     std::vector<XDimensionInfo*> fDC;
     std::vector<XMaterialInfo*> fMC;
 };

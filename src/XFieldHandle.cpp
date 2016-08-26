@@ -44,6 +44,7 @@ void XFieldHandle :: AddCoil(const std::string& name, const double z0, const dou
     mag->SetName( name );
     mag->SetDimension( z0, z1, r0, r1 );
     fHC.push_back(mag);
+    //delete mag;
   }
   else {
     QuenchError( XQuenchLogger::WARNING, "magnet: " << name << " is already defined." );

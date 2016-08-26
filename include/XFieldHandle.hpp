@@ -25,7 +25,7 @@ namespace Quench
 class Quench::XMagnetInfoContainer
 {
   public:
-    /*! constructor */
+    /// @brief constructor
     XMagnetInfoContainer() : fName(""), fSolenoid(NULL), fMesh(NULL) {}
 
     /*! deconstructor */

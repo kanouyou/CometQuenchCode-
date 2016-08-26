@@ -8,6 +8,7 @@
 #define XCoilHandle_HH
 
 #include <map>
+#include <vector>
 #include <string>
 #include "XMaterial.hpp"
 #include "XCoilBase.hpp"
@@ -23,6 +24,8 @@ namespace Quench
 //
 class Quench::XCoilHandle
 {
+  friend class XProcessManager;
+
   public:
     /// @brief constuctor
     XCoilHandle();
@@ -100,6 +103,9 @@ class Quench::XCoilHandle
 
     /// @brief return the size of layout container
     int GetLayoutEntries() const { return fLayerGeo.size(); }
+
+    /// @brief return the array contains the layer number of input coil parts
+    std::vector<int> GetLayerId(const Geometry geo);
 
     /// @brief check the layer is out of mesh or not
     /// @detail if the set layer is out of range, then return true
