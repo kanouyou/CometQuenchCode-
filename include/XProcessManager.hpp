@@ -71,6 +71,9 @@ class Quench::XProcessManager : public XMeshLoop
     /// @brief return this material container
     XMaterialInfo* GetMaterialEntry(const int entry) { return fMC.at(entry); }
 
+    /// @brief returns the entries of both dimension and material
+    size_t GetEntries() const;
+
 
   protected:
     /// @brief initialize the container vector
@@ -82,6 +85,10 @@ class Quench::XProcessManager : public XMeshLoop
     /// @brief calculate the position and fill it into container
     void InitPosition();
 
+    /// @brief fill conductor/strip/shell material property
+    void SetConductorMat(const int id, const double T, const double RRR, const double B);
+    void SetStripMat(const int id, const double T, const double RRR, const double B);
+    void SetShellMat(const int id, const double T, const double RRR, const double B);
 
   private:
     XCoilHandle* fCoil;

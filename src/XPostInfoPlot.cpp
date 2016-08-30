@@ -3,6 +3,7 @@
 #include <TGraph.h>
 #include <TGraph2D.h>
 #include <TStyle.h>
+
 #include "XQuenchInfo.hpp"
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
@@ -50,7 +51,8 @@ void XPostInfoPlot :: PlotField(const bool save)
   gStyle->SetNumberContours(75);
   //gStyle->SetPalette(51);
 
-  GetFieldGraph()->Draw("cont4z");
+  //GetFieldGraph()->Draw("cont4z");
+  GetFieldGraph()->Draw("colz");
 
   if (save==true)
     c0->Print("MagField.pdf");

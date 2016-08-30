@@ -32,7 +32,7 @@ if ( ${ROOT_VERSION} MATCHES "^5\\.34/([0-9]+)$" )
   message("-- ROOT version: ${ROOT_VERSION}")
 else ()
   message("-- ROOT version: ${ROOT_VERSION}")
-  message(FATAL_ERROR "quench code does not support this version of ROOT.") 
+  message(FATAL_ERROR "quench code is not supporting this version of ROOT.") 
 endif ()
 
 # append the root library

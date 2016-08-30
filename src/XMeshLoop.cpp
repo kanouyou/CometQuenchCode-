@@ -42,14 +42,16 @@ bool XMeshLoop :: IsOverRange(const int id) const
 const int XMeshLoop :: Id(const int i, const int j, const int k)
 {
   const int id = k*(fMshZ+2)*(fMshP+2) + j*(fMshZ+2) + i;
+
   if ( IsOverRange(id) ) {
-    QuenchError( XQuenchLogger::ERROR, "id = " << id << ", i = " << i <<
+    QuenchError( XQuenchLogger::ERROR,"over range: " << 
+                                      "id = " << id << ", i = " << i <<
                                       ", j = " << j  << ", k = " << k );
     XQuenchExcept except("id number is over range.");
     throw except;
   }
-  else
-    return id;
+    
+  return id;
 }
 
 
