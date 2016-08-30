@@ -190,10 +190,13 @@ class XPostManager:
         self._phi = num
 
     ## plot magnetic field
-    def plot_field(self):
+    def plot_field(self, fig, ax):
+        print "ploting field..."
         data = {"z":np.array([]), "r":np.array([]), "B":np.array([])}
         for i in range(len(self._data)):
-            if self._data[i].GetId("phi")==self._phi:
+            if self._data[i].GetId("phi")==self._phi and \
+               self._data[i].GetId("z") > 0 and self._data[i].GetId("z") < self._mesh["z"]+1 and \
+               self._data[i].GetId("r") > 0 and self._data[i].GetId("r") < self._mesh["r"]+1:
                 data["z"] = np.append( data["z"], self._data[i].GetPosition("z") )
                 data["r"] = np.append( data["r"], self._data[i].GetPosition("r") )
                 data["B"] = np.append( data["B"], self._data[i].GetField() )
@@ -201,6 +204,64 @@ class XPostManager:
         data["z"] = data["z"].reshape((self._mesh["r"], self._mesh["z"]))
         data["r"] = data["r"].reshape((self._mesh["r"], self._mesh["z"]))
         data["B"] = data["B"].reshape((self._mesh["r"], self._mesh["z"]))
+        # plot
+        cs = ax.contourf( data["z"], data["r"], data["B"], 70, cmap=plt.cm.gnuplot2 )
+        cbar = fig.colorbar( cs, ax=ax, shrink=0.9 )
+        cbar.set_label("Magnetic Field [Tesla]")
+        ax.set_xlabel("Z [m]")
+        ax.set_ylabel("R [m]")
 
+    ## plot heat capacity
+    def plot_capacity(self, fig, ax):
+        print "ploting capacity..."
+        data = {"z":np.array([]), "r":np.array([]), "C":np.array([])}
+        for i in range(len(self._data)):
+            if self._data[i].GetId("phi")==self._phi and \
+               self._data[i].GetId("z") > 0 and self._data[i].GetId("z") < self._mesh["z"]+1 and \
+               self._data[i].GetId("r") > 0 and self._data[i].GetId("r") < self._mesh["r"]+1:
+                data["z"] = np.append( data["z"], self._data[i].GetPosition("z") )
+                data["r"] = np.append( data["r"], self._data[i].GetPosition("r") )
+                data["C"] = np.append( data["C"], self._data[i].GetCapacity() )
+        # reshape data
+        data["z"] = data["z"].reshape((self._mesh["r"], self._mesh["z"]))
+        data["r"] = data["r"].reshape((self._mesh["r"], self._mesh["z"]))
+        data["C"] = data["C"].reshape((self._mesh["r"], self._mesh["z"]))
+        # plot
+        cs = ax.contourf( data["z"], data["r"], data["C"], 70, cmap=plt.cm.gnuplot2 )
+        cbar = fig.colorbar( cs, ax=ax, shrink=0.9 )
+        cbar.set_label("Heat Capacity [J/kg/K]")
+        ax.set_xlabel("Z [m]")
+        ax.set_ylabel("R [m]")
 
+    ## plot heat capacity
+    def plot_conductivity(self, fig, ax, opt="z"):
+        print "ploting conductivity along %s direction..." %opt
+        data = {"z":np.array([]), "r":np.array([]), "k":np.array([])}
+        for i in range(len(self._data)):
+            if self._data[i].GetId("phi")==self._phi and \
+               self._data[i].GetId("z") > 0 and self._data[i].GetId("z") < self._mesh["z"]+1 and \
+               self._data[i].GetId("r") > 0 and self._data[i].GetId("r") < self._mesh["r"]+1:
+                data["z"] = np.append( data["z"], self._data[i].GetPosition("z") )
+                data["r"] = np.append( data["r"], self._data[i].GetPosition("r") )
+                data["k"] = np.append( data["k"], self._data[i].GetConductivity(opt) )
+        # reshape data
+        data["z"] = data["z"].reshape((self._mesh["r"], self._mesh["z"]))
+        data["r"] = data["r"].reshape((self._mesh["r"], self._mesh["z"]))
+        data["k"] = data["k"].reshape((self._mesh["r"], self._mesh["z"]))
+        # plot
+        cs = ax.contourf( data["z"], data["r"], data["k"], 70, cmap=plt.cm.gnuplot2 )
+        cbar = fig.colorbar( cs, ax=ax, shrink=0.9 )
+        cbar.set_label("Thermal Conductivity [W/m/K]")
+        ax.set_title("%s direction" %opt)
+        ax.set_xlabel("Z [m]")
+        ax.set_ylabel("R [m]")
 
+    ## plot
+    def Plot(self):
+        fig, ax = plt.subplots(2,2)
+        fig.tight_layout()
+        self.plot_field(fig, ax[0][0])
+        self.plot_capacity(fig, ax[0][1])
+        self.plot_conductivity(fig, ax[1][0], "r")
+        self.plot_conductivity(fig, ax[1][1], "z")
+        plt.show()

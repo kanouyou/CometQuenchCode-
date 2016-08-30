@@ -19,7 +19,7 @@ XQuenchOutput :: XQuenchOutput(const std::string &filename, const FileOutput opt
 XQuenchOutput :: ~XQuenchOutput()
 {
   if (fRootfile) fRootfile->Close();
-  if (fNormfile) fNormfile.close();
+  if (fNormfile.is_open()) fNormfile.close();
 }
 
 

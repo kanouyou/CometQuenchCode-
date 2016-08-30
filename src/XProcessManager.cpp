@@ -143,48 +143,6 @@ void XProcessManager :: SetMaterial()
     throw except;
   }
 
-  /*
-  int i = 0;  int j = 0;  int k = 0;
-  double T   = fMC.at( Id(i,j,k) )->GetTemperature();
-  double RRR = fMC.at( Id(i,j,k) )->GetRRR();
-  double B   = fMC.at( Id(i,j,k) )->GetField();
-  Geometry geo = fDC.at( Id(i,j,k) )->GetGeometry();
-
-  while ( k<fMshR+2 ) {
-    switch (geo) {
-      case kConductor: 
-        SetConductorMat( Id(i,j,k), T, RRR, B ); 
-        break;
-      case kStrip: 
-        SetStripMat( Id(i,j,k), T, RRR, B ); 
-        break;
-      case kShell: 
-        SetShellMat( Id(i,j,k), T, RRR, B ); 
-        break;
-      default:
-        QuenchError( XQuenchLogger::WARNING, "geometry " << fCoil->GetGeometryName(geo) << " did not exist." );
-        break;
-    }
-    j = 0;
-    while ( j<fMshP+2 ) {
-      i = 0;
-      while ( i<fMshZ+2 ) {
-        std::cout << Id(i,j,k) << " " << i << " " << fDC.at( Id(i,j,k) )->GetId(iZ)
-                               << " " << j << " " << fDC.at( Id(i,j,k) )->GetId(iPhi)
-                               << " " << k << " " << fDC.at( Id(i,j,k) )->GetId(iR) << std::endl;
-
-        T   = fMC.at( Id(i,j,k) )->GetTemperature();
-        RRR = fMC.at( Id(i,j,k) )->GetRRR();
-        B   = fMC.at( Id(i,j,k) )->GetField();
-        geo = fDC.at( Id(i,j,k) )->GetGeometry();
-        i++;
-      }
-      j++;
-    }
-    k++;
-  }
-  */
-
   double T, RRR, B;
   Geometry geo;
 

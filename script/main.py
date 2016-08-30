@@ -4,6 +4,5 @@ from sys import argv
 import XPostManager
 
 if __name__=="__main__":
-    post = XPostManager.XPostLoading(argv[1])
-    print post.GetMesh()
-
+    post = XPostManager.XPostManager(argv[1])
+    post.Plot()

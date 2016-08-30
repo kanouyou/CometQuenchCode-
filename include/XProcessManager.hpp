@@ -26,7 +26,7 @@ class Quench::XProcessManager : public XMeshLoop
     XProcessManager();
 
     /// @brief deconstructor
-    ~XProcessManager();
+    virtual ~XProcessManager();
 
     /// @brief setup the class contained coil information
     void SetCoilHandler(XCoilHandle* handler);
@@ -90,11 +90,14 @@ class Quench::XProcessManager : public XMeshLoop
     void SetStripMat(const int id, const double T, const double RRR, const double B);
     void SetShellMat(const int id, const double T, const double RRR, const double B);
 
-  private:
+
+  protected:
     XCoilHandle* fCoil;
-    std::string fName;
     std::vector<XDimensionInfo*> fDC;
     std::vector<XMaterialInfo*> fMC;
+
+  private:
+    std::string fName;
 };
 
 #endif
