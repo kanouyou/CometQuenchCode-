@@ -86,6 +86,63 @@ void XProcessManager :: SetFieldHandler(XFieldHandle* hand)
 }
 
 
+void XProcessManager :: SetRadiationHandler(XRadiationHandle* hand)
+{
+  if (!hand) {
+    QuenchError( XQuenchLogger::ERROR, "radiation handler is null." );
+    XQuenchExcept except("radiation handler is null.");
+    throw except;
+  }
+
+  const int mshz = hand->GetMesh(iZ);
+  const int mshp = hand->GetMesh(iPhi);
+  const int mshr = hand->GetMesh(iR);
+
+  const int radmshz = fMshZ / mshz;
+  const int radmshp = fMshP / mshp;
+  const int radmshr = fMshR / mshr;
+
+  QuenchError( XQuenchLogger::INFO, "check radiation input file mesh -> z: " 
+                                    << hand->GetMesh(iZ)   << " phi: "
+                                    << hand->GetMesh(iPhi) << " r: " 
+                                    << hand->GetMesh(iR) );
+
+  int iz = 0; int jp = 0; int kr = hand->GetMesh(iR);
+  int id = 0;
+  double fluence, RRR, deposit;
+
+  for (int k=0; k<fMshR+2; k++) {
+    kr = mshr - static_cast<int>(k/radmshr);
+    if (kr>=mshr)
+      kr = mshr-1;
+    if (kr<=0)
+      kr = 0;
+
+    for (int j=0; j<fMshP+2; j++) {
+      // only for the case when phi mesh is equal to the rad phi size
+      if (j>0 && j<fMshP+1) jp = j-1;
+      else jp = 0;
+
+      for (int i=0; i<fMshZ+2; i++) {
+        iz = static_cast<int>(i/radmshz);
+        if (iz<=0 || iz>=mshz)
+          iz = 0;
+        // get local id for radiation
+        id = hand->Id( iz, jp, kr );
+        // get neutron fluence and deposit
+        fluence = hand->GetEntry(id)->GetNeutron();
+        deposit = hand->GetEntry(id)->GetDose();
+        // convert neutron fluence to RRR 
+        RRR = hand->GetRRR( fDC.at(Id(i,j,k))->GetGeometry(), fluence );
+        // fill RRR value into container
+        fMC.at( Id(i,j,k) )->SetDeposit( deposit );
+        fMC.at( Id(i,j,k) )->SetRRR(RRR);
+      }
+    }
+  }
+}
+
+
 void XProcessManager :: SetUniformRRR(const Geometry part, const double RRR)
 {
   std::vector<int> id = fCoil->GetLayerId(part);
@@ -145,24 +202,26 @@ void XProcessManager :: SetMaterial()
 
   double T, RRR, B;
   Geometry geo;
+  int id;
 
   for (int k=0; k<fMshR+2; k++) {
     for (int j=0; j<fMshP+2; j++) {
       for (int i=0; i<fMshZ+2; i++) {
-        T   = fMC.at( Id(i,j,k) )->GetTemperature();
-        RRR = fMC.at( Id(i,j,k) )->GetRRR();
-        B   = fMC.at( Id(i,j,k) )->GetField();
-        geo = fDC.at( Id(i,j,k) )->GetGeometry();
+        id  = Id(i,j,k);
+        T   = fMC.at(id)->GetTemperature();
+        RRR = fMC.at(id)->GetRRR();
+        B   = fMC.at(id)->GetField();
+        geo = fDC.at(id)->GetGeometry();
         
         switch (geo) {
           case kConductor: 
-            SetConductorMat( Id(i,j,k), T, RRR, B ); 
+            SetConductorMat( id, T, RRR, B ); 
             break;
           case kStrip: 
-            SetStripMat( Id(i,j,k), T, RRR, B ); 
+            SetStripMat( id, T, RRR, B ); 
             break;
           case kShell: 
-            SetShellMat( Id(i,j,k), T, RRR, B ); 
+            SetShellMat( id, T, RRR, B ); 
             break;
           default:
             QuenchError( XQuenchLogger::WARNING, "geometry " << fCoil->GetGeometryName(geo) << " did not exist." );

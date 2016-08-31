@@ -20,6 +20,14 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_INSTALL_PREFIX}/bin)
 # set the path where the library should be put
 set(LIBRARY_OUTPUT_PATH ${CMAKE_INSTALL_PREFIX}/bin)
 
+# check python
+if ( NOT ${PYTHONLIBS_FOUND} )
+  message(FATAL_ERROR "python library is not found.")
+else ()
+  message("-- python version: ${PYTHONLIBS_VERSION_STRING}")
+  message("-- python library: ${PYTHON_LIBRARIES}")
+endif ( NOT ${PYTHONLIBS_FOUND} )
+
 # find FindROOT.cmake
 set(CMAKE_MODULE_PATH $ENV{ROOTSYS}/cmake)
 find_package(ROOT REQUIRED)

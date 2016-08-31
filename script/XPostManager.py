@@ -1,6 +1,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
 
 ## class to contain the data
 class XPostContainer:
@@ -14,6 +15,7 @@ class XPostContainer:
         self._RRR = 0.
         self._C   = 0.
         self._k   = np.array([0.,0.,0.])
+        self._dose = 0.
 
     ## setup position
     def SetPosition(self, z, phi, r):
@@ -104,6 +106,13 @@ class XPostContainer:
     def GetRRR(self):
         return self._RRR
 
+    ## setup dose
+    def SetDose(self, dose):
+        self._dose = dose
+
+    ## return dose
+    def GetDose(self):
+        return self._dose
 
 
 class XPostLoading:
@@ -134,6 +143,7 @@ class XPostLoading:
             vec.SetField( float(item[8]) )
             vec.SetCapacity( float(item[9]) )
             vec.SetConductivity( float(item[10]), float(item[11]), float(item[12]) )
+            vec.SetDose( float(item[13]) )
             self._collect = np.append(self._collect, vec)
 
     ## check the mesh
@@ -249,19 +259,68 @@ class XPostManager:
         data["r"] = data["r"].reshape((self._mesh["r"], self._mesh["z"]))
         data["k"] = data["k"].reshape((self._mesh["r"], self._mesh["z"]))
         # plot
-        cs = ax.contourf( data["z"], data["r"], data["k"], 70, cmap=plt.cm.gnuplot2 )
+        cs = ax.contourf( data["z"], data["r"], data["k"], \
+                          #norm=colors.LogNorm(vmin=data["k"].min(), vmax=data["k"].max()), \
+                          50, cmap=plt.cm.gnuplot2 )
         cbar = fig.colorbar( cs, ax=ax, shrink=0.9 )
         cbar.set_label("Thermal Conductivity [W/m/K]")
         ax.set_title("%s direction" %opt)
         ax.set_xlabel("Z [m]")
         ax.set_ylabel("R [m]")
 
+    ## plot RRR
+    def plot_RRR(self, fig, ax):
+        print "ploting residual resistance ratio..."
+        data = {"z":np.array([]), "r":np.array([]), "RRR":np.array([])}
+        for i in range(len(self._data)):
+            if self._data[i].GetId("phi")==self._phi and \
+               self._data[i].GetId("z") > 0 and self._data[i].GetId("z") < self._mesh["z"]+1 and \
+               self._data[i].GetId("r") > 0 and self._data[i].GetId("r") < self._mesh["r"]+1:
+                data["z"] = np.append( data["z"], self._data[i].GetPosition("z") )
+                data["r"] = np.append( data["r"], self._data[i].GetPosition("r") )
+                data["RRR"] = np.append( data["RRR"], self._data[i].GetRRR() )
+        # reshape data
+        data["z"] = data["z"].reshape((self._mesh["r"], self._mesh["z"]))
+        data["r"] = data["r"].reshape((self._mesh["r"], self._mesh["z"]))
+        data["RRR"] = data["RRR"].reshape((self._mesh["r"], self._mesh["z"]))
+        # plot
+        cs = ax.contourf( data["z"], data["r"], data["RRR"], 50, cmap=plt.cm.gnuplot2 )
+        cbar = fig.colorbar( cs, ax=ax, shrink=0.9 )
+        cbar.set_label("RRR")
+        ax.set_xlabel("Z [m]")
+        ax.set_ylabel("R [m]")
+
+    ## plot energy deposit
+    def plot_dose(self, fig, ax):
+        print "ploting energy deposition..."
+        data = {"z":np.array([]), "r":np.array([]), "dose":np.array([])}
+        for i in range(len(self._data)):
+            if self._data[i].GetId("phi")==self._phi and \
+               self._data[i].GetId("z") > 0 and self._data[i].GetId("z") < self._mesh["z"]+1 and \
+               self._data[i].GetId("r") > 0 and self._data[i].GetId("r") < self._mesh["r"]+1:
+                data["z"] = np.append( data["z"], self._data[i].GetPosition("z") )
+                data["r"] = np.append( data["r"], self._data[i].GetPosition("r") )
+                data["dose"] = np.append( data["dose"], self._data[i].GetDose() )
+        # reshape data
+        data["z"] = data["z"].reshape((self._mesh["r"], self._mesh["z"]))
+        data["r"] = data["r"].reshape((self._mesh["r"], self._mesh["z"]))
+        data["dose"] = data["dose"].reshape((self._mesh["r"], self._mesh["z"]))
+        # plot
+        cs = ax.contourf( data["z"], data["r"], data["dose"], 50, cmap=plt.cm.gnuplot2 )
+        cbar = fig.colorbar( cs, ax=ax, shrink=0.9 )
+        cbar.set_label("Energy Deposit [W/kg]")
+        ax.set_xlabel("Z [m]")
+        ax.set_ylabel("R [m]")
+
+
     ## plot
     def Plot(self):
-        fig, ax = plt.subplots(2,2)
-        fig.tight_layout()
+        fig, ax = plt.subplots(3,2,figsize=(12,7))
+        #fig.tight_layout(w_pad=1.7, h_pad=1.0)
         self.plot_field(fig, ax[0][0])
         self.plot_capacity(fig, ax[0][1])
         self.plot_conductivity(fig, ax[1][0], "r")
         self.plot_conductivity(fig, ax[1][1], "z")
+        self.plot_RRR(fig, ax[2][0])
+        self.plot_dose(fig, ax[2][1])
         plt.show()

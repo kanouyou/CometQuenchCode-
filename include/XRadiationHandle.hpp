@@ -86,6 +86,15 @@ class XRadiationHandle
     /// @brief return name of magnet
     std::string GetName() const { return fName; }
 
+    /// @brief setup irradiation time
+    void SetIrrTime(const double time);
+
+    /// @brief check the id is over range or not
+    bool IsOverRange(const int id) const;
+
+    /// @brief find the local id from the given i, j, k
+    const int Id(const int i, const int j, const int k);
+
     /// @brief load radiation file
     void Load(const std::string& filename);
 
@@ -101,6 +110,9 @@ class XRadiationHandle
     /// @brief get this entry
     XRadiationContainer* GetEntry(const int entry) { return fRC.at(entry); }
 
+    /// @brief calculate irradiation induced RRR
+    double GetRRR(const Geometry geo, const double neu) const;
+
 
   private:
     /// @brief find the maximum of id
@@ -109,6 +121,10 @@ class XRadiationHandle
 
   private:
     std::string fName;
+    double fIrrad;
+    int fMshz;
+    int fMshp;
+    int fMshr;
     std::vector<XRadiationContainer*> fRC;
 };
 

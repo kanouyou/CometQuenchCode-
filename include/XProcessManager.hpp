@@ -12,6 +12,7 @@
 #include "XQuenchInfo.hpp"
 #include "XMeshLoop.hpp"
 #include "XCoilHandle.hpp"
+#include "XRadiationHandle.hpp"
 #include "XFieldHandle.hpp"
 
 namespace Quench
@@ -33,6 +34,9 @@ class Quench::XProcessManager : public XMeshLoop
 
     /// @brief setup the field handler
     void SetFieldHandler(XFieldHandle* hand);
+
+    /// @brief setup radiation handler
+    void SetRadiationHandler(XRadiationHandle* hand);
 
     /// @brief return the coil handler
     const XCoilHandle* GetCoilHandler() { return fCoil; }
