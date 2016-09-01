@@ -36,6 +36,9 @@ class Quench::XQuenchOutput
     /// @brief write the data into file
     void Write(XProcessManager* man);
 
+    /// @brief close the file
+    void Close();
+
 
   protected:
     /// @brief initialization

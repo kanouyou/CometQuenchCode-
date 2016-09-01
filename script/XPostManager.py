@@ -215,7 +215,7 @@ class XPostManager:
         data["r"] = data["r"].reshape((self._mesh["r"], self._mesh["z"]))
         data["B"] = data["B"].reshape((self._mesh["r"], self._mesh["z"]))
         # plot
-        cs = ax.contourf( data["z"], data["r"], data["B"], 70, cmap=plt.cm.gnuplot2 )
+        cs = ax.contourf( data["z"], data["r"], data["B"], 50, cmap=plt.cm.gnuplot2 )
         cbar = fig.colorbar( cs, ax=ax, shrink=0.9 )
         cbar.set_label("Magnetic Field [Tesla]")
         ax.set_xlabel("Z [m]")
@@ -237,7 +237,7 @@ class XPostManager:
         data["r"] = data["r"].reshape((self._mesh["r"], self._mesh["z"]))
         data["C"] = data["C"].reshape((self._mesh["r"], self._mesh["z"]))
         # plot
-        cs = ax.contourf( data["z"], data["r"], data["C"], 70, cmap=plt.cm.gnuplot2 )
+        cs = ax.contourf( data["z"], data["r"], data["C"], 50, cmap=plt.cm.gnuplot2 )
         cbar = fig.colorbar( cs, ax=ax, shrink=0.9 )
         cbar.set_label("Heat Capacity [J/kg/K]")
         ax.set_xlabel("Z [m]")

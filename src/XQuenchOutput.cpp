@@ -65,3 +65,9 @@ void XQuenchOutput :: Write(XProcessManager* man)
               <<"\n";
   }
 }
+
+void XQuenchOutput :: Close()
+{
+  if (fRootfile) fRootfile->Close();
+  if (fNormfile.is_open()) fNormfile.close();
+}
