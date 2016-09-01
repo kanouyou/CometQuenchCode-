@@ -22,6 +22,8 @@ namespace Quench
 //
 class Quench::XProcessManager : public XMeshLoop
 {
+  friend class XThermalSolver;
+
   public:
     /// @brief constructor
     XProcessManager();

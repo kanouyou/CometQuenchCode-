@@ -18,6 +18,9 @@ static const double mm3 = mm * mm * mm;
 static const double kg = 1.;
 static const double g  = 0.001 * kg;
 
+static const double K  = 1.;
+static const double mK = 0.001 * K;
+
 static const double sec  = 1.;
 static const double msec = 0.001*sec;
 static const double hour = 3600.*sec;

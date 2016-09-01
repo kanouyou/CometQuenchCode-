@@ -95,11 +95,11 @@ void XProcessManager :: SetRadiationHandler(XRadiationHandle* hand)
   }
 
   const int mshz = hand->GetMesh(iZ);
-  const int mshp = hand->GetMesh(iPhi);
+  //const int mshp = hand->GetMesh(iPhi);
   const int mshr = hand->GetMesh(iR);
 
   const int radmshz = fMshZ / mshz;
-  const int radmshp = fMshP / mshp;
+  //const int radmshp = fMshP / mshp;
   const int radmshr = fMshR / mshr;
 
   QuenchError( XQuenchLogger::INFO, "check radiation input file mesh -> z: " 
@@ -348,6 +348,7 @@ void XProcessManager :: InitPosition()
         fDC.at( Id(i,j,k) )->SetPrePosition(preZ, preP, preR);
         fDC.at( Id(i,j,k) )->SetPosition(z, p, r);
         fDC.at( Id(i,j,k) )->SetCellSize(lz, lp, lr);
+        fDC.at( Id(i,j,k) )->SetDistance(dz, dp, dr);
 
         preZ = z;
         z += lz/2.;

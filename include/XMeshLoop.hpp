@@ -7,6 +7,8 @@
 #ifndef XMeshLoop_HH
 #define XMeshLoop_HH
 
+#include "XCoilBase.hpp"
+
 /// class to handle the 3 dimensional mesh loop
 //
 class XMeshLoop
@@ -25,6 +27,9 @@ class XMeshLoop
 
     /// @brief initialize the mesh loop
     void SetMesh(const int mz, const int mp, const int mr);
+
+    /// @brief return the mesh
+    size_t GetMesh(const Coil dim) const;
 
     /// @brief check the id is over range or not
     /// @param id the id number of the data

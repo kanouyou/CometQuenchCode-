@@ -13,6 +13,7 @@ namespace Quench
 { class XProcessHandle; }
 
 /// class to handle the data container and update the data
+/// @detail this class is for the quench calculation
 //
 class Quench::XProcessHandle : public Quench::XProcessManager
 {

@@ -47,6 +47,12 @@ class Quench::XMaterialInfo
     /*! return the magnetic field */
     double GetField() const { return fField; }
 
+    /// @brief setup pre-temperature
+    void SetPreTemp(const double T) { fPreTemp = T; }
+
+    /// @brief returns pre-temperature
+    double GetPreTemp() const { return fPreTemp; }
+
     /*! setup temperature */
     void SetTemperature(const double temp);
 
@@ -115,6 +121,7 @@ class Quench::XMaterialInfo
     std::array<double, 3> fHeat;
     std::array<double, 3> fk;
     double  fField;
+    double  fPreTemp;
     double  fTemp;
     double  fCapacity;
     double  fR;

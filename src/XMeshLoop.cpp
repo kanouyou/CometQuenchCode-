@@ -29,6 +29,17 @@ void XMeshLoop :: SetMesh(const int mz, const int mp, const int mr)
 }
 
 
+size_t XMeshLoop :: GetMesh(const Coil dim) const
+{
+  switch (dim) {
+    case iZ:   return fMshZ;
+    case iPhi: return fMshP;
+    case iR:   return fMshR;
+    default: return 0;
+  }
+}
+
+
 bool XMeshLoop :: IsOverRange(const int id) const
 {
   bool over_range = false;

@@ -12,7 +12,7 @@ QuenchCode is a Toolkit for calculation of magnet quench with quench propagator.
 The code is wriiten in C++ and depends on the libraries:
 
 - ROOT
-- Boost
+- matplotlib
 
 
 # Code Sample for calculation of the magnetic field
@@ -51,9 +51,9 @@ void SetConductor(XCoilHandle* hand)
 void SetStrip(XCoilHandle* hand)
 {
   XCoilStrip* strip = new XCoilStrip();
-  strip->SetDimension(4.73*mm+0.3*2*mm, 15.*mm);
+  strip->SetDimension(4.73*mm+0.3*2*mm, 1.*mm);
   strip->SetInsSize(0.0, 0.3*mm);
-  hand->SetConductor( dynamic_cast<XCoilBase*>(strip) );
+  hand->SetStrip( dynamic_cast<XCoilBase*>(strip) );
 }
 
 void Construct()
