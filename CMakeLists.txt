@@ -14,6 +14,9 @@ message("-- Quench code version: ${QUENCH_VERSION}")
 
 set(TARGET SimQuench.exe)
 
+# set c++11 library
+add_compile_options(-std=c++11)
+
 # set the path where the executable file should be put
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_INSTALL_PREFIX}/bin)
 
