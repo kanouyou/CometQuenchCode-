@@ -10,15 +10,13 @@
 #include <array>
 #include "XCoilBase.hpp"
 
-/** @enum
- *  Quench status
- */
+/// @enum Quench status
 enum QuenchStatus {
-  //! superconducting status: operating
+  /// superconducting status: operating
   kSuperconduct,
-  //! transition status: start current sharing
+  /// transition status: start current sharing
   kTransition,
-  //! normal: start quenching
+  /// normal: start quenching
   kNormal
 };
 
@@ -116,6 +114,12 @@ class Quench::XMaterialInfo
     /// @brief return the energy deposit data
     double GetDeposit() { return fDose; }
 
+    /// @brief setup the time step
+    void SetTimeStep(const double step) { fStep = step; }
+
+    /// @brief return the time step
+    double GetTimeStep() const { return fStep; }
+
 
   private:
     std::array<double, 3> fHeat;
@@ -130,6 +134,7 @@ class Quench::XMaterialInfo
     QuenchStatus fStatus;
     double  fGen;
     double  fDose;
+    double  fStep;
 };
 
 

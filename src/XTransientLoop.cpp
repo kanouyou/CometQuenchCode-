@@ -28,7 +28,6 @@ void XTransientLoop :: SetTime(const double t0, const double tf, const double dt
 
   QuenchError( XQuenchLogger::INFO, "setup time -> t0:" << fTime0 << "sec, tf:"
                                     << fTimef << "sec, dt:" << fdt << "sec" );
-  fSolver->SetTimeInterval(fdt);
 }
 
 void XTransientLoop :: Begin()
@@ -42,6 +41,8 @@ void XTransientLoop :: SetProcess(Quench::XProcessManager* hand)
 
 void XTransientLoop :: Run()
 {
+  fSolver->SetTimeInterval(fdt);
+
   double time = fTime0;
   const double Tcool = 4.5*K;
   int cnt = 0;

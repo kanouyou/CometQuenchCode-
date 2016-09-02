@@ -14,7 +14,11 @@ message("-- Quench code version: ${QUENCH_VERSION}")
 
 set(TARGET SimQuench.exe)
 
+# debug
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 # set c++11 library
+set(CMAKE_CXX_COMPILER g++)
 add_compile_options(-std=c++11)
 
 # set the path where the executable file should be put
@@ -39,7 +43,7 @@ if ( NOT ROOT_FOUND )
 endif ( NOT ROOT_FOUND )
 
 # check the version of ROOT, currently the required version is 5.34
-if ( ${ROOT_VERSION} MATCHES "^5\\.34/([0-9]+)$" )
+if ( ${ROOT_VERSION} MATCHES "^5\\.34" )
   message("-- ROOT version: ${ROOT_VERSION}")
 else ()
   message("-- ROOT version: ${ROOT_VERSION}")

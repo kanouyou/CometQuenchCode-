@@ -35,6 +35,22 @@ void XThermalSolver :: SetProcessHandle(Quench::XProcessManager* hand)
   fMshR = fProcess->GetMesh(iR);
 }
 
+void XThermalSolver :: SetTimeInterval(const double dt)
+{
+  fdt = dt;
+
+  int id = 0;
+
+  for (int k=0; k<fMshR+2; k++) {
+    for (int j=0; j<fMshP+2; j++) {
+      for (int i=0; i<fMshZ+2; i++) {
+        id = fProcess->Id(i,j,k);
+        fProcess->GetMaterialEntry(id)->SetTimeStep(fdt);
+      }
+    }
+  }
+}
+
 void XThermalSolver :: Initial()
 {
   int id = 0;

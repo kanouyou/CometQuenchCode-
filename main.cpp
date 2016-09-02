@@ -7,7 +7,7 @@
 #include "XFieldHandle.hpp"
 #include "XPostField.hpp"
 #include "XCoilHandle.hpp"
-#include "XPreProcess.hpp"
+#include "XCoilConductor.hpp"
 #include "XPlotMaterial.hpp"
 #include "IFdmUnits.hpp"
 
@@ -31,8 +31,6 @@ void Test() {
   mat->Add("B", 1.);
   mat->Plot();
 
-  XPreProcess* pre  = new XPreProcess("CS1");
-
   XFieldHandle* fld = new XFieldHandle();
   XCoilHandle* coil = new XCoilHandle();
   coil->SetMesh(270, 2, 9);
@@ -41,15 +39,11 @@ void Test() {
     fld->AddCoil("CS1", -79.525*cm, 59.525*cm, 672.*mm, 823.65*mm);
     fld->SetCurrent(2700.);
 
-    pre->SetCoilHandler( coil );
-    pre->Initialize();
-    pre->SetFieldHandler(fld);
     //post->SetFieldHandler(fld);
     //post->Plot();
   }
   catch (XQuenchExcept except) {
     delete fld;
-    delete pre;
     delete coil;
     std::cerr << " ERROR: " << except.what() << std::endl;
   }

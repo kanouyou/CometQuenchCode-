@@ -31,7 +31,7 @@ class XThermalSolver
     void SetProcessHandle(Quench::XProcessManager* hand);
 
     /// @brief setup time interval
-    void SetTimeInterval(const double dt) { fdt = dt; }
+    void SetTimeInterval(const double dt);
 
     /// @brief setup accelerating factor
     void SetAccelerateFactor(const double acc=1.);

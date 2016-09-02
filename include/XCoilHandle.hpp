@@ -74,6 +74,9 @@ class Quench::XCoilHandle
     int  GetMesh(const Coil dim) const;
     int* GetMesh() const { return fMsh; }
 
+    /// @brief return the approach factor
+    double GetApproachZ() const;
+
     /// @brief setup coil total layers and turns
     /// @param layer layer of conductor, not included the shell and strip 
     void SetCoilParameters(const int turn, const int layer);

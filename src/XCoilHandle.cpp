@@ -131,6 +131,13 @@ int XCoilHandle :: GetMesh(const Coil dim) const
 }
 
 
+double XCoilHandle :: GetApproachZ() const 
+{
+  const double app = fTurn / fMsh[iZ];
+  return app;
+}
+
+
 void XCoilHandle :: SetCoilParameters(const int turn, const int layer)
 {
   SetCoilTurns(turn);
