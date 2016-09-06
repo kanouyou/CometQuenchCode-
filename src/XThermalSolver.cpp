@@ -67,6 +67,25 @@ void XThermalSolver :: Initial()
   }
 }
 
+double XThermalSolver :: FindTimeStep() const
+{
+  double minstep = 10000.;
+  double step; 
+  int    id;
+
+  for (int k=1; k<fMshR+1; k++) {
+    for (int j=1; j<fMshP+1; j++) {
+      for (int i=1; i<fMshZ+1; i++) {
+        id = fProcess->Id(i,j,k);
+        step = fProcess->GetMaterialEntry(id)->GetTimeStep();
+        minstep = step < minstep ? step : minstep;
+      }
+    }
+  }
+
+  return minstep;
+}
+
 void XThermalSolver :: Solve()
 {
   for (int k=1; k<fMshR+1; k++) {
@@ -129,6 +148,17 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
   const double kz = fProcess->GetMaterialEntry(zpr)->GetConductivity(iZ);
   const double kp = fProcess->GetMaterialEntry(zpr)->GetConductivity(iPhi);
   const double kr = fProcess->GetMaterialEntry(zpr)->GetConductivity(iR);
+
+  // get diffusion velocity
+  double az = kz / rho / C;
+  double ap = kp / rho / C;
+  double ar = kr / rho / C;
+
+  // calculate time step
+  double step = 1. / (az/dpreZ/lz + ap/dpreP/lp + ar/dpreR/lr) / 2.;
+  //step *= 0.95;
+
+  fProcess->GetMaterialEntry(zpr)->SetTimeStep(step);
 
   // get heat generation 
   const double gen = fProcess->GetMaterialEntry(zpr)->GetDeposit() * rho;
@@ -193,7 +223,8 @@ void XThermalSolver :: SetBoundary()
   // CONDUCTOR DIRECTION
   ///////////////////////////////////////
   // connection
-  for (int k=0; k<fMshR+2; k++) {
+  // last layer is assumed as shell
+  for (int k=0; k<fMshR+1; k++) {
     for (int i=0; i<fMshZ+2; i++) {
       id_bdy  = fProcess->Id(i,0,k);
       id_edge = fProcess->Id(i,fMshP,k);
@@ -259,6 +290,19 @@ void XThermalSolver :: SetCoolingPath(const int r, const double T, const Cooling
       bdy = fProcess->Id(fMshZ+1,j,r);
       fProcess->GetMaterialEntry(bdy)->SetTemperature(T);
     }
+  }
+}
+
+void XThermalSolver :: SetCoolingPoint(const int z, const double T)
+{
+  int id = 0;
+
+  for (int j=1; j<fMshP+1; j++) {
+    id = fProcess->Id(z, j, fMshR);
+    if (fProcess->GetDimensionEntry(id)->GetGeometry()!=kShell)
+      throw
+    id = fProcess->Id(z, j, fMshR+1);
+    fProcess->GetMaterialEntry(id)->SetTemperature(T);
   }
 }
 

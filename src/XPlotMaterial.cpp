@@ -1,3 +1,4 @@
+#if USE_ROOT
 #include <iostream>
 #include <TMultiGraph.h>
 #include <TCanvas.h>
@@ -104,3 +105,4 @@ void XPlotMaterial :: Plot()
   fLg->Draw();
 }
 
+#endif

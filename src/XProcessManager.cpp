@@ -317,7 +317,10 @@ void XProcessManager :: InitPosition()
   double lz = 0.;  double lp = 0.;  double lr = 0.;        // length
   double dz = 0.;  double dp = 0.;  double dr = 0.;        // distance = position - pre-position
 
-  lz = fCoil->GetCoilLayout(2)->GetTotalLength(iZ);
+  const double factor = fCoil->GetApproachZ();
+  //lz = fCoil->GetCoilLayout(2)->GetTotalLength(iZ);
+  // apply approach factor on z direction
+  lz = fCoil->GetCoilLayout(2)->GetTotalLength(iZ) * factor;
   lp = fCoil->GetCoilSize(iPhi) / fMshP;
 
   for (int k=1; k<fMshR+1; k++) {

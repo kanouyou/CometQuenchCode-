@@ -2,7 +2,7 @@
  *  @file   XPlotMaterial.hpp
  *  @author Y.Yang (Kyushu University)
  *  @date   5 Aug 2016
- */
+ **/
 
 #ifndef XPlotMaterial_HH
 #define XPlotMaterial_HH

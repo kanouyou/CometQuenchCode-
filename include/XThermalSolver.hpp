@@ -39,7 +39,11 @@ class XThermalSolver
     /// @brief initialization
     void Initial();
 
-    /// @brief solve the thermal problem
+    /// @brief find minimum time step
+    double FindTimeStep() const;
+
+    /// @brief  solve the thermal problem
+    /// @detail time step is calculated by the condition: \f$ r_{x} + r_{y} + r_{z} < \frac{1}{2} \f$
     void Solve();
 
     /// @brief setup boundary
@@ -58,6 +62,10 @@ class XThermalSolver
     ///            the both side cooling.
     /// @detail this function must be used after SetBoundary()
     void SetCoolingPath(const int r, const double T=4.5*K, const Cooling opt=kSide);
+
+    /// @brief  setup cooling point on shell
+    /// @detail this point is on the last layer of coil
+    void SetCoolingPoint(const int z, const double T=4.5*K);
 
     /// @brief return process handler
     Quench::XProcessManager* GetProcess() { return fProcess; }

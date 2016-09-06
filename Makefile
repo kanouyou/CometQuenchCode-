@@ -16,7 +16,7 @@ OBJS   = $(SRCS:.cpp=.o)
 
 ARFLAGS = rv
 
-CXXFLAGS = -Wall -O3 -I include
+CXXFLAGS = -Wall -std=c++11 -O3 -I include
 CXXLIBS  = 
 
 ROOTFLAGS = $(shell root-config --cflags)

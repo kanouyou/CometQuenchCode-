@@ -41,7 +41,8 @@ void XTransientLoop :: SetProcess(Quench::XProcessManager* hand)
 
 void XTransientLoop :: Run()
 {
-  fSolver->SetTimeInterval(fdt);
+  double dt = fdt;
+  fSolver->SetTimeInterval(dt);
 
   double time = fTime0;
   const double Tcool = 4.5*K;
@@ -55,20 +56,32 @@ void XTransientLoop :: Run()
 
     fSolver->SetBoundary();
 
+    // setup cooling path
     fSolver->SetCoolingPath(1, Tcool, kSide);
-    fSolver->SetCoolingPath(3, Tcool, kLeft);
-    fSolver->SetCoolingPath(5, Tcool, kRight);
+    fSolver->SetCoolingPath(3, Tcool, kSide);
+    fSolver->SetCoolingPath(5, Tcool, kSide);
+    fSolver->SetCoolingPath(7, Tcool, kSide);
+    fSolver->SetCoolingPath(9, Tcool, kSide);
+    fSolver->SetCoolingPath(11, Tcool, kSide);
+    fSolver->SetCoolingPath(13, Tcool, kSide);
+    fSolver->SetCoolingPath(15, Tcool, kSide);
+    fSolver->SetCoolingPath(17, Tcool, kSide);
+
+    // setup cooling point on shell
+    fSolver->SetCoolingPoint(fSolver->GetProcess()->GetMesh(iZ)/2, Tcool);
 
     if (cnt%1000==0) {
-      std::cout << time << " ";
+      std::cout << time << " " << dt << " ";
       fSolver->Print();
     }
 
-    time += fdt;
+    dt = fSolver->FindTimeStep();
+
+    time += dt;
     cnt ++;
   }
 
-  for (unsigned int i=0; i<fSolver->GetProcess()->GetMaterialEntries(); i++) {
+  for (int i=0; i<fSolver->GetProcess()->GetMaterialEntries(); i++) {
     std::cout << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iZ) << "  "
               << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iPhi) << "  "
               << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iR) << "  "
