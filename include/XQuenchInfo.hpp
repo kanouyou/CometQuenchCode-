@@ -2,11 +2,14 @@
  *  @file   XQuenchContainer.hpp
  *  @author Y.Yang (Kyushu University)
  *  @date   1st. Aug. 2016
- */
+ **/
 
 #ifndef XQuenchInfo_HH
 #define XQuenchInfo_HH
 
+#if __cplusplus <= 199711L
+ #error This library needs C++11 at least
+#endif
 #include <array>
 #include "XCoilBase.hpp"
 

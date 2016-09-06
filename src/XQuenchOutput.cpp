@@ -47,7 +47,7 @@ void XQuenchOutput :: Write(XProcessManager* man)
     QuenchError( XQuenchLogger::ERROR, "processing manager is null.");
   }
 
-  for (int i=0; i<man->GetEntries(); i++) {
+  for (unsigned int i=0; i<man->GetEntries(); i++) {
     fNormfile << man->GetDimensionEntry(i)->GetId(iZ)   << " "
               << man->GetDimensionEntry(i)->GetId(iPhi) << " "
               << man->GetDimensionEntry(i)->GetId(iR)   << " "

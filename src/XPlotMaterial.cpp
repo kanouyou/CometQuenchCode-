@@ -66,7 +66,7 @@ void XPlotMaterial :: Add(const std::string& opt, const double var)
   const double dT = (Tf - T0) / nT;
 
   double T = T0;
-  double par;
+  double par = 0.;
 
   for (int i=0; i<nT; i++) {
     fMat->SetTemperature(T);

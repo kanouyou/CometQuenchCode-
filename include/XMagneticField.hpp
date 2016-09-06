@@ -8,6 +8,9 @@
 #define XMagneticField_HH
 
 #include <vector>
+#if __cplusplus <= 199711L
+  #error This library needs C++11 at least
+#endif
 #include <array>
 
 #ifndef IFdmUnits_HH
