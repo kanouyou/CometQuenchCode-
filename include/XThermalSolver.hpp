@@ -44,7 +44,7 @@ class XThermalSolver
 
     /// @brief  solve the thermal problem
     /// @detail time step is calculated by the condition: \f$ r_{x} + r_{y} + r_{z} < \frac{1}{2} \f$
-    void Solve();
+    void Solve(const double dt);
 
     /// @brief setup boundary
     void SetBoundary();

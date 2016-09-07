@@ -10,7 +10,8 @@ using Quench::XQuenchOutput;
 
 
 XQuenchOutput :: XQuenchOutput(const std::string &filename, const FileOutput opt)
-    : fFilename(filename)
+    : fFilename(filename),
+      fRootfile(NULL)
 {
   init(opt);
 }
@@ -38,6 +39,64 @@ void XQuenchOutput :: init(const FileOutput opt)
       QuenchError( XQuenchLogger::ERROR, "option " << opt << " is not available." );
       XQuenchExcept except("output option is not available.");
       throw except;
+  }
+}
+
+
+void XQuenchOutput :: WriteGeometry(XProcessManager* man)
+{
+  if (!man) {
+    QuenchError( XQuenchLogger::ERROR, "processing manager is null.");
+  }
+
+  const int mshz = man->GetMesh(iZ);
+  const int mshp = man->GetMesh(iPhi);
+  const int mshr = man->GetMesh(iR);
+
+  int idz = 0;
+  int idp = 0;
+  int idr = 0;
+
+  double z   = 0.;
+  double phi = 0.;
+  double r   = 0.;
+
+  double lz   = 0.;
+  double lphi = 0.;
+  double lr   = 0.;
+
+  for (unsigned int i=0; i<man->GetEntries(); i++) {
+
+    idz = man->GetDimensionEntry(i)->GetId(iZ);
+    idp = man->GetDimensionEntry(i)->GetId(iPhi);
+    idr = man->GetDimensionEntry(i)->GetId(iR);
+
+    if ( idz>0 && idz<mshz+1 &&
+         idp>0 && idp<mshp+1 &&
+         idr>0 && idr<mshr+1 ) {
+    
+      lz   = man->GetDimensionEntry(i)->GetCellSize(iZ);
+      lphi = man->GetDimensionEntry(i)->GetCellSize(iPhi);
+      lr   = man->GetDimensionEntry(i)->GetCellSize(iR);
+
+      z   = man->GetDimensionEntry(i)->GetPosition(  iZ) - lz/2.;
+      phi = man->GetDimensionEntry(i)->GetPosition(iPhi) - lphi/2.;
+      r   = man->GetDimensionEntry(i)->GetPosition(  iR) - lr/2.;
+
+      if (idz==1 && man->GetDimensionEntry(i)->GetGeometry()==kStrip)
+        z = man->GetDimensionEntry(i)->GetPrePosition(iZ);
+
+      if (idz==mshz && man->GetDimensionEntry(i)->GetGeometry()==kStrip)
+        z = man->GetDimensionEntry(i)->GetPrePosition(iZ);
+
+      fNormfile << i << " "
+                << man->GetDimensionEntry(i)->GetId(iZ)   << " "
+                << man->GetDimensionEntry(i)->GetId(iPhi) << " "
+                << man->GetDimensionEntry(i)->GetId(iR)   << " "
+                << z << " " << phi << " " << r << " "
+                << lz << " " << lphi << " " << lr << " "
+                <<"\n";
+    }
   }
 }
 

@@ -260,15 +260,18 @@ void XProcessManager :: init()
   }
 
   // initialize id number
+  int id = 0;
   for (int k=0; k<fMshR+2; k++) {
     for (int j=0; j<fMshP+2; j++) {
       for (int i=0; i<fMshZ+2; i++) {
-        fDC.at( Id(i,j,k) )->SetId(i, j, k);
-        fDC.at( Id(i,j,k) )->SetNodeId( Id(i,j,k) );
-        fDC.at( Id(i,j,k) )->SetPosition(0., 0., 0.);
-        fDC.at( Id(i,j,k) )->SetPrePosition(0., 0., 0.);
-        fDC.at( Id(i,j,k) )->SetPostPosition(0., 0., 0.);
-        fDC.at( Id(i,j,k) )->SetGeometry(kConductor);
+        id = Id(i,j,k);
+        fDC.at(id)->SetId(i, j, k);
+        fDC.at(id)->SetNodeId( Id(i,j,k) );
+        fDC.at(id)->SetPosition(0., 0., 0.);
+        fDC.at(id)->SetPrePosition(0., 0., 0.);
+        fDC.at(id)->SetPostPosition(0., 0., 0.);
+        fDC.at(id)->SetCellSize(1., 1., 1.);
+        fDC.at(id)->SetGeometry(kConductor);
       }
     }
   }
@@ -315,43 +318,57 @@ void XProcessManager :: InitPosition()
 
   double z  = 0.;  double p  = 0.;  double r  = 0.;        // position
   double lz = 0.;  double lp = 0.;  double lr = 0.;        // length
-  double dz = 0.;  double dp = 0.;  double dr = 0.;        // distance = position - pre-position
 
+  int id = 0;
+
+  // length edge of strip along direction z
+  const double edge = fCoil->GetStripEdge();
+  // approach z factor
   const double factor = fCoil->GetApproachZ();
-  //lz = fCoil->GetCoilLayout(2)->GetTotalLength(iZ);
-  // apply approach factor on z direction
+  // length of cell
   lz = fCoil->GetCoilLayout(2)->GetTotalLength(iZ) * factor;
   lp = fCoil->GetCoilSize(iPhi) / fMshP;
 
   for (int k=1; k<fMshR+1; k++) {
     lr = fCoil->GetCoilLayout(k)->GetTotalLength(iR);
     r += lr/2.;
-    dr = r - preR;
-    //if (k==fMshR)
-    //  postR = r + lr/2.;
-    //else
-    //  postR = r + lr/2. + fCoil->GetCoilLayout(k+1)->GetTotalLength(iR)/2.;
     postR = k==fMshR ? r+lr/2. : r+lr/2.+fCoil->GetCoilLayout(k+1)->GetTotalLength(iR)/2.;
+
+    QuenchError( XQuenchLogger::CONFIG, "id: " << k << ", r position:" << r/mm << " [mm]"
+                                        << " , cell size_r: " << lr/mm << " [mm]");
 
     p  = 0.;
     preP = 0.;
     for (int j=1; j<fMshP+1; j++) {
       p += lp/2.;
-      dp = p - preP;
-      postP = j==fMshR ? p+lp/2. : p+lp;
+      postP = p+lp;
 
       z  = 0.;
       preZ = 0.;
       for (int i=1; i<fMshZ+1; i++) {
+        id = Id(i,j,k);
+
         z += lz/2.;
-        dz = z - preZ;
         postZ = i==fMshZ ? z+lz/2. : z+lz;
 
-        fDC.at( Id(i,j,k) )->SetPostPosition(postZ, postP, postR);
-        fDC.at( Id(i,j,k) )->SetPrePosition(preZ, preP, preR);
-        fDC.at( Id(i,j,k) )->SetPosition(z, p, r);
-        fDC.at( Id(i,j,k) )->SetCellSize(lz, lp, lr);
-        fDC.at( Id(i,j,k) )->SetDistance(dz, dp, dr);
+        fDC.at(id)->SetPrePosition( preZ, preP, preR );
+        fDC.at(id)->SetPosition( z, p, r );
+        fDC.at(id)->SetPostPosition( postZ, postP, postR );
+        fDC.at(id)->SetCellSize( lz, lp, lr );
+
+        // re-setup the pre-position for the cell at the boundary
+        if ( fDC.at(id)->GetGeometry()==kStrip && i==1 ) {
+          fDC.at(id)->SetPrePosition( preZ-edge, preP, preR );
+          fDC.at(id)->SetPostPosition( postZ, postP, postR );
+          fDC.at(id)->SetCellSize( lz+edge, lp, lr );
+        }
+
+        // re-setup the post-position for the cell at the boundary
+        if ( fDC.at(id)->GetGeometry()==kStrip && i==fMshZ ) {
+          fDC.at(id)->SetPrePosition( preZ, preP, preR );
+          fDC.at(id)->SetPostPosition( postZ+edge, postP, postR );
+          fDC.at(id)->SetCellSize( lz+edge, lp, lr );
+        }
 
         preZ = z;
         z += lz/2.;

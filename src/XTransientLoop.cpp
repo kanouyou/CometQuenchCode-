@@ -52,7 +52,7 @@ void XTransientLoop :: Run()
 
     fSolver->Initial();
 
-    fSolver->Solve();
+    fSolver->Solve(dt);
 
     fSolver->SetBoundary();
 

@@ -86,8 +86,10 @@ double XThermalSolver :: FindTimeStep() const
   return minstep;
 }
 
-void XThermalSolver :: Solve()
+void XThermalSolver :: Solve(const double dt)
 {
+  fdt = dt;
+
   for (int k=1; k<fMshR+1; k++) {
     for (int j=1; j<fMshP+1; j++) {
       for (int i=1; i<fMshZ+1; i++) {

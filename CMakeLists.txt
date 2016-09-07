@@ -15,7 +15,7 @@ message("-- Quench code version: ${QUENCH_VERSION}")
 set(TARGET SimQuench.exe)
 
 # debug
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 # set c++11 library
 set(CMAKE_CXX_COMPILER g++)
@@ -36,7 +36,7 @@ else ()
 endif ( NOT ${PYTHONLIBS_FOUND} )
 
 # find FindROOT.cmake
-set(CMAKE_MODULE_PATH $ENV{ROOTSYS}/cmake)
+set(CMAKE_MODULE_PATH $ENV{ROOTSYS}/etc/cmake)
 find_package(ROOT REQUIRED)
 if ( NOT ROOT_FOUND )
   message(FATAL_ERROR "package is required ROOT, but not found it.")

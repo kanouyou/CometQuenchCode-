@@ -12,6 +12,7 @@ XCoilHandle :: XCoilHandle()
       fMsh(NULL),
       fLayer(0),
       fTurn(0),
+      fEdge(20.*cm),
       fCdt(NULL),
       fStrip(NULL),
       fShell(NULL)
@@ -128,6 +129,14 @@ int XCoilHandle :: GetMesh(const Coil dim) const
   else {
     return fMsh[dim];
   }
+}
+
+
+void XCoilHandle :: SetStripEdge(const double length)
+{
+  fEdge = length;
+
+  QuenchError( XQuenchLogger::INFO, "the length of edge of aluminium: " << fEdge/cm << " cm" );
 }
 
 

@@ -74,6 +74,14 @@ class Quench::XCoilHandle
     int  GetMesh(const Coil dim) const;
     int* GetMesh() const { return fMsh; }
 
+    /// @brief setup the length of edge of strip
+    /// @detail only for aluminium strip
+    void SetStripEdge(const double length);
+
+    /// @brief return the length of edge of strip
+    /// @detail the default length is 20 cm
+    double GetStripEdge() const { return fEdge; }
+
     /// @brief return the approach factor
     double GetApproachZ() const;
 
@@ -140,6 +148,7 @@ class Quench::XCoilHandle
     int*    fMsh;
     int     fLayer;
     int     fTurn;
+    double  fEdge;
     const XCoilBase* fCdt;
     const XCoilBase* fStrip;
     const XCoilBase* fShell;

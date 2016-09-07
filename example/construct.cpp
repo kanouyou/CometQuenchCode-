@@ -34,23 +34,23 @@ void SetConductor(XCoilHandle* hand)
 {
   XCoilConductor* cdt = new XCoilConductor();
   cdt->SetDimension(4.73*mm, 15.*mm);
-  cdt->SetInsSize(0.3*mm, 0.3*mm);
+  cdt->SetInsSize(0.15*mm, 0.15*mm);
   hand->SetConductor( dynamic_cast<XCoilBase*>(cdt) );
 }
 
 void SetStrip(XCoilHandle* hand)
 {
   XCoilStrip* strip = new XCoilStrip();
-  strip->SetDimension(4.73*mm+0.3*2*mm, 1.*mm);
-  strip->SetInsSize(0.0, 0.3*mm);
+  strip->SetDimension(4.73*mm+0.15*2*mm, 1.*mm);
+  strip->SetInsSize(0.0, 0.15*mm);
   hand->SetStrip( dynamic_cast<XCoilBase*>(strip) );
 }
 
 void SetShell(XCoilHandle* hand)
 {
   XCoilShell* shell = new XCoilShell();
-  shell->SetDimension(4.73*mm+0.3*2*mm, 80.*mm);
-  shell->SetInsSize(0.0, 1*mm);
+  shell->SetDimension(4.73*mm+0.15*2*mm, 80.*mm);
+  shell->SetInsSize(0.0, 3*mm);
   hand->SetShell( dynamic_cast<XCoilBase*>(shell) );
 }
 
@@ -103,8 +103,8 @@ int main(int argc, char** argv)
     rad->SetIrrTime(90.*day);
     man->SetCoilHandler(hand);
     man->Initialize();
-    ConstructField(fld);
-    man->SetFieldHandler(fld);
+    //ConstructField(fld);
+    //man->SetFieldHandler(fld);
     man->SetRadiationHandler(rad);
     
     // uniform RRR and field
@@ -115,12 +115,13 @@ int main(int argc, char** argv)
     man->SetMaterial();
 
     std::cout << "finished" << std::endl;
+    out->WriteGeometry(man);
 
-    out->Write(man);
+    //out->Write(man);
     out->Close();
 
     XTransientLoop* trans = new XTransientLoop();
-    trans->SetTime(0., 30., 0.015*msec);
+    trans->SetTime(0., 30., 4.e-3*msec);
     trans->SetProcess(man);
     trans->Run();
 

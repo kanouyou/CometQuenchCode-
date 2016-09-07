@@ -32,9 +32,12 @@ class Quench::XQuenchOutput
 
     /// @brief deconstructor
     ~XQuenchOutput();
-
+    
     /// @brief write the data into file
     void Write(XProcessManager* man);
+
+    /// @brief write geometry information
+    void WriteGeometry(XProcessManager* man);
 
     /// @brief close the file
     void Close();
