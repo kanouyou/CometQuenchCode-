@@ -50,8 +50,6 @@ void XTransientLoop :: Run()
 
   while (time<fTimef) {
 
-    fSolver->Initial();
-
     fSolver->Solve(dt);
 
     fSolver->SetBoundary();
@@ -81,10 +79,12 @@ void XTransientLoop :: Run()
     cnt ++;
   }
 
+  /*
   for (int i=0; i<fSolver->GetProcess()->GetMaterialEntries(); i++) {
     std::cout << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iZ) << "  "
               << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iPhi) << "  "
               << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iR) << "  "
               << fSolver->GetProcess()->GetMaterialEntry(i)->GetTemperature() << std::endl;
   }
+  */
 }

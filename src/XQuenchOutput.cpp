@@ -87,18 +87,19 @@ void XQuenchOutput :: WriteGeometry(XProcessManager* man)
         z = man->GetDimensionEntry(i)->GetPrePosition(iZ);
 
       if (idz==mshz && man->GetDimensionEntry(i)->GetGeometry()==kStrip)
-        z = man->GetDimensionEntry(i)->GetPrePosition(iZ);
+        z = man->GetDimensionEntry(i)->GetPrePosition(iZ)
+           +man->GetDimensionEntry(i-1)->GetCellSize(iZ)/2.;
 
       fNormfile << i << " "
-                << man->GetDimensionEntry(i)->GetId(iZ)   << " "
-                << man->GetDimensionEntry(i)->GetId(iPhi) << " "
-                << man->GetDimensionEntry(i)->GetId(iR)   << " "
+                << idz << " " << idp << " " << idr << " "
                 << z << " " << phi << " " << r << " "
                 << lz << " " << lphi << " " << lr << " "
+                << man->GetDimensionEntry(i)->GetGeometry() << " "
                 <<"\n";
     }
   }
 }
+
 
 void XQuenchOutput :: Write(XProcessManager* man)
 {
@@ -106,22 +107,35 @@ void XQuenchOutput :: Write(XProcessManager* man)
     QuenchError( XQuenchLogger::ERROR, "processing manager is null.");
   }
 
+  const int mshz = man->GetMesh(iZ);
+  const int mshp = man->GetMesh(iPhi);
+  const int mshr = man->GetMesh(iR);
+
+  int idz = 0;
+  int idp = 0;
+  int idr = 0;
+
   for (unsigned int i=0; i<man->GetEntries(); i++) {
-    fNormfile << man->GetDimensionEntry(i)->GetId(iZ)   << " "
-              << man->GetDimensionEntry(i)->GetId(iPhi) << " "
-              << man->GetDimensionEntry(i)->GetId(iR)   << " "
-              << man->GetDimensionEntry(i)->GetPosition(iZ)   << " "
-              << man->GetDimensionEntry(i)->GetPosition(iPhi) << " "
-              << man->GetDimensionEntry(i)->GetPosition(iR)   << " "
-              << man->GetMaterialEntry(i)->GetTemperature() << " "
-              << man->GetMaterialEntry(i)->GetRRR() << " "
-              << man->GetMaterialEntry(i)->GetField() << " "
-              << man->GetMaterialEntry(i)->GetCapacity() << " "
-              << man->GetMaterialEntry(i)->GetConductivity(iZ) << " "
-              << man->GetMaterialEntry(i)->GetConductivity(iPhi) << " "
-              << man->GetMaterialEntry(i)->GetConductivity(iR) << " "
-              << man->GetMaterialEntry(i)->GetDeposit() << " "
-              <<"\n";
+
+    idz = man->GetDimensionEntry(i)->GetId(iZ);
+    idp = man->GetDimensionEntry(i)->GetId(iPhi);
+    idr = man->GetDimensionEntry(i)->GetId(iR);
+
+    if ( idz>0 && idz<mshz+1 &&
+         idp>0 && idp<mshp+1 &&
+         idr>0 && idr<mshr+1 ) {
+      fNormfile << i << " "
+                << man->GetMaterialEntry(i)->GetTemperature()      << " "
+                << man->GetMaterialEntry(i)->GetRRR()              << " "
+                << man->GetMaterialEntry(i)->GetField()            << " "
+                << man->GetMaterialEntry(i)->GetCapacity()         << " "
+                << man->GetMaterialEntry(i)->GetConductivity(iZ)   << " "
+                << man->GetMaterialEntry(i)->GetConductivity(iPhi) << " "
+                << man->GetMaterialEntry(i)->GetConductivity(iR)   << " "
+                << man->GetMaterialEntry(i)->GetDeposit()          << " "
+                <<"\n";
+
+    }
   }
 }
 

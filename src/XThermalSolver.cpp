@@ -89,7 +89,10 @@ double XThermalSolver :: FindTimeStep() const
 void XThermalSolver :: Solve(const double dt)
 {
   fdt = dt;
+  
+  Initial();
 
+  // thermal calculation
   for (int k=1; k<fMshR+1; k++) {
     for (int j=1; j<fMshP+1; j++) {
       for (int i=1; i<fMshZ+1; i++) {
@@ -97,6 +100,7 @@ void XThermalSolver :: Solve(const double dt)
       }
     }
   }
+
 }
 
 void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
@@ -111,12 +115,12 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
   const int postR = fProcess->Id(i, j, k+1);
 
   // get pre-temperature
-  double T      = fProcess->GetMaterialEntry(zpr)->GetPreTemp();
-  double preTz  = fProcess->GetMaterialEntry(preZ)->GetPreTemp();
+  double T      = fProcess->GetMaterialEntry(  zpr)->GetPreTemp();
+  double preTz  = fProcess->GetMaterialEntry( preZ)->GetPreTemp();
   double postTz = fProcess->GetMaterialEntry(postZ)->GetPreTemp();
-  double preTp  = fProcess->GetMaterialEntry(preP)->GetPreTemp();
+  double preTp  = fProcess->GetMaterialEntry( preP)->GetPreTemp();
   double postTp = fProcess->GetMaterialEntry(postP)->GetPreTemp();
-  double preTr  = fProcess->GetMaterialEntry(preR)->GetPreTemp();
+  double preTr  = fProcess->GetMaterialEntry( preR)->GetPreTemp();
   double postTr = fProcess->GetMaterialEntry(postR)->GetPreTemp();
 
   // get distance
@@ -166,9 +170,9 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
   const double gen = fProcess->GetMaterialEntry(zpr)->GetDeposit() * rho;
 
   // calculate heat flux grad [W/m2]
-  double qz = kz * ( (postTz-T)/dpostZ/lz - (T-preTz)/dpreZ/lz );
-  double qp = kp * ( (postTp-T)/dpostP/lp - (T-preTp)/dpreP/lp );
-  double qr = kr * ( (postTr-T)/dpostR/lr - (T-preTr)/dpreR/lr );
+  double qz = kz * ( (postTz-T)/dpostZ - (T-preTz)/dpreZ ) / lz;
+  double qp = kp * ( (postTp-T)/dpostP - (T-preTp)/dpreP ) / lp;
+  double qr = kr * ( (postTr-T)/dpostR - (T-preTr)/dpreR ) / lr;
 
   // set heat flux
   fProcess->GetMaterialEntry(zpr)->SetHeatFlux( qz*fdt, qp*fdt, qr*fdt );
