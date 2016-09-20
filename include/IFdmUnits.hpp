@@ -30,6 +30,6 @@ static const double year = 365*day;
 static const double Ohm = 1.;
 static const double mu0 = 4. * M_PI * 1e-7;
 
-static const double Lwf = 2.44e-8;
+static const double Lwf = 2.45e-8;
 
 #endif

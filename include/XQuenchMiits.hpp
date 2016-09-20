@@ -47,6 +47,12 @@ class XQuenchMiits
     /// @brief setup initial temperature
     void SetInitialTemp(const double T0);
 
+    /// @brief set final temperature
+    void SetFinalTemp(const double Tf);
+
+    /// @brief setup temperature range
+    void SetTempRange(const double T0, const double Tf);
+
     /// @brief setup coil handler
     void SetCoilHandler(Quench::XCoilHandle* coil) { fCoil = coil; }
 
@@ -57,8 +63,13 @@ class XQuenchMiits
     double GetMiits() const;
 
     /// @brief  calculate miits from current integration
+    /// @param  nt total time step number
     /// @detail miits: \f$ \int_0^{\infty} J_0 exp(-2\frac{R}{L}t) dt  f$
-    double GetMiits(const double tf) const;
+    std::map<double,double> GetMiitsDecay(const double t0, const double tf, const double T);
+
+    /// @brief  calculate miits from given temperature
+    /// @detail miits at T: \f$ U(T_0) = \int_0^{T_0} \gamma \frac{C(T)}{\rho(T)}dT \f$
+    double CalMiits2(const double Temp);
 
     /// @brief calculate miits from material property
     std::map<double, double> Eval(const double T0, const double Tf);
@@ -69,7 +80,40 @@ class XQuenchMiits
     /// @brief  return the minimal propagation zone
     /// @detail MPZ: \f$ l = \sqrt{\frac{2k(T_c - T_0)}{J_c^2 \rho}} \f$
     double GetMPZ() const;
+
+    /// @brief  return the quench velocity approached from exact solution
+    /// @detail Quench velocity: \f$ v_{ad} = \frac{J_{op}}{\gamma C} \sqrt{\frac{L_0 T_{cs}}{T_{cs} - T_0}} \f$
+    double GetVelocity(const double Iop);
+
+    /// @brief return the resistance with conductor self resistance
+    double GetQuenchRes(const double t);
     
+    /// @brief interpolation
+    double interpolate(std::map<double,double> hc, const double x) const;
+
+    /// @brief get the collection of time vs temperature
+    std::map<double, double> GetTimeTemp(const double T0, const double Tf);
+
+    /// @brief get the collection of time vs current
+    std::map<double, double> GetTimeCurrent(const double T0, const double Tf);
+
+    /// @brief get the collection of time vs resistance
+    std::map<double, double> GetTimeResist(const double T0, const double Tf);
+
+    /// @brief get the collection of time vs voltage
+    std::map<double, double> GetTimeVolt(const double T0, const double Tf);
+    
+
+  protected:
+    /// @brief calculate the average capacity for conductor
+    double GetAvgCapacity(const double T, const double RRR, const double B);
+
+    /// @brief calculate the average resistivity for conductor
+    double GetAvgResistance(double T, double RRR, double B, double l=1.) const;
+
+    /// @brief interpolate to find miits according to the miits
+    double findtime(std::map<double,double> time, double miits);
+
 
   private:
     double fResist;
@@ -78,6 +122,7 @@ class XQuenchMiits
     double fField;
     double fRRR;
     double fTemp0;
+    double fTempf;
     Quench::XCoilHandle* fCoil;
 };
 

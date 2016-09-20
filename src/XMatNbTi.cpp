@@ -16,6 +16,7 @@ double XMatNbTi :: GetCriticalI()
 {
   // wilson's book page 3
   // Jc ~ 2.5e+9 A/m2 at 4.2K, 5T
+  // 2500 A/mm2 * 4.73mm * 15mm -> I0
   const double I0 = 2500.*4.73*15.;    // normalized factor
   double Ic = calcriticalcurrent(fTemp, fFld, I0);
 
@@ -32,11 +33,11 @@ double XMatNbTi :: GetCriticalT()
 
 double XMatNbTi :: GetSharingT(const double I)
 {
-  const double area = 4.73 * 15. / 9.3;        // area of NbTi
   const double Tc = GetCriticalT();
   const double T0 = 4.5;
-  const double Ic = GetCriticalI() * area;
-  const double Tcs = Tc + (Tc - T0) * (1 - I/Ic);
+  const double Ic = GetCriticalI();
+  //const double Tcs = Tc + (Tc - T0) * (1 - I/Ic);
+  const double Tcs = Tc - (Tc - T0) * I / Ic;
 
   return Tcs;
 }
