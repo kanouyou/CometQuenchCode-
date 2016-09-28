@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cmath>
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
@@ -34,10 +35,10 @@ double XMatCopper :: GetConductivity()
 
 double XMatCopper :: GetResistivity()
 {
-  const double res = calresist(fTemp);
+  double res = calresist(fTemp);
 
   if ( fFld>0. )
-    calmagresist(res, fFld);
+    res = calmagresist(res, fFld);
 
   return res;
 }

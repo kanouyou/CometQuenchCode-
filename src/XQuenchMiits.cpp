@@ -285,7 +285,7 @@ double XQuenchMiits :: GetMPZ() const
   nbti.SetTemperature(Tavg);
 
   const double k = al.GetConductivity();
-  const double rho = GetAvgResistance(Tavg, fRRR, fField) / Atot;
+  const double rho = GetAvgResistance(Tavg, fRRR, fField) * Atot;
   //const double rho = Lwf * Tavg / k;
   const double Jc = nbti.GetCriticalI() / Atot;
 
@@ -293,7 +293,8 @@ double XQuenchMiits :: GetMPZ() const
 
   //std::cout << Tc << "   " << k/rho << "  " << Jc << std::endl;
   QuenchInfo("Jc: " << Jc << " A/m2, Tc: " << Tc << " K, " <<
-             "Tavg: " << Tavg << " K, k:" << k << " W/m/K, "
+             "Tavg: " << Tavg << " K, k:" << k << " W/m/K, " <<
+             "rho: " << rho << " Ohm*m, " <<
              "MPZ: " << mpz << " m");
 
   return mpz;
@@ -442,6 +443,9 @@ double XQuenchMiits :: GetAvgResistance(double T, double RRR, double B, double l
   const double R_Cu  = cu.GetResistivity() * l / A_Cu;
   const double R_avg = pow( (1./R_Al + 1./R_Cu), -1. );
   //const double res   = Atot * R_avg / l;
+  //
+  //std::cout << RRR << " " << al.GetResistivity();
+  //std::cout << " " << cu.GetResistivity() << std::endl;
 
   //return res;
   return R_avg;
@@ -478,6 +482,7 @@ double XQuenchMiits :: GetVelocity(const double Iop)
 {
   XMatNbTi sc;
   sc.SetMaterialProperty(fTemp0, fRRR, fField);
+
   const double Tcs = sc.GetSharingT(Iop);
   
   const double Atot = fCoil->GetCoilParts(kConductor)->GetArea();
@@ -485,8 +490,10 @@ double XQuenchMiits :: GetVelocity(const double Iop)
 
   const double rho_avg = 4000.;
   const double C_avg = GetAvgCapacity(fTemp0, fRRR, fField);
+  //const double C_avg = 0.8;
 
   const double vqch = Jop * sqrt(Lwf * Tcs / (Tcs-fTemp0)) / rho_avg / C_avg;
+  std::cout << C_avg << " " << Tcs << std::endl;
 
   return vqch;
 }
