@@ -15,9 +15,9 @@ double XMatNbTi :: GetCapacity()
 double XMatNbTi :: GetCriticalI()
 {
   // wilson's book page 3
-  // Jc ~ 2.5e+9 A/m2 at 4.2K, 5T
-  // 2500 A/mm2 * 4.73mm * 15mm -> I0
-  const double I0 = 2500.*4.73*15.*0.9/9.2;    // normalized factor
+  // Jc ~ 2.4e+9 A/m2 at 4.2K, 5T
+  // 2400 A/mm2 * 4.73mm * 15mm -> I0
+  const double I0 = 2400.*4.73*15.;    // normalized factor
   double Ic = calcriticalcurrent(fTemp, fFld, I0);
 
   return Ic;

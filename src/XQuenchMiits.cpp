@@ -287,7 +287,10 @@ double XQuenchMiits :: GetMPZ() const
   const double k = al.GetConductivity();
   const double rho = GetAvgResistance(Tavg, fRRR, fField) * Atot;
   //const double rho = Lwf * Tavg / k;
-  const double Jc = nbti.GetCriticalI() / Atot;
+  //double Jc = nbti.GetCriticalI() / Atot;
+  // convert to the effective critical current
+  //Jc *= fCoil->GetMaterialRatio(iNbTi);
+  const double Jc = fCurr / Atot;
 
   const double mpz = sqrt(2. * k * (Tc - fTemp0) / pow(Jc,2) / rho);
 
@@ -489,11 +492,11 @@ double XQuenchMiits :: GetVelocity(const double Iop)
   const double Jop = Iop / Atot;
 
   const double rho_avg = 4000.;
-  const double C_avg = GetAvgCapacity(fTemp0, fRRR, fField);
+  const double C_avg = GetAvgCapacity((Tcs+fTemp0)/2, fRRR, fField);
   //const double C_avg = 0.8;
 
   const double vqch = Jop * sqrt(Lwf * Tcs / (Tcs-fTemp0)) / rho_avg / C_avg;
-  std::cout << C_avg << " " << Tcs << std::endl;
+  //std::cout << C_avg << " " << Tcs << std::endl;
 
   return vqch;
 }

@@ -1,5 +1,6 @@
 # filename: XPostLoading.pyx
 
+import math
 import numpy as np
 cimport numpy as np
 cimport cython
@@ -321,6 +322,13 @@ cdef class XGeoFileLoad:
         return lower, upper
 
 
+    ## return the collect class for given node id
+    def GetCollect(self, int node):
+        for geo in self._gc:
+            if geo.GetNode()==node:
+                return geo
+
+
 
 ## loading the material property file
 cdef class XMatFileLoad:
@@ -359,6 +367,12 @@ cdef class XMatFileLoad:
     def GetCollection(self):
         return self._mc
 
+    
+    ## return the collect class for given node id
+    def GetCollect(self, int Id):
+        for mat in self._mc:
+            if mat.GetNode()==Id:
+                return mat
 
 
 
@@ -439,7 +453,8 @@ cdef class XPost2dPlot:
     ## plot geometry with given info
     def Draw(self):
         self.fillpatch(self._phi, self._info, self._direct)
-        p = PatchCollection(self._patch, cmap=matplotlib.cm.gnuplot2, linewidth=0.1)
+        #p = PatchCollection(self._patch, cmap=matplotlib.cm.gnuplot2, linewidth=0.1)
+        p = PatchCollection(self._patch, cmap=matplotlib.cm.jet, linewidth=0.1)
         p.set_array(self._dset)
         
         fig, ax = plt.subplots(1, 1, figsize=(16,5))

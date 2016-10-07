@@ -65,7 +65,10 @@ class XThermalSolver
 
     /// @brief  setup cooling point on shell
     /// @detail this point is on the last layer of coil
-    void SetCoolingPoint(const int z, const double T=4.5*K);
+    void SetLastCoolingPoint(const int z, const double T=4.5*K);
+
+    /// @brief  setup cooling point on the inner most layer
+    void SetFirstCoolingPoint(const int z, const double T=4.5*K);
 
     /// @brief return process handler
     Quench::XProcessManager* GetProcess() { return fProcess; }

@@ -214,8 +214,9 @@ std::vector<int> XCoilHandle :: GetLayerId(const Geometry geo)
   std::vector<int> id;
 
   for (std::map<const int, const Geometry>::const_iterator it=fLayerGeo.begin(); it!=fLayerGeo.end(); it++) {
-    if ( it->second == geo )
+    if ( it->second == geo ) {
       id.push_back( it->first );
+    }
   }
 
   return id;

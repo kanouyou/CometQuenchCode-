@@ -50,6 +50,9 @@ class Quench::XProcessManager : public XMeshLoop
     /// @brief setup the uniform field
     void SetUniformField(const double fld);
 
+    /// @brief setup the uniform heat generation
+    void SetUniformHeatGen(const double gen);
+
     /// @brief initialization
     void Initialize();
 

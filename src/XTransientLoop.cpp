@@ -66,10 +66,12 @@ void XTransientLoop :: Run()
     fSolver->SetCoolingPath(17, Tcool, kSide);
 
     // setup cooling point on shell
-    fSolver->SetCoolingPoint(fSolver->GetProcess()->GetMesh(iZ)/2, Tcool);
+    for (unsigned int i=0; i<fSolver->GetProcess()->GetMesh(iZ); i++) {
+      fSolver->SetLastCoolingPoint(i, Tcool);
+    }
 
     if (cnt%1000==0) {
-      std::cout << time << " " << dt << " ";
+      std::cout << "time: " << time << " [sec], step: " << dt << " [sec] ";
       fSolver->Print();
     }
 

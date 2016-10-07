@@ -152,16 +152,30 @@ void XProcessManager :: SetUniformRRR(const Geometry part, const double RRR)
     throw;
   }
 
+  int kr = 0;
   for (std::vector<int>::size_type k=0; k<id.size(); k++) {
-    for (int j=0; j<fMshR+2; j++) {
+    kr = id.at(k);
+    for (int j=0; j<fMshP+2; j++) {
       for (int i=0; i<fMshZ+2; i++) 
-        fMC.at( Id(i,j,k) )->SetRRR( RRR );
+        fMC.at( Id(i,j,kr) )->SetRRR( RRR );
     }
   }
 
   QuenchInfo( "set the uniform RRR value: " << RRR << " for " << fCoil->GetGeometryName(part) );
 }
 
+
+void XProcessManager :: SetUniformHeatGen(const double gen)
+{
+  for (int k=1; k<fMshR+1; k++) {
+    for (int j=1; j<fMshP+1; j++) {
+      for (int i=1; i<fMshZ+1; i++)
+        fMC.at( Id(i,j,k) )->SetDeposit(gen);
+    }
+  }
+
+  QuenchInfo( "set the uniform heat generation: " << gen );
+}
 
 void XProcessManager :: Initialize()
 {
@@ -212,7 +226,7 @@ void XProcessManager :: SetMaterial()
         RRR = fMC.at(id)->GetRRR();
         B   = fMC.at(id)->GetField();
         geo = fDC.at(id)->GetGeometry();
-        
+
         switch (geo) {
           case kConductor: 
             SetConductorMat( id, T, RRR, B ); 
@@ -424,6 +438,7 @@ void XProcessManager :: SetConductorMat(const int id, const double T, const doub
   const double lr_ins = 2. * fCoil->GetCoilParts(kConductor)->GetInsSize(iR);
   const double lz_cdt = fCoil->GetCoilParts(kConductor)->GetDimension(iZ);
   const double lr_cdt = fCoil->GetCoilParts(kConductor)->GetDimension(iR);
+
   const double A_cdt  = fCoil->GetCoilParts(kConductor)->GetArea();
   const double A_ins  = fCoil->GetCoilParts(kConductor)->GetInsArea();
   
@@ -468,7 +483,7 @@ void XProcessManager :: SetStripMat(const int id, const double T, const double R
   const double lr_ins = 2. * fCoil->GetCoilParts(kStrip)->GetInsSize(iR);
   const double lr_Al  = fCoil->GetCoilParts(kStrip)->GetDimension(iR);
 
-  const double kz = k_Al;
+  const double kz = al.GetParallelk( lr_Al, k_Al, lr_ins, k_ins );
   const double kr = al.GetSerialk( lr_ins, k_ins, lr_Al, k_Al );
   const double kp = k_ins;
 

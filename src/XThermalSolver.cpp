@@ -115,29 +115,29 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
   const int postR = fProcess->Id(i, j, k+1);
 
   // get pre-temperature
-  double T      = fProcess->GetMaterialEntry(  zpr)->GetPreTemp();
-  double preTz  = fProcess->GetMaterialEntry( preZ)->GetPreTemp();
-  double postTz = fProcess->GetMaterialEntry(postZ)->GetPreTemp();
-  double preTp  = fProcess->GetMaterialEntry( preP)->GetPreTemp();
-  double postTp = fProcess->GetMaterialEntry(postP)->GetPreTemp();
-  double preTr  = fProcess->GetMaterialEntry( preR)->GetPreTemp();
-  double postTr = fProcess->GetMaterialEntry(postR)->GetPreTemp();
+  const double T      = fProcess->GetMaterialEntry(  zpr)->GetPreTemp();
+  const double preTz  = fProcess->GetMaterialEntry( preZ)->GetPreTemp();
+  const double postTz = fProcess->GetMaterialEntry(postZ)->GetPreTemp();
+  const double preTp  = fProcess->GetMaterialEntry( preP)->GetPreTemp();
+  const double postTp = fProcess->GetMaterialEntry(postP)->GetPreTemp();
+  const double preTr  = fProcess->GetMaterialEntry( preR)->GetPreTemp();
+  const double postTr = fProcess->GetMaterialEntry(postR)->GetPreTemp();
 
   // get distance
-  double dpreZ  = fProcess->GetDimensionEntry(zpr)->GetPosition(iZ) -
-                  fProcess->GetDimensionEntry(zpr)->GetPrePosition(iZ);
-  double dpostZ = fProcess->GetDimensionEntry(zpr)->GetPostPosition(iZ) - 
-                  fProcess->GetDimensionEntry(zpr)->GetPosition(iZ);
+  const double dpreZ  = fProcess->GetDimensionEntry(zpr)->GetPosition(iZ) -
+                        fProcess->GetDimensionEntry(zpr)->GetPrePosition(iZ);
+  const double dpostZ = fProcess->GetDimensionEntry(zpr)->GetPostPosition(iZ) - 
+                        fProcess->GetDimensionEntry(zpr)->GetPosition(iZ);
 
-  double dpreP  = fProcess->GetDimensionEntry(zpr)->GetPosition(iPhi) -
-                  fProcess->GetDimensionEntry(zpr)->GetPrePosition(iPhi);
-  double dpostP = fProcess->GetDimensionEntry(zpr)->GetPostPosition(iPhi) - 
-                  fProcess->GetDimensionEntry(zpr)->GetPosition(iPhi);
+  const double dpreP  = fProcess->GetDimensionEntry(zpr)->GetPosition(iPhi) -
+                        fProcess->GetDimensionEntry(zpr)->GetPrePosition(iPhi);
+  const double dpostP = fProcess->GetDimensionEntry(zpr)->GetPostPosition(iPhi) - 
+                        fProcess->GetDimensionEntry(zpr)->GetPosition(iPhi);
 
-  double dpreR  = fProcess->GetDimensionEntry(zpr)->GetPosition(iR) -
-                  fProcess->GetDimensionEntry(zpr)->GetPrePosition(iR);
-  double dpostR = fProcess->GetDimensionEntry(zpr)->GetPostPosition(iR) - 
-                  fProcess->GetDimensionEntry(zpr)->GetPosition(iR);
+  const double dpreR  = fProcess->GetDimensionEntry(zpr)->GetPosition(iR) -
+                        fProcess->GetDimensionEntry(zpr)->GetPrePosition(iR);
+  const double dpostR = fProcess->GetDimensionEntry(zpr)->GetPostPosition(iR) - 
+                        fProcess->GetDimensionEntry(zpr)->GetPosition(iR);
 
   // get cell size
   const double lz = fProcess->GetDimensionEntry(zpr)->GetCellSize(iZ);
@@ -155,6 +155,28 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
   const double kp = fProcess->GetMaterialEntry(zpr)->GetConductivity(iPhi);
   const double kr = fProcess->GetMaterialEntry(zpr)->GetConductivity(iR);
 
+  // calculate pre and post thermal conductivity
+  double kpreZ = fProcess->GetMaterialEntry(preZ)->GetConductivity(iZ);
+  if (i==1) kpreZ = kz;
+  double kpostZ = fProcess->GetMaterialEntry(postZ)->GetConductivity(iZ);
+  if (i==fMshZ+1) kpostZ = kz;
+
+  double kpreP = fProcess->GetMaterialEntry(preZ)->GetConductivity(iPhi);
+  if (j==1) kpreP = fProcess->GetMaterialEntry(fProcess->Id(i,j,fMshP+1))->GetConductivity(iPhi);
+  double kpostP = fProcess->GetMaterialEntry(postZ)->GetConductivity(iPhi);
+  if (j==fMshP+1) kpostP = fProcess->GetMaterialEntry(fProcess->Id(i,j,1))->GetConductivity(iPhi);
+  
+  double kpreR = fProcess->GetMaterialEntry(preR)->GetConductivity(iR);
+  if (k==1) kpreR = kr;
+  double kpostR = fProcess->GetMaterialEntry(postR)->GetConductivity(iR);
+  if (k==fMshR+1) kpostR = kr;
+
+  const double prekZ  = 2*pow(1./kpreZ + 1./kz, -1);
+  const double postkZ = 2*pow(1./kpostZ + 1./kz, -1);
+
+  const double prekR  = dpreR / (lr/2./kr + (dpreR-lr/2.)/kpreR);
+  const double postkR = dpostR / (lr/2./kr + (dpostR-lr/2.)/kpostR);
+
   // get diffusion velocity
   double az = kz / rho / C;
   double ap = kp / rho / C;
@@ -162,23 +184,39 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
 
   // calculate time step
   double step = 1. / (az/dpreZ/lz + ap/dpreP/lp + ar/dpreR/lr) / 2.;
-  //step *= 0.95;
+  //step *= 0.005;
 
   fProcess->GetMaterialEntry(zpr)->SetTimeStep(step);
 
   // get heat generation 
-  const double gen = fProcess->GetMaterialEntry(zpr)->GetDeposit() * rho;
+  const double gen = fProcess->GetMaterialEntry(zpr)->GetDeposit() * 4000.;
 
-  // calculate heat flux grad [W/m2]
-  double qz = kz * ( (postTz-T)/dpostZ - (T-preTz)/dpreZ ) / lz;
+  fProcess->GetMaterialEntry(zpr)->SetHeat(gen);
+
+  // calculate heat flux grad [W/m3]
+  //double qz = kz * ( (postTz-T)/dpostZ - (T-preTz)/dpreZ ) / lz;
+  double qz = postkZ * (postTz-T)/dpostZ/lz - prekZ * (T-preTz)/dpreZ/lz;
+  //double qp = kp * ( (postTp-T)/dpostP - (T-preTp)/dpreP ) / lp;
   double qp = kp * ( (postTp-T)/dpostP - (T-preTp)/dpreP ) / lp;
-  double qr = kr * ( (postTr-T)/dpostR - (T-preTr)/dpreR ) / lr;
+  //double qr = kr * ( (postTr-T)/dpostR - (T-preTr)/dpreR ) / lr;
+  double qr = postkR * (postTr-T)/dpostR/lr - prekR * (T-preTr)/dpreR/lr;
+
+  // calculate heat flux (center differential)
+  const double fluz = -kz * (postTz - preTz) / (dpostZ + dpreZ);
+  const double flup = -kp * (postTp - preTp) / (dpostP + dpreP);
+  const double flur = -kr * (postTr - preTr) / (dpostR + dpreR);
 
   // set heat flux
-  fProcess->GetMaterialEntry(zpr)->SetHeatFlux( qz*fdt, qp*fdt, qr*fdt );
+  fProcess->GetMaterialEntry(zpr)->SetHeatFlux( fluz, flup, flur );
 
   double Q = (qz + qp + qr + gen) / rho / C;
   double Temp = T + fdt*Q;
+
+  //std::cout << Temp << " " << Q << " " << qz << " " << qp << " " << qr << " "
+            //<< gen << " " << kz << " " << kp << " " << kr << " "
+            //<< dpostZ << " " << dpreZ << " " << lz << " "
+            //<< i << " " << j << " " << k << " "
+            //<< std::endl;
 
   fProcess->GetMaterialEntry(zpr)->SetTemperature(Temp);
 }
@@ -226,10 +264,28 @@ void XThermalSolver :: SetBoundary()
   }
 
   ///////////////////////////////////////
+  // PHI DIRECTION
+  ///////////////////////////////////////
+  for (int k=0; k<fMshR+2; k++) {
+    for (int i=0; i<fMshZ+2; i++) {
+      id_bdy  = fProcess->Id(i, 0, k);
+      id_edge = fProcess->Id(i, fMshP, k);
+      T = fProcess->GetMaterialEntry(id_edge)->GetTemperature();
+      fProcess->GetMaterialEntry(id_bdy)->SetTemperature(T);
+
+      id_bdy  = fProcess->Id(i, fMshP+1, k);
+      id_edge = fProcess->Id(i, 1, k);
+      T = fProcess->GetMaterialEntry(id_edge)->GetTemperature();
+      fProcess->GetMaterialEntry(id_bdy)->SetTemperature(T);
+    }
+  }
+
+  ///////////////////////////////////////
   // CONDUCTOR DIRECTION
   ///////////////////////////////////////
   // connection
   // last layer is assumed as shell
+  /*
   for (int k=0; k<fMshR+1; k++) {
     for (int i=0; i<fMshZ+2; i++) {
       id_bdy  = fProcess->Id(i,0,k);
@@ -252,8 +308,10 @@ void XThermalSolver :: SetBoundary()
       }
     }
   }
+  */
  
 }
+
 
 void XThermalSolver :: Connect(const int from_z, const int from_p, const int from_r,
                                const int to_z,   const int to_p,   const int to_r)
@@ -265,11 +323,13 @@ void XThermalSolver :: Connect(const int from_z, const int from_p, const int fro
   fProcess->GetMaterialEntry(to_id)->SetTemperature(T);
 }
 
+
 void XThermalSolver :: Connect(const int from_id, const int to_id)
 {
   double T = fProcess->GetMaterialEntry(from_id)->GetTemperature();
   fProcess->GetMaterialEntry(to_id)->SetTemperature(T);
 }
+
 
 void XThermalSolver :: SetCoolingPath(const int r, const double T, const Cooling opt)
 {
@@ -299,21 +359,42 @@ void XThermalSolver :: SetCoolingPath(const int r, const double T, const Cooling
   }
 }
 
-void XThermalSolver :: SetCoolingPoint(const int z, const double T)
+
+void XThermalSolver :: SetLastCoolingPoint(const int z, const double T)
 {
   int id = 0;
 
   for (int j=1; j<fMshP+1; j++) {
-    id = fProcess->Id(z, j, fMshR);
-    if (fProcess->GetDimensionEntry(id)->GetGeometry()!=kShell)
-      throw
+    //id = fProcess->Id(z, j, fMshR);
+    //if (fProcess->GetDimensionEntry(id)->GetGeometry()!=kShell)
+      //throw
     id = fProcess->Id(z, j, fMshR+1);
     fProcess->GetMaterialEntry(id)->SetTemperature(T);
   }
 }
 
+
+void XThermalSolver :: SetFirstCoolingPoint(const int z, const double T)
+{
+  int id = 0;
+
+  for (int j=1; j<fMshP+1; j++) {
+    id = fProcess->Id(z, j, 0);
+    fProcess->GetMaterialEntry(id)->SetTemperature(T);
+  }
+
+}
+
+
 void XThermalSolver :: Print()
 {
   int id = fProcess->Id(fMshZ/2, fMshP/2, fMshR/2);
-  std::cout << fProcess->GetMaterialEntry(id)->GetTemperature() << std::endl;
+  //int id = fProcess->Id(fMshZ/2, 1, 2);
+  double Temp = fProcess->GetMaterialEntry(id)->GetTemperature();
+  double preTemp = fProcess->GetMaterialEntry(id)->GetPreTemp();
+  double step = fProcess->GetMaterialEntry(id)->GetTimeStep();
+
+  std::cout << " T: " << Temp << " [K], " 
+            << " dT/dt: " << (Temp-preTemp)/step << " [T/sec] "
+            << std::endl;
 }

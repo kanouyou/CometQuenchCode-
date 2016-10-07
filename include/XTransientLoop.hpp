@@ -32,7 +32,7 @@ class XTransientLoop
     void Run();
 
 
-  private:
+  protected:
     XThermalSolver* fSolver;
     double fTime0;
     double fTimef;

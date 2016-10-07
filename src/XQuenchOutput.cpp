@@ -132,7 +132,7 @@ void XQuenchOutput :: Write(XProcessManager* man)
                 << man->GetMaterialEntry(i)->GetConductivity(iZ)   << " "
                 << man->GetMaterialEntry(i)->GetConductivity(iPhi) << " "
                 << man->GetMaterialEntry(i)->GetConductivity(iR)   << " "
-                << man->GetMaterialEntry(i)->GetDeposit()          << " "
+                << man->GetMaterialEntry(i)->GetHeat()             << " "
                 <<"\n";
 
     }
