@@ -27,6 +27,10 @@ static const double hour = 3600.*sec;
 static const double day  = 24.*hour;
 static const double year = 365*day;
 
+static const double A  = 1.;
+static const double mA = 1e-3*A;
+static const double kA = 1e+3*A;
+
 static const double Ohm = 1.;
 static const double mu0 = 4. * M_PI * 1e-7;
 

@@ -7,6 +7,8 @@
 #ifndef XTransientLoop_HH
 #define XTransientLoop_HH
 
+#include "XProcessManager.hpp"
+
 class XThermalSolver;
 
 /// base time loop class -> QuenchLoop, ThermalLoop
@@ -23,13 +25,16 @@ class XTransientLoop
     void SetTime(const double t0, const double tf, const double dt);
 
     /// @brief begin of run
-    void Begin();
+    virtual void Begin();
 
     /// @brief setup process manager
     void SetProcess(Quench::XProcessManager* hand);
 
     /// @brief run
-    void Run();
+    virtual void Run();
+
+    /// @brief end of run
+    virtual void End();
 
 
   protected:

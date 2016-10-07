@@ -32,6 +32,7 @@ void XTransientLoop :: SetTime(const double t0, const double tf, const double dt
 
 void XTransientLoop :: Begin()
 {
+  std::cout << "running the thermal transient loop..." << std::endl;
 }
 
 void XTransientLoop :: SetProcess(Quench::XProcessManager* hand)
@@ -81,12 +82,14 @@ void XTransientLoop :: Run()
     cnt ++;
   }
 
-  /*
+}
+
+void XTransientLoop :: End()
+{
   for (int i=0; i<fSolver->GetProcess()->GetMaterialEntries(); i++) {
     std::cout << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iZ) << "  "
               << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iPhi) << "  "
               << fSolver->GetProcess()->GetDimensionEntry(i)->GetId(iR) << "  "
               << fSolver->GetProcess()->GetMaterialEntry(i)->GetTemperature() << std::endl;
   }
-  */
 }

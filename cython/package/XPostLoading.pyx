@@ -387,6 +387,7 @@ cdef class XPost2dPlot:
     cdef int _phi
     cdef PosType _direct
     cdef MatType _info
+    cdef char* _name
 
     ## constructor
     def __init__(self, char* geofile, char* datfile):
@@ -397,6 +398,7 @@ cdef class XPost2dPlot:
         self._phi = 1
         self._direct = kZ
         self._info = kConductivity
+        self._name = ""
 
 
     ## fill the geometry info into patches
@@ -448,6 +450,16 @@ cdef class XPost2dPlot:
     ## set plot info
     def SetMatInfo(self, MatType info=kConductivity):
         self._info = info
+        if info==kTemperature:
+            self._name = "Temperature [K]"
+        elif info==kConductivity:
+            self._name = "Thermal Conductivity [W/m/K]"
+        elif info==kCapacity:
+            self._name = "Heat Capacity [J/kg/K]"
+        elif info==kRRR:
+            self._name = "RRR"
+        else:
+            print "Warning: there is no this kind of material property."
 
 
     ## plot geometry with given info
@@ -463,7 +475,8 @@ cdef class XPost2dPlot:
         ax.set_ylim( self._geof.CheckLimits(kR) )
         ax.set_xlabel( "Z [mm]" )
         ax.set_ylabel( "R [mm]" )
-        plt.colorbar(p)
+        cbar = plt.colorbar(p)
+        cbar.set_label("Temperature [K]")
         plt.tight_layout()
         #fig.savefig(save, bbox_inches="tight")
         plt.show()
