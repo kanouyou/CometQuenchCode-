@@ -93,6 +93,12 @@ class Quench::XMaterialInfo
     /*! return local resistance */
     double GetResistance() const { return fR; }
 
+    /// setup conductor voltage
+    void SetVoltage(const double V) { fVolt = V; }
+
+    /// return conductor local voltage
+    double GetVoltage() const { return fVolt; }
+
     /*! @brief setup material density */
     void SetDensity(const double rho) { fRho = rho; }
 
@@ -138,6 +144,7 @@ class Quench::XMaterialInfo
     double  fGen;
     double  fDose;
     double  fStep;
+    double  fVolt;
 };
 
 

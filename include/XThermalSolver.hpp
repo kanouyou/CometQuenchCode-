@@ -7,6 +7,7 @@
 #ifndef XThermalSolver_HH
 #define XThermalSolver_HH
 
+#include <vector>
 #include "XProcessManager.hpp"
 
 enum Cooling
@@ -76,10 +77,25 @@ class XThermalSolver
     /// @brief print info
     void Print();
 
+    /// @brief add output material property
+    void AddOutput(const int z, const int phi, const int r);
+
+    /// @brief use the cylindrical connection at phi direction
+    void UseCylinderConnect();
+
+    /// @brief use the conductor connection for phi thermal conduction
+    void UseConductorConnect();
+
 
   protected:
     /// @brief in the 3d loop
     void InTheLoop(const int i, const int j, const int k);
+
+    /// @brief set phi cylinerical connection
+    void SetCylinderPhi();
+
+    /// @brief set phit conductor connection
+    void SetConductorPhi();
 
 
   private:
@@ -89,6 +105,8 @@ class XThermalSolver
     int fMshR;
     double fAcce;
     double fdt;
+    bool fCylinder;
+    std::vector<int> fPrint;
 };
 
 #endif

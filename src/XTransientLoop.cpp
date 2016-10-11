@@ -10,7 +10,8 @@ XTransientLoop :: XTransientLoop()
     : fSolver(NULL),
       fTime0(0.*sec),
       fTimef(60.*sec),
-      fdt(1.*msec)
+      fdt(1.*msec),
+      fDisplay(500)
 {
   if (!fSolver) fSolver = new XThermalSolver();
 }
@@ -51,6 +52,8 @@ void XTransientLoop :: Run()
 
   while (time<fTimef) {
 
+    fSolver->GetProcess()->SetMaterial();
+
     fSolver->Solve(dt);
 
     fSolver->SetBoundary();
@@ -71,7 +74,7 @@ void XTransientLoop :: Run()
       fSolver->SetLastCoolingPoint(i, Tcool);
     }
 
-    if (cnt%1000==0) {
+    if (cnt%fDisplay==0) {
       std::cout << "time: " << time << " [sec], step: " << dt << " [sec] ";
       fSolver->Print();
     }

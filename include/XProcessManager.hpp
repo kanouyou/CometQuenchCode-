@@ -41,7 +41,7 @@ class Quench::XProcessManager : public XMeshLoop
     void SetRadiationHandler(XRadiationHandle* hand);
 
     /// @brief return the coil handler
-    const XCoilHandle* GetCoilHandler() { return fCoil; }
+    XCoilHandle* GetCoilHandler() { return fCoil; }
 
     /// @brief setup uniform RRR for strip
     /// @param part enumeration of geometry: kShell/kConductor/kStrip

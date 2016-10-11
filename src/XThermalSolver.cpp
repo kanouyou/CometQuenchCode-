@@ -12,7 +12,8 @@ XThermalSolver :: XThermalSolver()
       fMshP(0),
       fMshR(0),
       fAcce(1.),
-      fdt(0.1*sec)
+      fdt(0.1*sec),
+      fCylinder(false)
 {}
 
 XThermalSolver :: ~XThermalSolver()
@@ -189,9 +190,8 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
   fProcess->GetMaterialEntry(zpr)->SetTimeStep(step);
 
   // get heat generation 
-  const double gen = fProcess->GetMaterialEntry(zpr)->GetDeposit() * 4000.;
-
-  fProcess->GetMaterialEntry(zpr)->SetHeat(gen);
+  //const double gen = fProcess->GetMaterialEntry(zpr)->GetDeposit() * 4000.;
+  const double gen = fProcess->GetMaterialEntry(zpr)->GetHeat();
 
   // calculate heat flux grad [W/m3]
   //double qz = kz * ( (postTz-T)/dpostZ - (T-preTz)/dpreZ ) / lz;
@@ -266,6 +266,19 @@ void XThermalSolver :: SetBoundary()
   ///////////////////////////////////////
   // PHI DIRECTION
   ///////////////////////////////////////
+  if (fCylinder==true)
+    SetCylinderPhi();
+  else
+    SetConductorPhi();
+ 
+}
+
+
+void XThermalSolver :: SetCylinderPhi() {
+  int id_bdy = 0;
+  int id_edge = 0;
+  double T = 0.;
+
   for (int k=0; k<fMshR+2; k++) {
     for (int i=0; i<fMshZ+2; i++) {
       id_bdy  = fProcess->Id(i, 0, k);
@@ -279,13 +292,14 @@ void XThermalSolver :: SetBoundary()
       fProcess->GetMaterialEntry(id_bdy)->SetTemperature(T);
     }
   }
+}
 
-  ///////////////////////////////////////
-  // CONDUCTOR DIRECTION
-  ///////////////////////////////////////
-  // connection
-  // last layer is assumed as shell
-  /*
+
+void XThermalSolver :: SetConductorPhi() {
+  int id_bdy = 0;
+  int id_edge = 0;
+  double T = 0.;
+
   for (int k=0; k<fMshR+1; k++) {
     for (int i=0; i<fMshZ+2; i++) {
       id_bdy  = fProcess->Id(i,0,k);
@@ -308,8 +322,6 @@ void XThermalSolver :: SetBoundary()
       }
     }
   }
-  */
- 
 }
 
 
@@ -388,13 +400,46 @@ void XThermalSolver :: SetFirstCoolingPoint(const int z, const double T)
 
 void XThermalSolver :: Print()
 {
-  int id = fProcess->Id(fMshZ/2, fMshP/2, fMshR/2);
-  //int id = fProcess->Id(fMshZ/2, 1, 2);
-  double Temp = fProcess->GetMaterialEntry(id)->GetTemperature();
-  double preTemp = fProcess->GetMaterialEntry(id)->GetPreTemp();
-  double step = fProcess->GetMaterialEntry(id)->GetTimeStep();
+  if (fPrint.size()==0)
+    fPrint.push_back( fProcess->Id(fMshZ/2, fMshP/2, fMshR/2) );
 
-  std::cout << " T: " << Temp << " [K], " 
-            << " dT/dt: " << (Temp-preTemp)/step << " [T/sec] "
-            << std::endl;
+  double Temp = 0.;
+  double preTemp = 0.;
+  double step = 0.;
+
+  for (std::vector<int>::size_type i=0; i<fPrint.size(); i++) {
+    Temp    = fProcess->GetMaterialEntry(fPrint.at(i))->GetTemperature();
+    preTemp = fProcess->GetMaterialEntry(fPrint.at(i))->GetPreTemp();
+    step    = fProcess->GetMaterialEntry(fPrint.at(i))->GetTimeStep();
+
+    std::cout << " T: "     << Temp << " [K], " 
+              << " dT/dt: " << (Temp-preTemp)/step << " [T/sec] ";
+
+    if (i==fPrint.size()-1)
+      std::cout << "\n";
+  }
+}
+
+
+void XThermalSolver :: AddOutput(const int z, const int phi, const int r)
+{
+  fPrint.push_back( fProcess->Id(z, phi, r) );
+  
+  QuenchInfo("set output temperature at mesh (" << z << ", " << phi << ", " << r << ")");
+}
+
+
+void XThermalSolver :: UseCylinderConnect()
+{
+  fCylinder = true;
+
+  QuenchInfo("using the cylinderial connection at phi direction.");
+}
+
+
+void XThermalSolver :: UseConductorConnect()
+{
+  fCylinder = false;
+
+  QuenchInfo("using the conductor connection at phi direction");
 }

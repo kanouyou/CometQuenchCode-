@@ -1,6 +1,13 @@
+/**
+ *  @file   XQuenchTransient.hpp
+ *  @author Y.Yang (Kyushu University)
+ *  @date   7 Oct 2016
+ **/
+
 #ifndef XQuenchTransient_HH
 
-class XTransientLoop;
+#include "XThermalSolver.hpp"
+#include "XTransientLoop.hpp"
 
 class XQuenchTransient : public XTransientLoop
 {
@@ -37,6 +44,30 @@ class XQuenchTransient : public XTransientLoop
     /// @brief returns the decay time
     inline double GetDecaytime() { return fInduct/fDumpRes; }
 
+    /// @brief setup threshold voltage
+    void SetThreshold(const double Vth);
+
+    /// @brief returns the threshold voltage
+    double GetThreshold() const { return fVth; }
+
+    /// @brief setup detection time
+    void SetDetectTime(const double time);
+
+    /// @brief returns detection time
+    double GetDetectTime() const { return fDetTime; }
+
+    /// @brief setup the diode turn on voltage
+    void SetDiode(const double V);
+
+    /// @brief return the diode turn on voltage
+    double GetDiode() const { return fDiode; }
+
+    /// @brief calculate the current decay
+    double CalCurrentDecay(const double preI, const double res, const double dt);
+
+    /// @brief calculate the magnetic field decay
+    void CalFieldDecay(XThermalSolver* solver);
+
     /// @brief set beginning of the run
     virtual void Begin();
 
@@ -47,10 +78,14 @@ class XQuenchTransient : public XTransientLoop
     virtual void End();
 
 
-  private:
+  protected:
     double fDumpRes;
     double fInduct;
+    double fPreI;
     double fCurr;
+    double fVth;
+    double fDetTime;
+    double fDiode;
 };
 
 #endif

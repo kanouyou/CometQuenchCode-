@@ -17,7 +17,8 @@ XMaterialInfo :: XMaterialInfo()
       fStatus(kSuperconduct), 
       fGen(0.),
       fDose(0.),
-      fStep(0.1)
+      fStep(0.1),
+      fVolt(0.)
 {}
 
 

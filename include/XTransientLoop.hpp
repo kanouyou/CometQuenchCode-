@@ -24,6 +24,10 @@ class XTransientLoop
     /// @brief setup time mesh
     void SetTime(const double t0, const double tf, const double dt);
 
+    /// @brief set the count step
+    /// @detail the data will be displayed on the screen every <step> loop
+    void SetDisplayStep(const int step);
+
     /// @brief begin of run
     virtual void Begin();
 
@@ -42,6 +46,7 @@ class XTransientLoop
     double fTime0;
     double fTimef;
     double fdt;
+    int    fDisplay;
 };
 
 #endif

@@ -92,9 +92,9 @@ class Quench::XCoilHandle
     void SetCoilTurns(const int turn);
 
     /// @brief setup the conductor/strip/shell
-    void SetConductor(const XCoilBase* cdt) { fCdt = cdt; }
-    void SetStrip(const XCoilBase* strip) { fStrip = strip; }
-    void SetShell(const XCoilBase* shell) { fShell = shell; }
+    void SetConductor(XCoilBase* cdt) { fCdt = cdt; }
+    void SetStrip(XCoilBase* strip) { fStrip = strip; }
+    void SetShell(XCoilBase* shell) { fShell = shell; }
 
     /// @brief return the coil class, which consists of conductor/strip/shell
     const Quench::XCoilBase* GetCoilParts(const Geometry geo);

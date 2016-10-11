@@ -241,7 +241,8 @@ void XProcessManager :: SetMaterial()
             QuenchError( XQuenchLogger::WARNING, "geometry " << fCoil->GetGeometryName(geo) << " did not exist." );
             break;
         }
-
+        
+        fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*4000. );
       }
     }
   }
@@ -449,6 +450,7 @@ void XProcessManager :: SetConductorMat(const int id, const double T, const doub
   fMC.at(id)->SetConductivity( kz, kp, kr );
 
   // calculate average resistance
+  /*
   const double dl_phi = fCoil->GetCoilSize(iPhi) / fMshP;
   const double A_Cu = A_cdt * ratio_Cu;
   const double A_Al = A_cdt * ratio_Al;
@@ -456,9 +458,10 @@ void XProcessManager :: SetConductorMat(const int id, const double T, const doub
   const double R_Al = al.GetResistivity() * dl_phi / A_Al;
   const double R_Cu = cu.GetResistivity() * dl_phi / A_Cu;
   const double R_avg = pow( (1./R_Al + 1./R_Cu), -1. );
-  
+
   if ( fMC.at(id)->GetStatus()!=kSuperconduct )
     fMC.at(id)->SetResistance( R_avg );
+  */
 }
 
 
