@@ -35,7 +35,7 @@ class XThermalSolver
     void SetTimeInterval(const double dt);
 
     /// @brief setup accelerating factor
-    void SetAccelerateFactor(const double acc=1.);
+    void SetAccelerateFactor(double acc=1.);
     
     /// @brief initialization
     void Initial();

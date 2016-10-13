@@ -465,8 +465,8 @@ cdef class XPost2dPlot:
     ## plot geometry with given info
     def Draw(self):
         self.fillpatch(self._phi, self._info, self._direct)
-        p = PatchCollection(self._patch, cmap=matplotlib.cm.magma, linewidth=0.1)
-        #p = PatchCollection(self._patch, cmap=matplotlib.cm.rainbow, linewidth=0.1)
+        #p = PatchCollection(self._patch, cmap=matplotlib.cm.magma, linewidth=0.1)
+        p = PatchCollection(self._patch, cmap=matplotlib.cm.jet, linewidth=0.1)
         p.set_array(self._dset)
         
         fig, ax = plt.subplots(1, 1, figsize=(16,5))

@@ -28,6 +28,9 @@ class XTransientLoop
     /// @detail the data will be displayed on the screen every <step> loop
     void SetDisplayStep(const int step);
 
+    /// @brief return the solver
+    XThermalSolver* GetSolver() { return fSolver; }
+
     /// @brief begin of run
     virtual void Begin();
 

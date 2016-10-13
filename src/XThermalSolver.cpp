@@ -36,6 +36,14 @@ void XThermalSolver :: SetProcessHandle(Quench::XProcessManager* hand)
   fMshR = fProcess->GetMesh(iR);
 }
 
+
+void XThermalSolver :: SetAccelerateFactor(double acc)
+{
+  fAcce = acc;
+  QuenchInfo("set the factor on time step: " << fAcce );
+}
+
+
 void XThermalSolver :: SetTimeInterval(const double dt)
 {
   fdt = dt;
@@ -185,7 +193,7 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
 
   // calculate time step
   double step = 1. / (az/dpreZ/lz + ap/dpreP/lp + ar/dpreR/lr) / 2.;
-  //step *= 0.005;
+  step *= fAcce;
 
   fProcess->GetMaterialEntry(zpr)->SetTimeStep(step);
 
@@ -413,7 +421,7 @@ void XThermalSolver :: Print()
     step    = fProcess->GetMaterialEntry(fPrint.at(i))->GetTimeStep();
 
     std::cout << " T: "     << Temp << " [K], " 
-              << " dT/dt: " << (Temp-preTemp)/step << " [T/sec] ";
+              << " dT/dt: " << (Temp-preTemp)/step << " [K/sec] ";
 
     if (i==fPrint.size()-1)
       std::cout << "\n";

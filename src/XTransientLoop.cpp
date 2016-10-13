@@ -52,13 +52,15 @@ void XTransientLoop :: Run()
 
   while (time<fTimef) {
 
-    fSolver->GetProcess()->SetMaterial();
+    //fSolver->GetProcess()->SetMaterial();
 
     fSolver->Solve(dt);
 
     fSolver->SetBoundary();
 
     // setup cooling path
+    // two side configuration
+    /*
     fSolver->SetCoolingPath(1, Tcool, kSide);
     fSolver->SetCoolingPath(3, Tcool, kSide);
     fSolver->SetCoolingPath(5, Tcool, kSide);
@@ -68,6 +70,18 @@ void XTransientLoop :: Run()
     fSolver->SetCoolingPath(13, Tcool, kSide);
     fSolver->SetCoolingPath(15, Tcool, kSide);
     fSolver->SetCoolingPath(17, Tcool, kSide);
+    */
+
+    // original configuration
+    fSolver->SetCoolingPath(1, Tcool, kSide);
+    fSolver->SetCoolingPath(3, Tcool, kLeft);
+    fSolver->SetCoolingPath(5, Tcool, kRight);
+    fSolver->SetCoolingPath(7, Tcool, kLeft);
+    fSolver->SetCoolingPath(9, Tcool, kRight);
+    fSolver->SetCoolingPath(11, Tcool, kLeft);
+    fSolver->SetCoolingPath(13, Tcool, kRight);
+    fSolver->SetCoolingPath(15, Tcool, kLeft);
+    fSolver->SetCoolingPath(17, Tcool, kRight);
 
     // setup cooling point on shell
     for (unsigned int i=0; i<fSolver->GetProcess()->GetMesh(iZ); i++) {
