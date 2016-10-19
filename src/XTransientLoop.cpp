@@ -90,7 +90,7 @@ void XTransientLoop :: Run()
 
     if (cnt%fDisplay==0) {
       std::cout << "time: " << time << " [sec], step: " << dt << " [sec] ";
-      fSolver->Print();
+      fSolver->Print(20, 1, 2);
     }
 
     dt = fSolver->FindTimeStep();

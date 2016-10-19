@@ -406,10 +406,10 @@ void XThermalSolver :: SetFirstCoolingPoint(const int z, const double T)
 }
 
 
-void XThermalSolver :: Print()
+void XThermalSolver :: Print(const int z, const int phi, const int r)
 {
   if (fPrint.size()==0)
-    fPrint.push_back( fProcess->Id(fMshZ/2, fMshP/2, fMshR/2) );
+    fPrint.push_back( fProcess->Id(z, phi, r) );
 
   double Temp = 0.;
   double preTemp = 0.;

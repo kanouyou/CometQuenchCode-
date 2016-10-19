@@ -13,12 +13,25 @@ XQuenchTransient :: XQuenchTransient()
       fVth(0.1),
       fDetTime(1.*sec),
       fDiode(0.7),
+      fHotZ(1),
+      fHotPhi(1),
+      fHotR(1),
       XTransientLoop()
 {}
 
 
 XQuenchTransient :: ~XQuenchTransient()
 {}
+
+
+void XQuenchTransient :: SetHotSpot(const int z, const int phi, const int r)
+{
+  fHotZ = z;
+  fHotPhi = phi;
+  fHotR = r;
+
+  QuenchInfo(" set hot spot on (" << z << ", " << phi << ", " << r << ")");
+}
 
 
 void XQuenchTransient :: SetDumpResistor(const double R)

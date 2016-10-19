@@ -280,18 +280,19 @@ void XCOMETConstruction :: Run()
 
     // set heat generation before quench
     if ( quenched==false )
-      fCS0->GetProcess()->GetMaterialEntry(fCS0->GetProcess()->Id(3,2,8))->SetHeat(5000.*15);
+      fCS0->GetProcess()->GetMaterialEntry(fCS0->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*15);
 
     // 6. solve the thermal equation
     fCS0->Solve(dt);
     
     fCS0->SetBoundary();
 
+    // print out
     if (cnt%fDisplay==0) {
       std::cout << "time: " << time << " [sec], step: " << dt << " [sec], Rtot: "
                 << CoilRes  << " [Ohm], Vtot: " << CoilRes*fCurr << " [V], I: "
                 << fCurr << " [A]";
-      fCS0->Print();
+      fCS0->Print(fHotZ, fHotPhi, fHotR);
     }
 
     // fill data into file

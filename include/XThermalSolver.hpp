@@ -75,7 +75,7 @@ class XThermalSolver
     Quench::XProcessManager* GetProcess() { return fProcess; }
 
     /// @brief print info
-    void Print();
+    void Print(const int z, const int phi, const int r);
 
     /// @brief add output material property
     void AddOutput(const int z, const int phi, const int r);

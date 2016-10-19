@@ -18,6 +18,9 @@ class XQuenchTransient : public XTransientLoop
     /// deconstructor
     ~XQuenchTransient();
 
+    /// @brief setup the hot spot and heat generation
+    void SetHotSpot(const int z, const int phi, const int r);
+
     /// @brief setup dump resistor resistance
     void SetDumpResistor(const double R);
 
@@ -86,6 +89,9 @@ class XQuenchTransient : public XTransientLoop
     double fVth;
     double fDetTime;
     double fDiode;
+    int    fHotZ;
+    int    fHotPhi;
+    int    fHotR;
 };
 
 #endif
