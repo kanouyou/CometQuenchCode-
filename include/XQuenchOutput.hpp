@@ -39,6 +39,9 @@ class Quench::XQuenchOutput
     /// @brief write geometry information
     void WriteGeometry(XProcessManager* man);
 
+    /// @brief set the header stream
+    void SetHeader(XProcessManager* man);
+
     /// @brief close the file
     void Close();
 

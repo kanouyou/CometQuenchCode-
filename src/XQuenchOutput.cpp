@@ -101,6 +101,13 @@ void XQuenchOutput :: WriteGeometry(XProcessManager* man)
 }
 
 
+void XQuenchOutput :: SetHeader(XProcessManager* man)
+{
+  // write the header info for data recording
+
+}
+
+
 void XQuenchOutput :: Write(XProcessManager* man)
 {
   if (!man) {

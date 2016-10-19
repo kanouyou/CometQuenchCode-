@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <TString.h>
 #include "XMatCopper.hpp"
 #include "XMatAluminium.hpp"
 #include "XMatNbTi.hpp"
@@ -8,6 +9,7 @@
 #include "XCoilStrip.hpp"
 #include "XCoilShell.hpp"
 
+#include "XRootOutput.hpp"
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
 #include "XCOMETConstruction.h"
@@ -168,7 +170,7 @@ void XCOMETConstruction :: UpdateQuench(XThermalSolver* solve)
   const double A_Cu  = A_cdt * r_Cu;
   const double A_Al  = A_cdt * r_Al;
 
-  double Volume = solve->GetProcess()->GetCoilHandler()->GetCoilParts(kConductor)->GetTotalArea() * factor * l_Phi;
+  double Volume = solve->GetProcess()->GetCoilHandler()->GetCoilParts(kConductor)->GetTotalArea() * l_Phi;
 
   for (unsigned int i=0; i<solve->GetProcess()->GetMaterialEntries(); i++) {
     if (solve->GetProcess()->GetDimensionEntry(i)->GetGeometry()==kConductor) {
@@ -200,7 +202,7 @@ void XCOMETConstruction :: UpdateQuench(XThermalSolver* solve)
       else if ( T>=Tcs && T<Tc ) {
         Rcs = R_avg * (T-Tcs) / (Tc-Tcs);
         solve->GetProcess()->GetMaterialEntry(i)->SetStatus(kTransition);
-        solve->GetProcess()->GetMaterialEntry(i)->SetResistance(Rcs);
+        solve->GetProcess()->GetMaterialEntry(i)->SetResistance( Rcs );
         solve->GetProcess()->GetMaterialEntry(i)->SetVoltage( Rcs*fCurr );
         solve->GetProcess()->GetMaterialEntry(i)->SetHeat( pow(fCurr,2)*Rcs/Volume );
       }
@@ -239,6 +241,7 @@ void XCOMETConstruction :: Run()
 
   double time = fTime0;
   int cnt = 0;
+  int ocnt = 0;
   double CoilRes = 0.;
   double qchtime = fTimef;
   bool   quenched = false;
@@ -289,6 +292,17 @@ void XCOMETConstruction :: Run()
                 << CoilRes  << " [Ohm], Vtot: " << CoilRes*fCurr << " [V], I: "
                 << fCurr << " [A]";
       fCS0->Print();
+    }
+
+    // fill data into file
+    if (cnt%(fDisplay*5)==0) {
+      XRootOutput output( Form("./output/qchout%i.root",ocnt) );
+      output.SetSubDirectory("CS0");
+      output.SetHeader(cnt, time, fCurr, CoilRes, CoilRes*fCurr);
+      output.Fill("CS0", fCS0->GetProcess());
+      output.Close();
+
+      ocnt ++;
     }
 
     dt = fCS0->FindTimeStep();
