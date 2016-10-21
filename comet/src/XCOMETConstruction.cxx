@@ -18,6 +18,7 @@
 XCOMETConstruction :: XCOMETConstruction()
     : fFld(NULL),
       fCS0(NULL),
+      fCS1(NULL),
       XQuenchTransient()
 {
   if (!fFld)  fFld = new XFieldHandle();
@@ -29,6 +30,7 @@ XCOMETConstruction :: ~XCOMETConstruction()
 {
   if (fFld)  delete fFld;
   if (fCS0)  delete fCS0;
+  if (fCS1)  delete fCS1;
 }
 
 
@@ -83,13 +85,74 @@ void XCOMETConstruction ::ConstructCS0()
   
   // uniform RRR and magnetic field
   pro->SetUniformField(5.0);
-  pro->SetUniformRRR(kConductor, 100.);
-  pro->SetUniformRRR(kStrip, 100.);
+  pro->SetUniformRRR(kConductor, 113.);
+  pro->SetUniformRRR(kStrip, 122.);
   pro->SetUniformRRR(kShell, 10.);
 
   // fill the materail info into the coil solver
   if (!fCS0) fCS0 = new XThermalSolver();
   fCS0->SetProcessHandle(pro);
+}
+
+
+void XCOMETConstruction ::ConstructCS1()
+{
+  const double r = (672.+823.65)/2.*mm;
+  const std::string name = "CS1";
+  
+  XCoilHandle* coil = new XCoilHandle();
+  coil->SetName(name);
+  coil->SetCoilSize(0., 2.*M_PI*r, 0.);
+  coil->SetMesh(45, 4, 19);
+  coil->SetCoilLayers(9);
+  coil->SetCoilTurns(270);
+  coil->SetMaterialRatio(7.3, 1, 0.9);
+
+  // set coil parts
+  SetConductor(coil);
+  SetStrip(coil);
+  SetShell(coil);
+
+  // set coil structure
+  coil->AddLayer(1, kStrip);
+  coil->AddLayer(2, kConductor);
+  coil->AddLayer(3, kStrip);
+  coil->AddLayer(4, kConductor);
+  coil->AddLayer(5, kStrip);
+  coil->AddLayer(6, kConductor);
+  coil->AddLayer(7, kStrip);
+  coil->AddLayer(8, kConductor);
+  coil->AddLayer(9, kStrip);
+  coil->AddLayer(10, kConductor);
+  coil->AddLayer(11, kStrip);
+  coil->AddLayer(12, kConductor);
+  coil->AddLayer(13, kStrip);
+  coil->AddLayer(14, kConductor);
+  coil->AddLayer(15, kStrip);
+  coil->AddLayer(16, kConductor);
+  coil->AddLayer(17, kStrip);
+  coil->AddLayer(18, kConductor);
+  coil->AddLayer(19, kShell);
+
+  // set processor
+  XProcessManager* pro = new XProcessManager();
+  pro->SetCoilHandler(coil);
+  pro->Initialize();
+  
+  // get magnetic field map
+  //fFld->SetTarget(name);
+  //fFld->Run();
+  //coil->SetFieldHandler(fFld);
+  
+  // uniform RRR and magnetic field
+  pro->SetUniformField(5.0);
+  pro->SetUniformRRR(kConductor, 209.);
+  pro->SetUniformRRR(kStrip, 241.);
+  pro->SetUniformRRR(kShell, 10.);
+
+  // fill the materail info into the coil solver
+  if (!fCS1) fCS1 = new XThermalSolver();
+  fCS1->SetProcessHandle(pro);
 }
 
 
@@ -134,9 +197,23 @@ void XCOMETConstruction :: SetShell(XCoilHandle* hand)
 double XCOMETConstruction :: GetCoilResistance(XThermalSolver* solve)
 {
   double res = 0.;
+  int idz = 0;
+  int idp = 0;
+  int idr = 0;
+
+  const int mshz = solve->GetProcess()->GetMesh(iZ);
+  const int mshp = solve->GetProcess()->GetMesh(iPhi);
+  const int mshr = solve->GetProcess()->GetMesh(iR);
   
   for (unsigned int i=0; i<solve->GetProcess()->GetMaterialEntries(); i++) {
-    if (solve->GetProcess()->GetDimensionEntry(i)->GetGeometry()==kConductor)
+    idz = solve->GetProcess()->GetDimensionEntry(i)->GetId(iZ);
+    idp = solve->GetProcess()->GetDimensionEntry(i)->GetId(iPhi);
+    idr = solve->GetProcess()->GetDimensionEntry(i)->GetId(iR);
+
+    if (solve->GetProcess()->GetDimensionEntry(i)->GetGeometry()==kConductor &&
+        idz>0 && idz<mshz+1 &&
+        idp>0 && idp<mshp+1 &&
+        idr>0 && idr<mshr+1 )
       res += solve->GetProcess()->GetMaterialEntry(i)->GetResistance();
   }
 
@@ -160,6 +237,14 @@ void XCOMETConstruction :: UpdateQuench(XThermalSolver* solve)
   double Tc    = 0.;
   double Rcs   = 0.;
 
+  int idz = 0;
+  int idp = 0;
+  int idr = 0;
+
+  const int mshz = solve->GetProcess()->GetMesh(iZ);
+  const int mshp = solve->GetProcess()->GetMesh(iPhi);
+  const int mshr = solve->GetProcess()->GetMesh(iR);
+
   const double factor = solve->GetProcess()->GetCoilHandler()->GetApproachZ();
 
   const double l_Phi = solve->GetProcess()->GetCoilHandler()->GetCoilSize(iPhi) / solve->GetProcess()->GetMesh(iPhi);
@@ -173,7 +258,14 @@ void XCOMETConstruction :: UpdateQuench(XThermalSolver* solve)
   double Volume = solve->GetProcess()->GetCoilHandler()->GetCoilParts(kConductor)->GetTotalArea() * l_Phi;
 
   for (unsigned int i=0; i<solve->GetProcess()->GetMaterialEntries(); i++) {
-    if (solve->GetProcess()->GetDimensionEntry(i)->GetGeometry()==kConductor) {
+    idz = solve->GetProcess()->GetDimensionEntry(i)->GetId(iZ);
+    idp = solve->GetProcess()->GetDimensionEntry(i)->GetId(iPhi);
+    idr = solve->GetProcess()->GetDimensionEntry(i)->GetId(iR);
+
+    if ( solve->GetProcess()->GetDimensionEntry(i)->GetGeometry()==kConductor &&
+         idz>0 && idz<mshz+1 &&
+         idp>0 && idp<mshp+1 &&
+         idr>0 && idr<mshr+1 ) {
       T   = solve->GetProcess()->GetMaterialEntry(i)->GetTemperature();
       RRR = solve->GetProcess()->GetMaterialEntry(i)->GetRRR();
       B   = solve->GetProcess()->GetMaterialEntry(i)->GetField();
@@ -202,14 +294,14 @@ void XCOMETConstruction :: UpdateQuench(XThermalSolver* solve)
       else if ( T>=Tcs && T<Tc ) {
         Rcs = R_avg * (T-Tcs) / (Tc-Tcs);
         solve->GetProcess()->GetMaterialEntry(i)->SetStatus(kTransition);
-        solve->GetProcess()->GetMaterialEntry(i)->SetResistance( Rcs );
-        solve->GetProcess()->GetMaterialEntry(i)->SetVoltage( Rcs*fCurr );
+        solve->GetProcess()->GetMaterialEntry(i)->SetResistance( Rcs*factor );
+        solve->GetProcess()->GetMaterialEntry(i)->SetVoltage( Rcs*fCurr*factor );
         solve->GetProcess()->GetMaterialEntry(i)->SetHeat( pow(fCurr,2)*Rcs/Volume );
       }
       else if ( T>=Tc ) {
         solve->GetProcess()->GetMaterialEntry(i)->SetStatus(kNormal);
-        solve->GetProcess()->GetMaterialEntry(i)->SetResistance(R_avg);
-        solve->GetProcess()->GetMaterialEntry(i)->SetVoltage( R_avg*fCurr );
+        solve->GetProcess()->GetMaterialEntry(i)->SetResistance( R_avg*factor );
+        solve->GetProcess()->GetMaterialEntry(i)->SetVoltage( R_avg*fCurr*factor );
         solve->GetProcess()->GetMaterialEntry(i)->SetHeat( pow(fCurr,2)*R_avg/Volume );
       }
 
@@ -238,6 +330,7 @@ void XCOMETConstruction :: Run()
 
   double dt = fdt;
   fCS0->SetTimeInterval(dt);
+  fCS1->SetTimeInterval(dt);
 
   double time = fTime0;
   int cnt = 0;
@@ -251,13 +344,16 @@ void XCOMETConstruction :: Run()
     
     // 1. update material thermal conductivity, capacity
     fCS0->GetProcess()->SetMaterial();
+    fCS1->GetProcess()->SetMaterial();
 
     // 2. update material resistivity, voltage
     UpdateQuench(fCS0); 
+    UpdateQuench(fCS1);
 
     // 3. calculate coil resistance
     CoilRes = 0.;
     CoilRes += GetCoilResistance(fCS0);
+    CoilRes += GetCoilResistance(fCS1);
 
     preqch = quenched;
 
@@ -276,31 +372,39 @@ void XCOMETConstruction :: Run()
 
     // 5. calculate the field decay
       CalFieldDecay(fCS0);
+      CalFieldDecay(fCS1);
     }
 
     // set heat generation before quench
     if ( quenched==false )
-      fCS0->GetProcess()->GetMaterialEntry(fCS0->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*15);
+      fCS1->GetProcess()->GetMaterialEntry(fCS1->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*15);
 
     // 6. solve the thermal equation
     fCS0->Solve(dt);
-    
     fCS0->SetBoundary();
 
+    fCS1->Solve(dt);
+    fCS1->SetBoundary();
+
+    ConnectMagnet(fCS0, fCS1);
+
     // print out
+    if (dt>0.01) fDisplay=1;
     if (cnt%fDisplay==0) {
       std::cout << "time: " << time << " [sec], step: " << dt << " [sec], Rtot: "
                 << CoilRes  << " [Ohm], Vtot: " << CoilRes*fCurr << " [V], I: "
                 << fCurr << " [A]";
-      fCS0->Print(fHotZ, fHotPhi, fHotR);
+      fCS1->Print(fHotZ, fHotPhi, fHotR);
     }
 
     // fill data into file
-    if (cnt%(fDisplay*5)==0) {
+    if (cnt%(fDisplay*8)==0) {
       XRootOutput output( Form("./output/qchout%i.root",ocnt) );
       output.SetSubDirectory("CS0");
+      output.SetSubDirectory("CS1");
       output.SetHeader(cnt, time, fCurr, CoilRes, CoilRes*fCurr);
       output.Fill("CS0", fCS0->GetProcess());
+      output.Fill("CS1", fCS1->GetProcess());
       output.Close();
 
       ocnt ++;
@@ -312,6 +416,29 @@ void XCOMETConstruction :: Run()
     cnt ++;
   }
 
+}
+
+
+void XCOMETConstruction :: ConnectMagnet(XThermalSolver* mag1, XThermalSolver* mag2)
+{
+  // connect magnet1 with magnet2
+  //const int mshz1 = mag1->GetProcess()->GetMesh(iZ);
+  //const int mshr1 = mag1->GetProcess()->GetMesh(iR);
+
+  const int mshz2 = mag2->GetProcess()->GetMesh(iZ);
+  const int mshr2 = mag2->GetProcess()->GetMesh(iR);
+
+  // connect 1st coil
+  int id = mag2->GetProcess()->Id(mshz2,1,mshr2-1);
+  double temp = mag2->GetProcess()->GetMaterialEntry(id)->GetTemperature();
+  id = mag1->GetProcess()->Id(0, 1, 2);
+  mag1->GetProcess()->GetMaterialEntry(id)->SetTemperature(temp);
+  
+  // connect 2nd coil
+  id = mag1->GetProcess()->Id(1,1,2);
+  temp = mag1->GetProcess()->GetMaterialEntry(id)->GetTemperature();
+  id = mag2->GetProcess()->Id(mshz2+1,1, mshr2-1);
+  mag2->GetProcess()->GetMaterialEntry(id)->SetTemperature(temp);
 }
 
 

@@ -80,6 +80,12 @@ class Quench::XMaterialInfo
     /*! @brief return the heat generation */
     double GetHeat() const { return fGen; }
 
+    /// @brief setup something user want to save it
+    void SetStack(const double stack) { fStack = stack; }
+
+    /// @brief returns the stack
+    double GetStack() const { return fStack; }
+
     /// setup thermal conductivity
     void SetConductivity(const double kx, const double ky, const double kz);
 
@@ -145,6 +151,7 @@ class Quench::XMaterialInfo
     double  fDose;
     double  fStep;
     double  fVolt;
+    double  fStack;
 };
 
 

@@ -286,7 +286,7 @@ void XProcessManager :: init()
         fDC.at(id)->SetPrePosition(0., 0., 0.);
         fDC.at(id)->SetPostPosition(0., 0., 0.);
         fDC.at(id)->SetCellSize(1., 1., 1.);
-        fDC.at(id)->SetGeometry(kConductor);
+        fDC.at(id)->SetGeometry(kStrip);
       }
     }
   }
@@ -520,6 +520,7 @@ void XProcessManager :: SetShellMat(const int id, const double T, const double R
   const double kr = al.GetSerialk( lr_ins, k_ins, lr_Al, k_Al );
   const double kp = k_Al;
 
+  //fMC.at(id)->SetStack(k_Al);
   fMC.at(id)->SetConductivity( kz, kp, kr );
   fMC.at(id)->SetResistance(0.);
 }

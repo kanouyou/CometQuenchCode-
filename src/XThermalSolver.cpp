@@ -168,17 +168,20 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
   double kpreZ = fProcess->GetMaterialEntry(preZ)->GetConductivity(iZ);
   if (i==1) kpreZ = kz;
   double kpostZ = fProcess->GetMaterialEntry(postZ)->GetConductivity(iZ);
-  if (i==fMshZ+1) kpostZ = kz;
+  if (i==fMshZ) kpostZ = kz;
 
   double kpreP = fProcess->GetMaterialEntry(preZ)->GetConductivity(iPhi);
   if (j==1) kpreP = fProcess->GetMaterialEntry(fProcess->Id(i,j,fMshP+1))->GetConductivity(iPhi);
   double kpostP = fProcess->GetMaterialEntry(postZ)->GetConductivity(iPhi);
-  if (j==fMshP+1) kpostP = fProcess->GetMaterialEntry(fProcess->Id(i,j,1))->GetConductivity(iPhi);
+  if (j==fMshP) kpostP = fProcess->GetMaterialEntry(fProcess->Id(i,j,1))->GetConductivity(iPhi);
   
   double kpreR = fProcess->GetMaterialEntry(preR)->GetConductivity(iR);
   if (k==1) kpreR = kr;
   double kpostR = fProcess->GetMaterialEntry(postR)->GetConductivity(iR);
-  if (k==fMshR+1) kpostR = kr;
+  if (k==fMshR) kpostR = kr;
+
+  if (fProcess->GetDimensionEntry(zpr)->GetGeometry()==kShell)
+    kpostR = fProcess->GetMaterialEntry(zpr)->GetConductivity(iZ);
 
   const double prekZ  = 2*pow(1./kpreZ + 1./kz, -1);
   const double postkZ = 2*pow(1./kpostZ + 1./kz, -1);

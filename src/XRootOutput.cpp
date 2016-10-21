@@ -98,6 +98,7 @@ void XRootOutput :: Fill(const char* name, XProcessManager* man)
   tree->Branch("Q", &Q, "Q/D");
 
   for (unsigned int i=0; i<man->GetEntries(); i++) {
+
     node = man->GetDimensionEntry(i)->GetNodeId();
 
     id[0] = man->GetDimensionEntry(i)->GetId(iZ);
@@ -120,7 +121,11 @@ void XRootOutput :: Fill(const char* name, XProcessManager* man)
     R = man->GetMaterialEntry(i)->GetResistance();
     Q = man->GetMaterialEntry(i)->GetHeat();
 
-    tree->Fill();
+    if ( id[0]>0 && id[0]<fMshZ+1 &&
+         id[1]>0 && id[1]<fMshP+1 &&
+         id[2]>0 && id[2]<fMshR+1 ) {
+      tree->Fill();
+    }
   }
 
   tree->Write();
