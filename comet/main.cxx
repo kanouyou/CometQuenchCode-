@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     //comet->SetDisplayStep(10);
     comet->SetHotSpot(45/2,1,2);
     comet->SetCurrent(2700.*Amp);
-    comet->SetDumpResistor(0.185*Ohm);
+    comet->SetDumpResistor(0.*Ohm);
     comet->SetInductance(12.69);
     comet->SetDiode(0.7);
     comet->SetThreshold(0.1);
@@ -27,6 +27,8 @@ int main(int argc, char** argv)
 
     comet->ConstructCS0();
     comet->ConstructCS1();
+    comet->ConstructMS1();
+    comet->ConstructMS2();
     comet->Begin();
     comet->Run();
     comet->End();

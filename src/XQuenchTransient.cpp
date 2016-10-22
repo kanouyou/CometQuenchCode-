@@ -109,6 +109,63 @@ void XQuenchTransient :: CalFieldDecay(XThermalSolver* solver)
 }
 
 
+int XQuenchTransient :: GetTotalConductor(XThermalSolver* solver)
+{
+  int idz = 0;
+  int idp = 0;
+  int idr = 0;
+
+  const int mshz = solver->GetProcess()->GetMesh(iZ);
+  const int mshp = solver->GetProcess()->GetMesh(iPhi);
+  const int mshr = solver->GetProcess()->GetMesh(iR);
+
+  int cnt = 0;
+
+  for (unsigned int i=0; i<solver->GetProcess()->GetMaterialEntries(); i++) {
+    idz = solver->GetProcess()->GetDimensionEntry(i)->GetId(iZ);
+    idp = solver->GetProcess()->GetDimensionEntry(i)->GetId(iPhi);
+    idr = solver->GetProcess()->GetDimensionEntry(i)->GetId(iR);
+    
+    if (solver->GetProcess()->GetDimensionEntry(i)->GetGeometry()==kConductor &&
+        idz>0 && idz<mshz+1 &&
+        idp>0 && idp<mshp+1 &&
+        idr>0 && idr<mshr+1)
+      cnt ++;
+  }
+
+  return cnt;
+}
+
+
+int XQuenchTransient :: GetQuenchConductor(XThermalSolver* solver, QuenchStatus qch)
+{
+  int idz = 0;
+  int idp = 0;
+  int idr = 0;
+
+  const int mshz = solver->GetProcess()->GetMesh(iZ);
+  const int mshp = solver->GetProcess()->GetMesh(iPhi);
+  const int mshr = solver->GetProcess()->GetMesh(iR);
+
+  int cnt = 0;
+
+  for (unsigned int i=0; i<solver->GetProcess()->GetMaterialEntries(); i++) {
+    idz = solver->GetProcess()->GetDimensionEntry(i)->GetId(iZ);
+    idp = solver->GetProcess()->GetDimensionEntry(i)->GetId(iPhi);
+    idr = solver->GetProcess()->GetDimensionEntry(i)->GetId(iR);
+    
+    if (solver->GetProcess()->GetDimensionEntry(i)->GetGeometry()==kConductor &&
+        solver->GetProcess()->GetMaterialEntry(i)->GetStatus()==qch &&
+        idz>0 && idz<mshz+1 &&
+        idp>0 && idp<mshp+1 &&
+        idr>0 && idr<mshr+1)
+      cnt ++;
+  }
+
+  return cnt;
+}
+
+
 void XQuenchTransient :: Begin()
 {
   std::cout << "running the quench transient loop ... " << std::endl;

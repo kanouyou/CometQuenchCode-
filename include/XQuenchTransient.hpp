@@ -71,6 +71,12 @@ class XQuenchTransient : public XTransientLoop
     /// @brief calculate the magnetic field decay
     void CalFieldDecay(XThermalSolver* solver);
 
+    /// @brief count the total conductor number
+    int GetTotalConductor(XThermalSolver* solver);
+
+    /// @brief count quenched conductor
+    int GetQuenchConductor(XThermalSolver* solver, QuenchStatus qch=kNormal);
+
     /// @brief set beginning of the run
     virtual void Begin();
 

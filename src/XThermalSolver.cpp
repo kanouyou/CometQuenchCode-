@@ -171,9 +171,9 @@ void XThermalSolver :: InTheLoop(const int i, const int j, const int k)
   if (i==fMshZ) kpostZ = kz;
 
   double kpreP = fProcess->GetMaterialEntry(preZ)->GetConductivity(iPhi);
-  if (j==1) kpreP = fProcess->GetMaterialEntry(fProcess->Id(i,j,fMshP+1))->GetConductivity(iPhi);
+  if (j==1) kpreP = fProcess->GetMaterialEntry(fProcess->Id(i,fMshP+1,k))->GetConductivity(iPhi);
   double kpostP = fProcess->GetMaterialEntry(postZ)->GetConductivity(iPhi);
-  if (j==fMshP) kpostP = fProcess->GetMaterialEntry(fProcess->Id(i,j,1))->GetConductivity(iPhi);
+  if (j==fMshP) kpostP = fProcess->GetMaterialEntry(fProcess->Id(i,1,k))->GetConductivity(iPhi);
   
   double kpreR = fProcess->GetMaterialEntry(preR)->GetConductivity(iR);
   if (k==1) kpreR = kr;

@@ -31,6 +31,12 @@ class XCOMETConstruction : public XQuenchTransient
     /// @brief construct cs1 coil
     void ConstructCS1();
 
+    /// @brief construct ms1 coil
+    void ConstructMS1();
+
+    /// @brief construct ms1 coil
+    void ConstructMS2();
+
     /// @brief update the resistance of conductor
     /// @detail please use this function after SetMaterial() and the current decay calculation
     void UpdateQuench(XThermalSolver* solve);
@@ -66,6 +72,8 @@ class XCOMETConstruction : public XQuenchTransient
     XFieldHandle* fFld;
     XThermalSolver* fCS0;
     XThermalSolver* fCS1;
+    XThermalSolver* fMS1;
+    XThermalSolver* fMS2;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <ctime>
 #include <TString.h>
 #include "XMatCopper.hpp"
 #include "XMatAluminium.hpp"
@@ -19,6 +20,8 @@ XCOMETConstruction :: XCOMETConstruction()
     : fFld(NULL),
       fCS0(NULL),
       fCS1(NULL),
+      fMS1(NULL),
+      fMS2(NULL),
       XQuenchTransient()
 {
   if (!fFld)  fFld = new XFieldHandle();
@@ -31,6 +34,8 @@ XCOMETConstruction :: ~XCOMETConstruction()
   if (fFld)  delete fFld;
   if (fCS0)  delete fCS0;
   if (fCS1)  delete fCS1;
+  if (fMS1)  delete fMS1;
+  if (fMS2)  delete fMS2;
 }
 
 
@@ -42,7 +47,7 @@ void XCOMETConstruction ::ConstructCS0()
   XCoilHandle* coil = new XCoilHandle();
   coil->SetName(name);
   coil->SetCoilSize(0., 2.*M_PI*r, 0.);
-  coil->SetMesh(35, 4, 19);
+  coil->SetMesh(10, 4, 19);
   coil->SetCoilLayers(9);
   coil->SetCoilTurns(35);
   coil->SetMaterialRatio(7.3, 1, 0.9);
@@ -156,14 +161,130 @@ void XCOMETConstruction ::ConstructCS1()
 }
 
 
+void XCOMETConstruction ::ConstructMS1()
+{
+  const double r = (672.+756.25)/2.*mm;
+  const std::string name = "MS1";
+  
+  XCoilHandle* coil = new XCoilHandle();
+  coil->SetName(name);
+  coil->SetCoilSize(0., 2.*M_PI*r, 0.);
+  coil->SetMesh(57, 4, 11);
+  coil->SetCoilLayers(5);
+  coil->SetCoilTurns(285);
+  coil->SetMaterialRatio(7.3, 1, 0.9);
+
+  // set coil parts
+  SetConductor(coil);
+  SetStrip(coil);
+  SetShell(coil);
+
+  // set coil structure
+  coil->AddLayer(1, kStrip);
+  coil->AddLayer(2, kConductor);
+  coil->AddLayer(3, kStrip);
+  coil->AddLayer(4, kConductor);
+  coil->AddLayer(5, kStrip);
+  coil->AddLayer(6, kConductor);
+  coil->AddLayer(7, kStrip);
+  coil->AddLayer(8, kConductor);
+  coil->AddLayer(9, kStrip);
+  coil->AddLayer(10, kConductor);
+  coil->AddLayer(11, kShell);
+
+  // set processor
+  XProcessManager* pro = new XProcessManager();
+  pro->SetCoilHandler(coil);
+  pro->Initialize();
+  
+  // get magnetic field map
+  //fFld->SetTarget(name);
+  //fFld->Run();
+  //coil->SetFieldHandler(fFld);
+  
+  // uniform RRR and magnetic field
+  pro->SetUniformField(4.0);
+  pro->SetUniformRRR(kConductor, 250.);
+  pro->SetUniformRRR(kStrip, 297.);
+  pro->SetUniformRRR(kShell, 10.);
+
+  // fill the materail info into the coil solver
+  if (!fMS1) fMS1 = new XThermalSolver();
+  fMS1->SetProcessHandle(pro);
+}
+
+
+void XCOMETConstruction ::ConstructMS2()
+{
+  const double r = (672.+789.95)/2.*mm;
+  const std::string name = "MS2";
+  
+  XCoilHandle* coil = new XCoilHandle();
+  coil->SetName(name);
+  coil->SetCoilSize(0., 2.*M_PI*r, 0.);
+  coil->SetMesh(28, 4, 15);
+  coil->SetCoilLayers(7);
+  coil->SetCoilTurns(140);
+  coil->SetMaterialRatio(7.3, 1, 0.9);
+
+  // set coil parts
+  SetConductor(coil);
+  SetStrip(coil);
+  SetShell(coil);
+
+  // set coil structure
+  coil->AddLayer(1, kStrip);
+  coil->AddLayer(2, kConductor);
+  coil->AddLayer(3, kStrip);
+  coil->AddLayer(4, kConductor);
+  coil->AddLayer(5, kStrip);
+  coil->AddLayer(6, kConductor);
+  coil->AddLayer(7, kStrip);
+  coil->AddLayer(8, kConductor);
+  coil->AddLayer(9, kStrip);
+  coil->AddLayer(10, kConductor);
+  coil->AddLayer(11, kStrip);
+  coil->AddLayer(12, kConductor);
+  coil->AddLayer(13, kStrip);
+  coil->AddLayer(14, kConductor);
+  coil->AddLayer(15, kShell);
+
+  // set processor
+  XProcessManager* pro = new XProcessManager();
+  pro->SetCoilHandler(coil);
+  pro->Initialize();
+  
+  // get magnetic field map
+  //fFld->SetTarget(name);
+  //fFld->Run();
+  //coil->SetFieldHandler(fFld);
+  
+  // uniform RRR and magnetic field
+  pro->SetUniformField(3.5);
+  pro->SetUniformRRR(kConductor, 400.);
+  pro->SetUniformRRR(kStrip, 916.);
+  pro->SetUniformRRR(kShell, 10.);
+
+  // fill the materail info into the coil solver
+  if (!fMS2) fMS2 = new XThermalSolver();
+  fMS2->SetProcessHandle(pro);
+}
+
+
 void XCOMETConstruction :: ConstructField(XFieldHandle* fld)
 {
   fld->SetCurrent(2700.*Amp);
   fld->AddCoil( "CS0", 857.88*mm, 1038.12*mm, 672.*mm, 823.65*mm );
-  fld->SetMesh( "CS0", 35, 19 );
+  fld->SetMesh( "CS0", 10, 19 );
 
   fld->AddCoil( "CS1", -595.25*mm, 795.25*mm, 672.*mm, 823.65*mm );
-  fld->SetMesh( "CS1", 270, 19 );
+  fld->SetMesh( "CS1", 45, 19 );
+
+  fld->AddCoil( "MS1", -2121.375*mm, -653.625*mm, 672.*mm, 756.25*mm );
+  fld->SetMesh( "MS1", 57, 11 );
+
+  fld->AddCoil( "MS2", -2910.5*mm, -2189.5*mm, 672.*mm, 789.95*mm );
+  fld->SetMesh( "MS2", 28, 15 );
 }
 
 
@@ -331,6 +452,8 @@ void XCOMETConstruction :: Run()
   double dt = fdt;
   fCS0->SetTimeInterval(dt);
   fCS1->SetTimeInterval(dt);
+  fMS1->SetTimeInterval(dt);
+  fMS2->SetTimeInterval(dt);
 
   double time = fTime0;
   int cnt = 0;
@@ -345,15 +468,21 @@ void XCOMETConstruction :: Run()
     // 1. update material thermal conductivity, capacity
     fCS0->GetProcess()->SetMaterial();
     fCS1->GetProcess()->SetMaterial();
+    fMS1->GetProcess()->SetMaterial();
+    fMS2->GetProcess()->SetMaterial();
 
     // 2. update material resistivity, voltage
     UpdateQuench(fCS0); 
     UpdateQuench(fCS1);
+    UpdateQuench(fMS1);
+    UpdateQuench(fMS2);
 
     // 3. calculate coil resistance
     CoilRes = 0.;
     CoilRes += GetCoilResistance(fCS0);
     CoilRes += GetCoilResistance(fCS1);
+    CoilRes += GetCoilResistance(fMS1);
+    CoilRes += GetCoilResistance(fMS2);
 
     preqch = quenched;
 
@@ -373,6 +502,8 @@ void XCOMETConstruction :: Run()
     // 5. calculate the field decay
       CalFieldDecay(fCS0);
       CalFieldDecay(fCS1);
+      CalFieldDecay(fMS1);
+      CalFieldDecay(fMS2);
     }
 
     // set heat generation before quench
@@ -386,7 +517,15 @@ void XCOMETConstruction :: Run()
     fCS1->Solve(dt);
     fCS1->SetBoundary();
 
+    fMS1->Solve(dt);
+    fMS1->SetBoundary();
+    
+    fMS2->Solve(dt);
+    fMS2->SetBoundary();
+
     ConnectMagnet(fCS0, fCS1);
+    ConnectMagnet(fCS1, fMS1);
+    ConnectMagnet(fMS1, fMS2);
 
     // print out
     if (dt>0.01) fDisplay=1;
@@ -402,15 +541,19 @@ void XCOMETConstruction :: Run()
       XRootOutput output( Form("./output/qchout%i.root",ocnt) );
       output.SetSubDirectory("CS0");
       output.SetSubDirectory("CS1");
+      output.SetSubDirectory("MS1");
+      output.SetSubDirectory("MS2");
       output.SetHeader(cnt, time, fCurr, CoilRes, CoilRes*fCurr);
       output.Fill("CS0", fCS0->GetProcess());
       output.Fill("CS1", fCS1->GetProcess());
+      output.Fill("MS1", fMS1->GetProcess());
+      output.Fill("MS2", fMS2->GetProcess());
       output.Close();
 
       ocnt ++;
     }
 
-    dt = fCS0->FindTimeStep();
+    dt = fMS2->FindTimeStep();
     
     time += dt;
     cnt ++;
@@ -447,6 +590,11 @@ void XCOMETConstruction :: End()
   std::cout << "....................................................." << std::endl;
   std::cout << " Finished" << std::endl;
   std::cout << "....................................................." << std::endl;
+
+  time_t now = time(0);
+  tm* local = localtime(&now);
+
+  std::cout << "time: " << asctime(local) << std::endl;
 }
 
 
