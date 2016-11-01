@@ -50,7 +50,8 @@ bool XRadiationHandle :: IsOverRange(const int id) const
 
 const int XRadiationHandle :: Id(const int i, const int j, const int k)
 {
-  const int id = i*fMshr*fMshp + j*fMshr + k;
+  //const int id = i*fMshr*fMshp + j*fMshr + k;
+  const int id = k*fMshp*fMshz + i*fMshp + j;
   if (IsOverRange(id)) {
     QuenchError( XQuenchLogger::ERROR, "local id is over range, z:" << i
                                        << ", phi: " << j << ", r:" << k

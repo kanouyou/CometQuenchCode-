@@ -46,6 +46,7 @@ if __name__=="__main__":
 
     plot = pt.XPost2dPlot(sys.argv[1], sys.argv[2])
     plot.SetMatInfo(pt.kTemperature)
+    #plot.SetMatInfo(pt.kRRR)
     plot.SetDirection(pt.kZ)
-    plot.SetPhi(2)
+    plot.SetPhi(3)
     plot.Draw()

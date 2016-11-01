@@ -34,6 +34,18 @@ class XPostOutput:
         return node, maxtemp
 
 
+    ## get minimum RRR
+    def GetMinRRR(self, geom):
+        maxrrr = 999999.
+        node = 0
+        for mat in self._matf.GetCollection():
+            if mat.GetRRR() < maxrrr and self._geof.GetCollect(mat.GetNode()).GetGeometry()==geom:
+            #if mat.GetRRR() < maxrrr:
+                maxrrr = mat.GetRRR()
+                node = mat.GetNode()
+        return node, maxrrr
+
+
     ## print max temperature info
     def Print(self):
         node, maxtemp = self.GetMaxTemp()
@@ -50,6 +62,7 @@ class XPostOutput:
         print " temperature: %.4f [K]" %maxtemp
         print " id: (%i, %i, %i)" %(idz, idp, idr)
         print " position: (%.2f, %.2f, %.2f)" %(z, p, r)
+        print " min. RRR conductor: %.2f, strip: %.2f" %(self.GetMinRRR(0)[1], self.GetMinRRR(1)[1])
 
 
     ##

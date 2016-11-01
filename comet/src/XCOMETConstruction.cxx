@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <ctime>
+#include <string>
 #include <TString.h>
 #include "XMatCopper.hpp"
 #include "XMatAluminium.hpp"
@@ -11,6 +12,7 @@
 #include "XCoilShell.hpp"
 
 #include "XRootOutput.hpp"
+#include "XQuenchOutput.hpp"
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
 #include "XCOMETConstruction.h"
@@ -97,6 +99,11 @@ void XCOMETConstruction ::ConstructCS0()
   // fill the materail info into the coil solver
   if (!fCS0) fCS0 = new XThermalSolver();
   fCS0->SetProcessHandle(pro);
+
+  // write the geometry
+  XQuenchOutput* geo = new XQuenchOutput("geoCS0.dat", iOfstream);
+  geo->WriteGeometry(pro);
+  geo->Close();
 }
 
 
@@ -158,6 +165,11 @@ void XCOMETConstruction ::ConstructCS1()
   // fill the materail info into the coil solver
   if (!fCS1) fCS1 = new XThermalSolver();
   fCS1->SetProcessHandle(pro);
+
+  // write the geometry
+  XQuenchOutput* geo = new XQuenchOutput("geoCS1.dat", iOfstream);
+  geo->WriteGeometry(pro);
+  geo->Close();
 }
 
 
@@ -211,6 +223,11 @@ void XCOMETConstruction ::ConstructMS1()
   // fill the materail info into the coil solver
   if (!fMS1) fMS1 = new XThermalSolver();
   fMS1->SetProcessHandle(pro);
+
+  // write the geometry
+  XQuenchOutput* geo = new XQuenchOutput("geoMS1.dat", iOfstream);
+  geo->WriteGeometry(pro);
+  geo->Close();
 }
 
 
@@ -268,6 +285,11 @@ void XCOMETConstruction ::ConstructMS2()
   // fill the materail info into the coil solver
   if (!fMS2) fMS2 = new XThermalSolver();
   fMS2->SetProcessHandle(pro);
+
+  // write the geometry
+  XQuenchOutput* geo = new XQuenchOutput("geoMS2.dat", iOfstream);
+  geo->WriteGeometry(pro);
+  geo->Close();
 }
 
 
@@ -463,6 +485,10 @@ void XCOMETConstruction :: Run()
   bool   quenched = false;
   bool   preqch   = false;
 
+  const int numcdt = GetTotalConductor(fCS0) + GetTotalConductor(fCS1) +
+                     GetTotalConductor(fMS1) + GetTotalConductor(fMS2);
+  int qchcdt = 0;
+
   while (time<fTimef) {
     
     // 1. update material thermal conductivity, capacity
@@ -508,7 +534,7 @@ void XCOMETConstruction :: Run()
 
     // set heat generation before quench
     if ( quenched==false )
-      fCS1->GetProcess()->GetMaterialEntry(fCS1->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*15);
+      fCS1->GetProcess()->GetMaterialEntry(fCS1->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*8);
 
     // 6. solve the thermal equation
     fCS0->Solve(dt);
@@ -527,12 +553,16 @@ void XCOMETConstruction :: Run()
     ConnectMagnet(fCS1, fMS1);
     ConnectMagnet(fMS1, fMS2);
 
+    // count quenched conductors
+    qchcdt = GetQuenchConductor(fCS0) + GetQuenchConductor(fCS1) +
+             GetQuenchConductor(fMS1) + GetQuenchConductor(fMS2);
+
     // print out
     if (dt>0.01) fDisplay=1;
     if (cnt%fDisplay==0) {
       std::cout << "time: " << time << " [sec], step: " << dt << " [sec], Rtot: "
                 << CoilRes  << " [Ohm], Vtot: " << CoilRes*fCurr << " [V], I: "
-                << fCurr << " [A]";
+                << fCurr << " [A]" << static_cast<double>(qchcdt)/numcdt*100. << " %, ";
       fCS1->Print(fHotZ, fHotPhi, fHotR);
     }
 

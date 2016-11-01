@@ -112,7 +112,8 @@ void XProcessManager :: SetRadiationHandler(XRadiationHandle* hand)
   double fluence, RRR, deposit;
 
   for (int k=0; k<fMshR+2; k++) {
-    kr = mshr - static_cast<int>(k/radmshr);
+    //kr = mshr - static_cast<int>(k/radmshr);   // modified to reverse the r direction for loading radiation
+    kr = static_cast<int>(k/radmshr);
     if (kr>=mshr)
       kr = mshr-1;
     if (kr<=0)
@@ -125,8 +126,10 @@ void XProcessManager :: SetRadiationHandler(XRadiationHandle* hand)
 
       for (int i=0; i<fMshZ+2; i++) {
         iz = static_cast<int>(i/radmshz);
-        if (iz<=0 || iz>=mshz)
+        if (iz<=0)
           iz = 0;
+        if (iz>=mshz)
+          iz = mshz-1;
         // get local id for radiation
         id = hand->Id( iz, jp, kr );
         // get neutron fluence and deposit
@@ -511,7 +514,7 @@ void XProcessManager :: SetShellMat(const int id, const double T, const double R
 
   // setup thermal conductivity
   const double k_Al  = al.GetConductivity();
-  const double k_ins = kap.GetConductivity();
+  const double k_ins = kap.GetConductivity()*5;
 
   const double lr_ins = fCoil->GetCoilParts(kShell)->GetInsSize(iR);
   const double lr_Al  = fCoil->GetCoilParts(kShell)->GetDimension(iR);
