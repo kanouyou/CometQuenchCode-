@@ -6,6 +6,7 @@
 #include "XMatCopper.hpp"
 #include "XMatNbTi.hpp"
 #include "XMatKapton.hpp"
+#include "XMatG10.hpp"
 
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
@@ -113,7 +114,7 @@ void XProcessManager :: SetRadiationHandler(XRadiationHandle* hand)
 
   for (int k=0; k<fMshR+2; k++) {
     //kr = mshr - static_cast<int>(k/radmshr);   // modified to reverse the r direction for loading radiation
-    kr = static_cast<int>(k/radmshr);
+    kr = static_cast<int>((k-1)/radmshr);
     if (kr>=mshr)
       kr = mshr-1;
     if (kr<=0)
@@ -232,20 +233,23 @@ void XProcessManager :: SetMaterial()
 
         switch (geo) {
           case kConductor: 
+            fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*4000. );
             SetConductorMat( id, T, RRR, B ); 
             break;
           case kStrip: 
+            fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*2700. );
             SetStripMat( id, T, RRR, B ); 
             break;
           case kShell: 
-            SetShellMat( id, T, RRR, B ); 
+            fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*2700. );
+            SetShellMat( id, T, RRR, B );
             break;
           default:
             QuenchError( XQuenchLogger::WARNING, "geometry " << fCoil->GetGeometryName(geo) << " did not exist." );
             break;
         }
         
-        fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*4000. );
+        //fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*4000. );
       }
     }
   }
@@ -501,10 +505,11 @@ void XProcessManager :: SetStripMat(const int id, const double T, const double R
 void XProcessManager :: SetShellMat(const int id, const double T, const double RRR, const double B)
 {
   XMatAluminium al;
-  XMatKapton    kap;
+  //XMatKapton    kap;
+  XMatG10 ins;
 
   al.SetMaterialProperty(T, RRR, B);
-  kap.SetMaterialProperty(T, RRR, B);
+  ins.SetTemperature(T);
 
   // setup density
   fMC.at(id)->SetDensity( al.GetDensity() );
@@ -514,7 +519,7 @@ void XProcessManager :: SetShellMat(const int id, const double T, const double R
 
   // setup thermal conductivity
   const double k_Al  = al.GetConductivity();
-  const double k_ins = kap.GetConductivity()*5;
+  const double k_ins = ins.GetConductivity();
 
   const double lr_ins = fCoil->GetCoilParts(kShell)->GetInsSize(iR);
   const double lr_Al  = fCoil->GetCoilParts(kShell)->GetDimension(iR);

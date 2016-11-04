@@ -464,6 +464,11 @@ void XCOMETConstruction :: Begin()
   std::cout << "....................................................." << std::endl;
   std::cout << " Running" << std::endl;
   std::cout << "....................................................." << std::endl;
+
+  time_t now = time(0);
+  tm* local = localtime(&now);
+
+  std::cout << "time: " << asctime(local) << std::endl;
 }
 
 

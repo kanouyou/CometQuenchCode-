@@ -124,7 +124,7 @@ double XRadiationHandle :: GetRRR(const Geometry geo, const double neu) const
   const double rho0_Cdt = 0.0675;
   const double rho0_Al  = 0.0135;
 
-  double RRR = 10.;
+  double RRR = 1.;
 
   switch (geo) {
     case kConductor:
