@@ -20,10 +20,14 @@ class XRootOutput
 {
   public:
     /// constructor
+    XRootOutput();
     XRootOutput(const char* filename);
 
     /// deconstructor
     ~XRootOutput();
+
+    /// @brief setup filename
+    void SetFilename(const char* filename);
 
     /// @brief write the time dependence info into header file
     void SetHeader(const int i, const double t, const double I, const double R, const double V);
@@ -39,6 +43,9 @@ class XRootOutput
 
     /// @brief closed the root file
     void Close();
+
+    /// @brief check the given path exists or not 
+    void SetPath(const char* path);
 
 
   private:

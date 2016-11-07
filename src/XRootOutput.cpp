@@ -1,12 +1,26 @@
 #include <TTree.h>
 #include <TFile.h>
 #include <TDirectory.h>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
 #include "XRootOutput.hpp"
 
 using Quench::XQuenchLogger;
 using Quench::XProcessManager;
+
+
+XRootOutput :: XRootOutput()
+    : fFile(NULL),
+      fInfo(NULL),
+      fName(""),
+      fMshZ(0),
+      fMshP(0),
+      fMshR(0)
+{}
 
 
 XRootOutput :: XRootOutput(const char* filename)
@@ -17,14 +31,22 @@ XRootOutput :: XRootOutput(const char* filename)
       fMshP(0),
       fMshR(0)
 {
-  if (!fFile)  fFile = new TFile(filename, "RECREATE");
-  if (!fInfo)  fInfo = new TTree("info", "data info");
+  SetFilename(filename);
 }
 
 
 XRootOutput :: ~XRootOutput()
 {
   //if (fInfo) delete fInfo;
+}
+
+
+void XRootOutput :: SetFilename(const char* filename)
+{
+  fName = std::string(filename);
+
+  if (!fFile)  fFile = new TFile(filename, "RECREATE");
+  if (!fInfo)  fInfo = new TTree("info", "data info");
 }
 
 
@@ -137,5 +159,25 @@ void XRootOutput :: Close()
   if (fFile) {
     fFile->Write();
     fFile->Close();
+  }
+}
+
+
+void XRootOutput :: SetPath(const char* path)
+{
+  struct stat info;
+  mode_t mode = 0755;
+
+  if ( stat(path, &info)!=0 ) {
+    // cannot access this directory
+    mkdir(path, mode);
+    QuenchInfo("create new directory: " << path );
+  }
+  else if ( info.st_mode & S_IFDIR )
+    // it is a directory
+    QuenchInfo("find directory: " << path );
+  else {
+    mkdir(path, mode);
+    QuenchInfo("create new directory: " << path );
   }
 }

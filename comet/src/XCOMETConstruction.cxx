@@ -573,7 +573,10 @@ void XCOMETConstruction :: Run()
 
     // fill data into file
     if (cnt%(fDisplay*8)==0) {
-      XRootOutput output( Form("./output/qchout%i.root",ocnt) );
+      XRootOutput output;
+      if (ocnt==0)
+        output.SetPath("./output");
+      output.SetFilename(Form("./output/qchout%i.root",ocnt));
       output.SetSubDirectory("CS0");
       output.SetSubDirectory("CS1");
       output.SetSubDirectory("MS1");
