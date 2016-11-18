@@ -186,7 +186,59 @@ void XCoilHandle :: AddLayer(const int layer, const Geometry geo)
     QuenchError( XQuenchLogger::INFO, "coil layer = " << layer << ", geometry = " << GetGeometryName(geo) );
   }
   else {
-    QuenchError( XQuenchLogger::ERROR, "input layer: " << layer << " did already exist." );
+    QuenchError( XQuenchLogger::ERROR, "input layer: " << layer << " already existed." );
+  }
+}
+
+
+void XCoilHandle :: AddLayer(const int layer, const Geometry geo, const XCoilBase* coil, const Cooling cool, const double edgesize)
+{
+  if (!is_exist(layer) || !IsOutRange(layer)) {
+    fLayerGeo.insert( std::map<const int, const Geometry>::value_type(layer, geo) );
+    fCoilType.insert( std::map<const int, const XCoilBase*>::value_type(layer, coil) );
+    fCooling .insert( std::map<const int, const Cooling>::value_type(layer, cool) );
+    fEdgesize.insert( std::map<const int, const double>::value_type(layer, edgesize) );
+
+    //QuenchInfo( "layer: " << layer << " => geometry: " << GetGeometryName(geo) );
+  }
+  else {
+    QuenchInfo("this layer: " << layer << " existed already.");
+  }
+}
+
+
+const Quench::XCoilBase* XCoilHandle :: GetCoilType(const int layer)
+{
+  if (is_exist(layer)) {
+    return fCoilType.at(layer);
+  }
+  else {
+    XQuenchExcept except("this layer does not exist.");
+    throw except;
+  }
+}
+
+
+const double XCoilHandle :: GetStripEdgeSize(const int layer)
+{
+  if (is_exist(layer)) {
+    return fEdgesize.at(layer);
+  }
+  else {
+    XQuenchExcept except("this layer does not exist.");
+    throw except;
+  }
+}
+
+
+const Cooling XCoilHandle :: GetCoolingConfigure(const int layer)
+{
+  if (is_exist(layer)) {
+    return fCooling.at(layer);
+  }
+  else {
+    XQuenchExcept except("this layer does not exist.");
+    throw except;
   }
 }
 

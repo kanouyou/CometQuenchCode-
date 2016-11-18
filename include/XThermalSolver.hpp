@@ -10,12 +10,14 @@
 #include <vector>
 #include "XProcessManager.hpp"
 
+/*
 enum Cooling
 {
   kLeft,
   kRight,
   kSide
 };
+*/
 
 /// class to solve the thermal transfer equation
 //

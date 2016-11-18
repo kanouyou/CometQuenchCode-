@@ -358,19 +358,22 @@ void XThermalSolver :: SetCoolingPath(const int r, const double T, const Cooling
 {
   int bdy = fProcess->Id(1,1,r);
 
-  if (fProcess->GetDimensionEntry(bdy)->GetGeometry()!=kStrip) {
+  /*
+  if (fProcess->GetDimensionEntry(bdy)->GetGeometry()!=kStrip) 
     QuenchError( XQuenchLogger::WARNING, "layer: " << r << " is not strip.");
-  }
+  */
 
   // set cooling path
   for (int j=0; j<fMshP+2; j++) {
     if (opt==kLeft) {
       bdy  = fProcess->Id(0,j,r);
       fProcess->GetMaterialEntry(bdy)->SetTemperature(T);
+      QuenchInfo( "layer: " << r << " is cooling from left." );
     }
     else if (opt==kRight) {
       bdy = fProcess->Id(fMshZ+1,j,r);
       fProcess->GetMaterialEntry(bdy)->SetTemperature(T);
+      QuenchInfo( "layer: " << r << " is cooling from right." );
     } 
     else if (opt==kSide) {
       bdy  = fProcess->Id(0,j,r);
@@ -378,7 +381,10 @@ void XThermalSolver :: SetCoolingPath(const int r, const double T, const Cooling
 
       bdy = fProcess->Id(fMshZ+1,j,r);
       fProcess->GetMaterialEntry(bdy)->SetTemperature(T);
+      QuenchInfo( "layer: " << r << " is cooling from two side." );
     }
+    else
+      QuenchInfo( "layer: " << r << " is adiabatic condition." );
   }
 }
 

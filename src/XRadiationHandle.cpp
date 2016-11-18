@@ -90,13 +90,13 @@ void XRadiationHandle :: Load(const std::string& filename)
   const double factor = fIrrad / (1*year);
 
   int    ibuff[3];
-  double dbuff[2];
+  double dbuff[3];
     
   XRadiationContainer* rad = NULL;
   QuenchError( XQuenchLogger::INFO, "loading file: " << filename );
 
   while (true) {
-    file >> ibuff[0] >> ibuff[1] >> ibuff[2] >> dbuff[0] >> dbuff[1];
+    file >> ibuff[0] >> ibuff[1] >> ibuff[2] >> dbuff[0] >> dbuff[1] >> dbuff[2];
     if (!file) break;
     rad = new XRadiationContainer;
     rad->SetId( ibuff[0], ibuff[1], ibuff[2] );

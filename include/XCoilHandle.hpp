@@ -20,6 +20,14 @@
 namespace Quench
 { class XCoilHandle; }
 
+enum Cooling
+{
+  kLeft,
+  kRight,
+  kSide,
+  kAdiabatic
+};
+
 /// class to handle the information of coil
 //
 class Quench::XCoilHandle
@@ -107,10 +115,20 @@ class Quench::XCoilHandle
 
     /// @brief add the layer's information
     void AddLayer(const int layer, const Geometry geo);
+    void AddLayer(const int layer, const Geometry geo, const XCoilBase* coil, const Cooling cool, const double edgesize);
 
     /// @brief return the coil layout
     std::map<const int, const Geometry> GetCoilLayout() { return fLayerGeo; }
     const Quench::XCoilBase* GetCoilLayout(const int layer);
+
+    /// @brief return the coil type class
+    const Quench::XCoilBase* GetCoilType(const int layer);
+
+    /// @brief return the given aluminium strip edge size
+    const double GetStripEdgeSize(const int layer);
+
+    /// @brief return the given cooling conofiguration of coil
+    const Cooling GetCoolingConfigure(const int layer);
 
     /// @brief return the size of layout container
     int GetLayoutEntries() const { return fLayerGeo.size(); }
@@ -154,6 +172,9 @@ class Quench::XCoilHandle
     const XCoilBase* fShell;
     std::map<const int, const Geometry> fLayerGeo;
     std::map<const Material, double> fRatio;
+    std::map<const int, const XCoilBase*> fCoilType;
+    std::map<const int, const Cooling> fCooling;
+    std::map<const int, const double> fEdgesize;
 };
 
 

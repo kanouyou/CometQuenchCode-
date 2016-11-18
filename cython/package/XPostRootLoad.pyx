@@ -390,6 +390,8 @@ cdef class XPost2dPlot:
     cdef PosType _direct
     cdef MatType _info
     cdef char* _name
+    cdef double _min
+    cdef double _max
 
     ## constructor
     def __init__(self, char* geofile, char* datfile, char* subdir="CS0"):
@@ -451,6 +453,22 @@ cdef class XPost2dPlot:
         self._direct = dim
 
 
+    ## set color bar range
+    cpdef void SetRange(self, double minimum, double maximum):
+        self._max = maximum
+        self._min = minimum
+
+
+    ## find the maximum temperature
+    cpdef double FindMaxTemp(self):
+        cdef np.ndarray matinfo = self._matf.GetCollection()
+        cdef double T = -999.
+        for i in range(len(matinfo)):
+            if matinfo[i].GetTemperature() > T:
+                T = matinfo[i].GetTemperature()
+        return T
+
+
     ## set plot info
     def SetMatInfo(self, MatType info=kConductivity):
         self._info = info
@@ -469,8 +487,8 @@ cdef class XPost2dPlot:
     ## plot geometry with given info
     def Draw(self):
         self.fillpatch(self._phi, self._info, self._direct)
-        #p = PatchCollection(self._patch, cmap=matplotlib.cm.magma, linewidth=0.1)
-        p = PatchCollection(self._patch, cmap=matplotlib.cm.jet, linewidth=0.1)
+        p = PatchCollection(self._patch, cmap=matplotlib.cm.gnuplot2, linewidth=0.1)
+        #p = PatchCollection(self._patch, cmap=matplotlib.cm.jet, linewidth=0.1)
         p.set_array(self._dset)
         
         fig, ax = plt.subplots(1, 1, figsize=(16,5))
@@ -481,6 +499,7 @@ cdef class XPost2dPlot:
         ax.set_ylabel( "R [mm]" )
         cbar = plt.colorbar(p)
         cbar.set_label("Temperature [K]")
+        cbar.set_clim(self._min, self._max)
         plt.tight_layout()
         #fig.savefig(save, bbox_inches="tight")
         plt.show()

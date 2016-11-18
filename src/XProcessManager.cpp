@@ -231,22 +231,24 @@ void XProcessManager :: SetMaterial()
         B   = fMC.at(id)->GetField();
         geo = fDC.at(id)->GetGeometry();
 
-        switch (geo) {
-          case kConductor: 
-            fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*4000. );
-            SetConductorMat( id, T, RRR, B ); 
-            break;
-          case kStrip: 
-            fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*2700. );
-            SetStripMat( id, T, RRR, B ); 
-            break;
-          case kShell: 
-            fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*2700. );
-            SetShellMat( id, T, RRR, B );
-            break;
-          default:
-            QuenchError( XQuenchLogger::WARNING, "geometry " << fCoil->GetGeometryName(geo) << " did not exist." );
-            break;
+        if ( (i>0 && i<fMshZ+1) && (j>0 && j<fMshP+1) && (k>0 && k<fMshR+1) ) {
+          switch (geo) {
+            case kConductor: 
+              fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*4000. );
+              SetConductorMat( id, fCoil->GetCoilType(k), T, RRR, B ); 
+              break;
+            case kStrip: 
+              fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*2700. );
+              SetStripMat( id, fCoil->GetCoilType(k), T, RRR, B ); 
+              break;
+            case kShell: 
+              fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*2700. );
+              SetShellMat( id, fCoil->GetCoilType(k), T, RRR, B );
+              break;
+            default:
+              QuenchError( XQuenchLogger::WARNING, "geometry " << fCoil->GetGeometryName(geo) << " did not exist." );
+              break;
+          }
         }
         
         //fMC.at(id)->SetHeat( fMC.at(id)->GetDeposit()*4000. );
@@ -344,23 +346,26 @@ void XProcessManager :: InitPosition()
   int id = 0;
 
   // length edge of strip along direction z
-  const double edge = fCoil->GetStripEdge();
+  double edge = fCoil->GetStripEdge();
   // approach z factor
   const double factor = fCoil->GetApproachZ();
   // length of cell
-  lz = fCoil->GetCoilLayout(2)->GetTotalLength(iZ) * factor;
+  lz = fCoil->GetCoilType(2)->GetTotalLength(iZ) * factor;
   lp = fCoil->GetCoilSize(iPhi) / fMshP;
 
   for (int k=1; k<fMshR+1; k++) {
-    lr = fCoil->GetCoilLayout(k)->GetTotalLength(iR);
+    //lr = fCoil->GetCoilLayout(k)->GetTotalLength(iR);
+    lr = fCoil->GetCoilType(k)->GetTotalLength(iR);
     r += lr/2.;
-    postR = k==fMshR ? r+lr/2. : r+lr/2.+fCoil->GetCoilLayout(k+1)->GetTotalLength(iR)/2.;
+    //postR = k==fMshR ? r+lr/2. : r+lr/2.+fCoil->GetCoilLayout(k+1)->GetTotalLength(iR)/2.;
+    postR = k==fMshR ? r+lr/2. : r+lr/2.+fCoil->GetCoilType(k+1)->GetTotalLength(iR)/2.;
 
     QuenchError( XQuenchLogger::CONFIG, "id: " << k << ", r position:" << r/mm << " [mm]"
                                         << " , cell size_r: " << lr/mm << " [mm]");
 
     p  = 0.;
     preP = 0.;
+
     for (int j=1; j<fMshP+1; j++) {
       p += lp/2.;
       postP = p+lp;
@@ -380,16 +385,20 @@ void XProcessManager :: InitPosition()
 
         // re-setup the pre-position for the cell at the boundary
         if ( fDC.at(id)->GetGeometry()==kStrip && i==1 ) {
-          fDC.at(id)->SetPrePosition( preZ-edge, preP, preR );
-          fDC.at(id)->SetPostPosition( postZ, postP, postR );
-          fDC.at(id)->SetCellSize( lz+edge, lp, lr );
+          if ( fCoil->GetCoolingConfigure(k)==kSide || fCoil->GetCoolingConfigure(k)==kLeft ) {
+            edge = fCoil->GetStripEdgeSize(k);
+            fDC.at(id)->SetPrePosition( preZ-edge, preP, preR );
+            fDC.at(id)->SetCellSize( lz+edge, lp, lr );
+          }
         }
 
         // re-setup the post-position for the cell at the boundary
         if ( fDC.at(id)->GetGeometry()==kStrip && i==fMshZ ) {
-          fDC.at(id)->SetPrePosition( preZ, preP, preR );
-          fDC.at(id)->SetPostPosition( postZ+edge, postP, postR );
-          fDC.at(id)->SetCellSize( lz+edge, lp, lr );
+          if ( fCoil->GetCoolingConfigure(k)==kSide || fCoil->GetCoolingConfigure(k)==kRight ) {
+            edge = fCoil->GetStripEdgeSize(k);
+            fDC.at(id)->SetPostPosition( postZ+edge, postP, postR );
+            fDC.at(id)->SetCellSize( lz+edge, lp, lr );
+          }
         }
 
         preZ = z;
@@ -405,7 +414,7 @@ void XProcessManager :: InitPosition()
 }
 
 
-void XProcessManager :: SetConductorMat(const int id, const double T, const double RRR, const double B)
+void XProcessManager :: SetConductorMat(const int id, const XCoilBase* cdt, const double T, const double RRR, const double B)
 {
   XMatCopper    cu;
   XMatAluminium al;
@@ -442,13 +451,14 @@ void XProcessManager :: SetConductorMat(const int id, const double T, const doub
   const double k_Al = al.GetConductivity();
   const double k_ins = kap.GetConductivity();
 
-  const double lz_ins = 2. * fCoil->GetCoilParts(kConductor)->GetInsSize(iZ);
-  const double lr_ins = 2. * fCoil->GetCoilParts(kConductor)->GetInsSize(iR);
-  const double lz_cdt = fCoil->GetCoilParts(kConductor)->GetDimension(iZ);
-  const double lr_cdt = fCoil->GetCoilParts(kConductor)->GetDimension(iR);
+  //const double lz_ins = 2. * fCoil->GetCoilParts(kConductor)->GetInsSize(iZ);
+  const double lz_ins = 2. * cdt->GetInsSize(iZ);
+  const double lr_ins = 2. * cdt->GetInsSize(iR);
+  const double lz_cdt = cdt->GetDimension(iZ);
+  const double lr_cdt = cdt->GetDimension(iR);
 
-  const double A_cdt  = fCoil->GetCoilParts(kConductor)->GetArea();
-  const double A_ins  = fCoil->GetCoilParts(kConductor)->GetInsArea();
+  const double A_cdt  = cdt->GetArea();
+  const double A_ins  = cdt->GetInsArea();
   
   const double kz = al.GetSerialk( lz_ins, k_ins, lz_cdt, k_Al );
   const double kr = al.GetSerialk( lr_ins, k_ins, lr_cdt, k_Al );
@@ -472,7 +482,7 @@ void XProcessManager :: SetConductorMat(const int id, const double T, const doub
 }
 
 
-void XProcessManager :: SetStripMat(const int id, const double T, const double RRR, const double B)
+void XProcessManager :: SetStripMat(const int id, const XCoilBase* strip, const double T, const double RRR, const double B)
 {
   XMatAluminium al;
   XMatKapton    kap;
@@ -490,8 +500,10 @@ void XProcessManager :: SetStripMat(const int id, const double T, const double R
   const double k_Al  = al.GetConductivity();
   const double k_ins = kap.GetConductivity();
 
-  const double lr_ins = 2. * fCoil->GetCoilParts(kStrip)->GetInsSize(iR);
-  const double lr_Al  = fCoil->GetCoilParts(kStrip)->GetDimension(iR);
+  //const double lr_ins = 2. * fCoil->GetCoilParts(kStrip)->GetInsSize(iR);
+  const double lr_ins = 2. * strip->GetInsSize(iR);
+  //const double lr_Al  = fCoil->GetCoilParts(kStrip)->GetDimension(iR);
+  const double lr_Al  = strip->GetDimension(iR);
 
   const double kz = al.GetParallelk( lr_Al, k_Al, lr_ins, k_ins );
   const double kr = al.GetSerialk( lr_ins, k_ins, lr_Al, k_Al );
@@ -502,7 +514,7 @@ void XProcessManager :: SetStripMat(const int id, const double T, const double R
 }
 
 
-void XProcessManager :: SetShellMat(const int id, const double T, const double RRR, const double B)
+void XProcessManager :: SetShellMat(const int id, const XCoilBase* shell, const double T, const double RRR, const double B)
 {
   XMatAluminium al;
   //XMatKapton    kap;
@@ -521,8 +533,8 @@ void XProcessManager :: SetShellMat(const int id, const double T, const double R
   const double k_Al  = al.GetConductivity();
   const double k_ins = ins.GetConductivity();
 
-  const double lr_ins = fCoil->GetCoilParts(kShell)->GetInsSize(iR);
-  const double lr_Al  = fCoil->GetCoilParts(kShell)->GetDimension(iR);
+  const double lr_ins = shell->GetInsSize(iR);
+  const double lr_Al  = shell->GetDimension(iR);
 
   const double kz = k_Al;
   const double kr = al.GetSerialk( lr_ins, k_ins, lr_Al, k_Al );

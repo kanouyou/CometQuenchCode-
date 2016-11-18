@@ -95,9 +95,9 @@ class Quench::XProcessManager : public XMeshLoop
     void InitPosition();
 
     /// @brief fill conductor/strip/shell material property
-    void SetConductorMat(const int id, const double T, const double RRR, const double B);
-    void SetStripMat(const int id, const double T, const double RRR, const double B);
-    void SetShellMat(const int id, const double T, const double RRR, const double B);
+    void SetConductorMat(const int id, const XCoilBase* cdt, const double T, const double RRR, const double B);
+    void SetStripMat(const int id, const XCoilBase* strip, const double T, const double RRR, const double B);
+    void SetShellMat(const int id, const XCoilBase* shell, const double T, const double RRR, const double B);
 
 
   protected:

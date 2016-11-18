@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import XPostLoading as pt
+import XPostRootLoad as pt
 import XPostOutput
 
 def usage():
@@ -41,12 +41,13 @@ def run(argv):
 if __name__=="__main__":
     argv = sys.argv[1:]
 
-    out = XPostOutput.XPostOutput(sys.argv[1], sys.argv[2])
-    out.Print()
+    #out = XPostOutput.XPostOutput(sys.argv[1], sys.argv[2])
+    #out.Print()
 
-    plot = pt.XPost2dPlot(sys.argv[1], sys.argv[2])
+    plot = pt.XPost2dPlot(sys.argv[2], sys.argv[3], sys.argv[1])
     plot.SetMatInfo(pt.kTemperature)
-    #plot.SetMatInfo(pt.kDose)
     plot.SetDirection(pt.kZ)
-    plot.SetPhi(3)
+    plot.SetPhi(1)
+    maxi = plot.FindMaxTemp()
+    plot.SetRange(4.5, maxi)
     plot.Draw()

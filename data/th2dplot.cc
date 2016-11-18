@@ -16,7 +16,7 @@ TH2F* Load(const char* filename, const int phi, const int opt, const bool revers
     int    nr   = 9;
 
     int    ibuff[3];
-    double dbuff[2];
+    double dbuff[3];
     TH2F* hist = new TH2F(name, name, nz, zmin, zmax, nr, rmin, rmax);
 
     double min = 9999.;
@@ -24,7 +24,7 @@ TH2F* Load(const char* filename, const int phi, const int opt, const bool revers
 
     while (true) {
 
-        file >> ibuff[0] >> ibuff[1] >> ibuff[2] >> dbuff[0] >> dbuff[1];
+        file >> ibuff[0] >> ibuff[1] >> ibuff[2] >> dbuff[0] >> dbuff[1] >> dbuff[2];
         dbuff[0] /= 3600.*24*365;
         if (!file) break;
 
@@ -75,7 +75,7 @@ TH2F* LoadCS0(const char* filename, const int opt)
     int    nr   = 9;
 
     int    ibuff[3];
-    double dbuff[2];
+    double dbuff[3];
     TH2F* hist = new TH2F(name, name, np, pmin, pmax, nr, rmin, rmax);
 
     int swap = 0;
@@ -85,7 +85,7 @@ TH2F* LoadCS0(const char* filename, const int opt)
 
     while (true) {
 
-        file >> ibuff[0] >> ibuff[1] >> ibuff[2] >> dbuff[0] >> dbuff[1];
+        file >> ibuff[0] >> ibuff[1] >> ibuff[2] >> dbuff[0] >> dbuff[1] >> dbuff[2];
         if (!file) break;
         dbuff[0] /= 3600.*24*365;
 
@@ -143,7 +143,7 @@ void th2dplot()
     c0->cd(i+1);
     gPad->SetTicks(1,1);
     gPad->SetRightMargin(0.16);
-    TH2F* hist = Load("./161029CS1Kerma.dat",i,1);
+    TH2F* hist = Load("./phits288/161029CS1Kerma.dat",i,1);
     //TH2F* hist = Load("./rad_phits.dat",i,1,true);
     hist->Draw("colz");
   }

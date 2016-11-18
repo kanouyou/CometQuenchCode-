@@ -18,7 +18,7 @@ TH2F* Load(const char* filename, const int phi, const int opt, const bool revers
     int    nr   = 9;
 
     int    ibuff[3];
-    double dbuff[2];
+    double dbuff[3];
     TH2F* hist = new TH2F(name, name, nz, zmin, zmax, nr, rmin, rmax);
 
     double min = 9999.;
@@ -26,7 +26,7 @@ TH2F* Load(const char* filename, const int phi, const int opt, const bool revers
 
     while (true) {
 
-        file >> ibuff[0] >> ibuff[1] >> ibuff[2] >> dbuff[0] >> dbuff[1];
+        file >> ibuff[0] >> ibuff[1] >> ibuff[2] >> dbuff[0] >> dbuff[1] >> dbuff[2];
         dbuff[0] /= 3600.*24*365;
         if (!file) break;
 
@@ -74,15 +74,15 @@ void plotdiff2d()
 
   for (int i=0; i<4; i++) {
     //track[i] = Load("161029CS1Track.dat", i, 1);
-    track[i] = Load("rad_phits.dat", i, 0, true);
-    kerma[i] = Load("161029CS1Kerma.dat", i, 0);
+    track[i] = Load("rad_phits.dat", i, 1, true);
+    kerma[i] = Load("./phits288/161029CS1Track.dat", i, 1);
     track[i]->Divide(kerma[i]);
     
     c0->cd(i+1);
     gPad->SetTicks(1,1);
     gPad->SetRightMargin(0.16);
     //track[i]->SetTitle(Form("#phi = %i; Z; R; Track/Kerma", i+1));
-    track[i]->SetTitle(Form("#phi = %i; Z; R; phits2.76 / phits2.88", i+1));
+    track[i]->SetTitle(Form("#phi = %i; Z; R; phits2.73 / phits2.88", i+1));
     track[i]->Draw("colz");
   }
 
