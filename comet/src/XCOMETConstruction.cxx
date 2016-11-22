@@ -11,6 +11,7 @@
 #include "XCoilStrip.hpp"
 #include "XCoilShell.hpp"
 
+#include "XRadiationHandle.hpp"
 #include "XRootOutput.hpp"
 #include "XQuenchOutput.hpp"
 #include "XQuenchExcept.hpp"
@@ -19,7 +20,8 @@
 
 
 XCOMETConstruction :: XCOMETConstruction()
-    : fFld(NULL),
+    : fDay(90*day),
+      fFld(NULL),
       fCS0(NULL),
       fCS1(NULL),
       fMS1(NULL),
@@ -41,44 +43,42 @@ XCOMETConstruction :: ~XCOMETConstruction()
 }
 
 
-void XCOMETConstruction ::ConstructCS0()
+void XCOMETConstruction :: ConstructCS0(const std::string& radfile)
 {
+  XRadiationHandle* rad = new XRadiationHandle(radfile);
+  rad->SetIrrTime(fDay);
+
   const double r = (672.+823.65)/2.*mm;
   const std::string name = "CS0";
   
   XCoilHandle* coil = new XCoilHandle();
   coil->SetName(name);
   coil->SetCoilSize(0., 2.*M_PI*r, 0.);
-  coil->SetMesh(10, 4, 19);
+  coil->SetMesh(15, 4, 19);
   coil->SetCoilLayers(9);
   coil->SetCoilTurns(35);
   coil->SetMaterialRatio(7.3, 1, 0.9);
 
-  // set coil parts
-  SetConductor(coil);
-  SetStrip(coil);
-  SetShell(coil);
-
   // set coil structure
-  coil->AddLayer(1, kStrip);
-  coil->AddLayer(2, kConductor);
-  coil->AddLayer(3, kStrip);
-  coil->AddLayer(4, kConductor);
-  coil->AddLayer(5, kStrip);
-  coil->AddLayer(6, kConductor);
-  coil->AddLayer(7, kStrip);
-  coil->AddLayer(8, kConductor);
-  coil->AddLayer(9, kStrip);
-  coil->AddLayer(10, kConductor);
-  coil->AddLayer(11, kStrip);
-  coil->AddLayer(12, kConductor);
-  coil->AddLayer(13, kStrip);
-  coil->AddLayer(14, kConductor);
-  coil->AddLayer(15, kStrip);
-  coil->AddLayer(16, kConductor);
-  coil->AddLayer(17, kStrip);
-  coil->AddLayer(18, kConductor);
-  coil->AddLayer(19, kShell);
+  coil->AddLayer(1, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(2, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(3, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(4, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(5, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(6, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(7, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(8, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(9, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(10, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(11, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(12, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(13, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(14, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(15, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(16, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(17, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(18, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(19, kShell, GetShell(), kAdiabatic, 0.*cm);
 
   // set processor
   XProcessManager* pro = new XProcessManager();
@@ -86,15 +86,16 @@ void XCOMETConstruction ::ConstructCS0()
   pro->Initialize();
   
   // get magnetic field map
-  //fFld->SetTarget(name);
-  //fFld->Run();
-  //coil->SetFieldHandler(fFld);
+  fFld->SetTarget(name);
+  fFld->Run();
+  pro->SetFieldHandler(fFld);
+  pro->SetRadiationHandler(rad);
   
   // uniform RRR and magnetic field
-  pro->SetUniformField(5.0);
-  pro->SetUniformRRR(kConductor, 113.);
-  pro->SetUniformRRR(kStrip, 122.);
-  pro->SetUniformRRR(kShell, 10.);
+  //pro->SetUniformField(5.0);
+  //pro->SetUniformRRR(kConductor, 113.);
+  //pro->SetUniformRRR(kStrip, 122.);
+  //pro->SetUniformRRR(kShell, 1.);
 
   // fill the materail info into the coil solver
   if (!fCS0) fCS0 = new XThermalSolver();
@@ -104,11 +105,16 @@ void XCOMETConstruction ::ConstructCS0()
   XQuenchOutput* geo = new XQuenchOutput("geoCS0.dat", iOfstream);
   geo->WriteGeometry(pro);
   geo->Close();
+
+  std::cout << "constructing " << name << "..." << std::endl;
 }
 
 
-void XCOMETConstruction ::ConstructCS1()
+void XCOMETConstruction ::ConstructCS1(const std::string& radfile)
 {
+  XRadiationHandle* rad = new XRadiationHandle(radfile);
+  rad->SetIrrTime(fDay);
+
   const double r = (672.+823.65)/2.*mm;
   const std::string name = "CS1";
   
@@ -120,31 +126,26 @@ void XCOMETConstruction ::ConstructCS1()
   coil->SetCoilTurns(270);
   coil->SetMaterialRatio(7.3, 1, 0.9);
 
-  // set coil parts
-  SetConductor(coil);
-  SetStrip(coil);
-  SetShell(coil);
-
   // set coil structure
-  coil->AddLayer(1, kStrip);
-  coil->AddLayer(2, kConductor);
-  coil->AddLayer(3, kStrip);
-  coil->AddLayer(4, kConductor);
-  coil->AddLayer(5, kStrip);
-  coil->AddLayer(6, kConductor);
-  coil->AddLayer(7, kStrip);
-  coil->AddLayer(8, kConductor);
-  coil->AddLayer(9, kStrip);
-  coil->AddLayer(10, kConductor);
-  coil->AddLayer(11, kStrip);
-  coil->AddLayer(12, kConductor);
-  coil->AddLayer(13, kStrip);
-  coil->AddLayer(14, kConductor);
-  coil->AddLayer(15, kStrip);
-  coil->AddLayer(16, kConductor);
-  coil->AddLayer(17, kStrip);
-  coil->AddLayer(18, kConductor);
-  coil->AddLayer(19, kShell);
+  coil->AddLayer(1, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(2, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(3, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(4, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(5, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(6, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(7, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(8, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(9, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(10, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(11, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(12, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(13, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(14, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(15, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(16, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(17, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(18, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(19, kShell, GetShell(), kAdiabatic, 0.*cm);
 
   // set processor
   XProcessManager* pro = new XProcessManager();
@@ -152,15 +153,16 @@ void XCOMETConstruction ::ConstructCS1()
   pro->Initialize();
   
   // get magnetic field map
-  //fFld->SetTarget(name);
-  //fFld->Run();
-  //coil->SetFieldHandler(fFld);
+  fFld->SetTarget(name);
+  fFld->Run();
+  pro->SetFieldHandler(fFld);
+  pro->SetRadiationHandler(rad);
   
   // uniform RRR and magnetic field
-  pro->SetUniformField(5.0);
-  pro->SetUniformRRR(kConductor, 209.);
-  pro->SetUniformRRR(kStrip, 241.);
-  pro->SetUniformRRR(kShell, 10.);
+  //pro->SetUniformField(5.0);
+  //pro->SetUniformRRR(kConductor, 209.);
+  //pro->SetUniformRRR(kStrip, 241.);
+  //pro->SetUniformRRR(kShell, 1.);
 
   // fill the materail info into the coil solver
   if (!fCS1) fCS1 = new XThermalSolver();
@@ -170,11 +172,16 @@ void XCOMETConstruction ::ConstructCS1()
   XQuenchOutput* geo = new XQuenchOutput("geoCS1.dat", iOfstream);
   geo->WriteGeometry(pro);
   geo->Close();
+
+  std::cout << "constructing " << name << "..." << std::endl;
 }
 
 
-void XCOMETConstruction ::ConstructMS1()
+void XCOMETConstruction ::ConstructMS1(const std::string& radfile)
 {
+  XRadiationHandle* rad = new XRadiationHandle(radfile);
+  rad->SetIrrTime(fDay);
+
   const double r = (672.+756.25)/2.*mm;
   const std::string name = "MS1";
   
@@ -186,23 +193,18 @@ void XCOMETConstruction ::ConstructMS1()
   coil->SetCoilTurns(285);
   coil->SetMaterialRatio(7.3, 1, 0.9);
 
-  // set coil parts
-  SetConductor(coil);
-  SetStrip(coil);
-  SetShell(coil);
-
   // set coil structure
-  coil->AddLayer(1, kStrip);
-  coil->AddLayer(2, kConductor);
-  coil->AddLayer(3, kStrip);
-  coil->AddLayer(4, kConductor);
-  coil->AddLayer(5, kStrip);
-  coil->AddLayer(6, kConductor);
-  coil->AddLayer(7, kStrip);
-  coil->AddLayer(8, kConductor);
-  coil->AddLayer(9, kStrip);
-  coil->AddLayer(10, kConductor);
-  coil->AddLayer(11, kShell);
+  coil->AddLayer(1, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(2, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(3, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(4, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(5, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(6, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(7, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(8, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(9, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(10, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(11, kShell, GetShell(), kAdiabatic, 0.*cm);
 
   // set processor
   XProcessManager* pro = new XProcessManager();
@@ -210,15 +212,16 @@ void XCOMETConstruction ::ConstructMS1()
   pro->Initialize();
   
   // get magnetic field map
-  //fFld->SetTarget(name);
-  //fFld->Run();
-  //coil->SetFieldHandler(fFld);
+  fFld->SetTarget(name);
+  fFld->Run();
+  pro->SetFieldHandler(fFld);
+  pro->SetRadiationHandler(rad);
   
   // uniform RRR and magnetic field
-  pro->SetUniformField(4.0);
-  pro->SetUniformRRR(kConductor, 250.);
-  pro->SetUniformRRR(kStrip, 297.);
-  pro->SetUniformRRR(kShell, 10.);
+  //pro->SetUniformField(4.0);
+  //pro->SetUniformRRR(kConductor, 250.);
+  //pro->SetUniformRRR(kStrip, 297.);
+  //pro->SetUniformRRR(kShell, 1.);
 
   // fill the materail info into the coil solver
   if (!fMS1) fMS1 = new XThermalSolver();
@@ -228,11 +231,16 @@ void XCOMETConstruction ::ConstructMS1()
   XQuenchOutput* geo = new XQuenchOutput("geoMS1.dat", iOfstream);
   geo->WriteGeometry(pro);
   geo->Close();
+
+  std::cout << "constructing " << name << "..." << std::endl;
 }
 
 
-void XCOMETConstruction ::ConstructMS2()
+void XCOMETConstruction ::ConstructMS2(const std::string& radfile)
 {
+  XRadiationHandle* rad = new XRadiationHandle(radfile);
+  rad->SetIrrTime(fDay);
+
   const double r = (672.+789.95)/2.*mm;
   const std::string name = "MS2";
   
@@ -244,27 +252,22 @@ void XCOMETConstruction ::ConstructMS2()
   coil->SetCoilTurns(140);
   coil->SetMaterialRatio(7.3, 1, 0.9);
 
-  // set coil parts
-  SetConductor(coil);
-  SetStrip(coil);
-  SetShell(coil);
-
   // set coil structure
-  coil->AddLayer(1, kStrip);
-  coil->AddLayer(2, kConductor);
-  coil->AddLayer(3, kStrip);
-  coil->AddLayer(4, kConductor);
-  coil->AddLayer(5, kStrip);
-  coil->AddLayer(6, kConductor);
-  coil->AddLayer(7, kStrip);
-  coil->AddLayer(8, kConductor);
-  coil->AddLayer(9, kStrip);
-  coil->AddLayer(10, kConductor);
-  coil->AddLayer(11, kStrip);
-  coil->AddLayer(12, kConductor);
-  coil->AddLayer(13, kStrip);
-  coil->AddLayer(14, kConductor);
-  coil->AddLayer(15, kShell);
+  coil->AddLayer(1, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(2, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(3, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(4, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(5, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(6, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(7, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(8, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(9, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(10, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(11, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(12, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(13, kStrip, GetStrip(), kAdiabatic, 20.*cm);
+  coil->AddLayer(14, kConductor, GetConductor(), kAdiabatic, 0.*cm);
+  coil->AddLayer(15, kShell, GetShell(), kAdiabatic, 0.*cm);
 
   // set processor
   XProcessManager* pro = new XProcessManager();
@@ -272,15 +275,16 @@ void XCOMETConstruction ::ConstructMS2()
   pro->Initialize();
   
   // get magnetic field map
-  //fFld->SetTarget(name);
-  //fFld->Run();
-  //coil->SetFieldHandler(fFld);
+  fFld->SetTarget(name);
+  fFld->Run();
+  pro->SetFieldHandler(fFld);
+  pro->SetRadiationHandler(rad);
   
   // uniform RRR and magnetic field
-  pro->SetUniformField(3.5);
-  pro->SetUniformRRR(kConductor, 400.);
-  pro->SetUniformRRR(kStrip, 916.);
-  pro->SetUniformRRR(kShell, 10.);
+  //pro->SetUniformField(3.5);
+  //pro->SetUniformRRR(kConductor, 400.);
+  //pro->SetUniformRRR(kStrip, 916.);
+  //pro->SetUniformRRR(kShell, 1.);
 
   // fill the materail info into the coil solver
   if (!fMS2) fMS2 = new XThermalSolver();
@@ -290,6 +294,8 @@ void XCOMETConstruction ::ConstructMS2()
   XQuenchOutput* geo = new XQuenchOutput("geoMS2.dat", iOfstream);
   geo->WriteGeometry(pro);
   geo->Close();
+
+  std::cout << "constructing " << name << "..." << std::endl;
 }
 
 
@@ -297,7 +303,7 @@ void XCOMETConstruction :: ConstructField(XFieldHandle* fld)
 {
   fld->SetCurrent(2700.*Amp);
   fld->AddCoil( "CS0", 857.88*mm, 1038.12*mm, 672.*mm, 823.65*mm );
-  fld->SetMesh( "CS0", 10, 19 );
+  fld->SetMesh( "CS0", 15, 19 );
 
   fld->AddCoil( "CS1", -595.25*mm, 795.25*mm, 672.*mm, 823.65*mm );
   fld->SetMesh( "CS1", 45, 19 );
@@ -310,30 +316,33 @@ void XCOMETConstruction :: ConstructField(XFieldHandle* fld)
 }
 
 
-void XCOMETConstruction :: SetConductor(XCoilHandle* hand)
+XCoilBase* XCOMETConstruction :: GetConductor()
 {
   XCoilConductor* cdt = new XCoilConductor();
   cdt->SetDimension( 4.73*mm, 15.*mm );
   cdt->SetInsSize( 0.15*mm, 0.15*mm );
-  hand->SetConductor( dynamic_cast<XCoilBase*>(cdt) );
+
+  return dynamic_cast<XCoilBase*>(cdt);
 }
 
 
-void XCOMETConstruction :: SetStrip(XCoilHandle* hand)
+XCoilBase* XCOMETConstruction :: GetStrip(const double thick)
 {
   XCoilStrip* strip = new XCoilStrip();
-  strip->SetDimension( 4.73*mm+0.15*2*mm, 1.*mm );
+  strip->SetDimension( 4.73*mm+0.15*2*mm, thick );
   strip->SetInsSize( 0., 0.25*mm );
-  hand->SetStrip( dynamic_cast<XCoilBase*>(strip) );
+
+  return dynamic_cast<XCoilBase*>(strip);
 }
 
 
-void XCOMETConstruction :: SetShell(XCoilHandle* hand)
+XCoilBase* XCOMETConstruction :: GetShell(const double thick)
 {
   XCoilShell * shell = new XCoilShell();
-  shell->SetDimension( 4.73*mm+0.15*2*mm, 80.*mm );
+  shell->SetDimension( 4.73*mm+0.15*2*mm, thick );
   shell->SetInsSize( 0., 3.*mm );
-  hand->SetShell( dynamic_cast<XCoilBase*>(shell) );
+
+  return dynamic_cast<XCoilBase*>(shell);
 }
 
 
@@ -393,12 +402,14 @@ void XCOMETConstruction :: UpdateQuench(XThermalSolver* solve)
   const double l_Phi = solve->GetProcess()->GetCoilHandler()->GetCoilSize(iPhi) / solve->GetProcess()->GetMesh(iPhi);
   const double r_Cu  = solve->GetProcess()->GetCoilHandler()->GetMaterialRatio(iCopper);
   const double r_Al  = solve->GetProcess()->GetCoilHandler()->GetMaterialRatio(iAluminium);
-  const double A_cdt = solve->GetProcess()->GetCoilHandler()->GetCoilParts(kConductor)->GetArea();
+  //const double A_cdt = solve->GetProcess()->GetCoilHandler()->GetCoilParts(kConductor)->GetArea();
+  const double A_cdt = solve->GetProcess()->GetCoilHandler()->GetCoilType(2)->GetArea();
 
   const double A_Cu  = A_cdt * r_Cu;
   const double A_Al  = A_cdt * r_Al;
 
-  double Volume = solve->GetProcess()->GetCoilHandler()->GetCoilParts(kConductor)->GetTotalArea() * l_Phi;
+  //double Volume = solve->GetProcess()->GetCoilHandler()->GetCoilParts(kConductor)->GetTotalArea() * l_Phi;
+  double Volume = solve->GetProcess()->GetCoilHandler()->GetCoilType(2)->GetTotalArea() * l_Phi;
 
   for (unsigned int i=0; i<solve->GetProcess()->GetMaterialEntries(); i++) {
     idz = solve->GetProcess()->GetDimensionEntry(i)->GetId(iZ);
@@ -539,7 +550,7 @@ void XCOMETConstruction :: Run()
 
     // set heat generation before quench
     if ( quenched==false )
-      fCS1->GetProcess()->GetMaterialEntry(fCS1->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*8);
+      fCS0->GetProcess()->GetMaterialEntry(fCS0->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*12);
 
     // 6. solve the thermal equation
     fCS0->Solve(dt);
@@ -567,8 +578,8 @@ void XCOMETConstruction :: Run()
     if (cnt%fDisplay==0) {
       std::cout << "time: " << time << " [sec], step: " << dt << " [sec], Rtot: "
                 << CoilRes  << " [Ohm], Vtot: " << CoilRes*fCurr << " [V], I: "
-                << fCurr << " [A]" << static_cast<double>(qchcdt)/numcdt*100. << " %, ";
-      fCS1->Print(fHotZ, fHotPhi, fHotR);
+                << fCurr << " [A], Ratio: " << static_cast<double>(qchcdt)/numcdt*100. << " %, ";
+      fCS0->Print(fHotZ, fHotPhi, fHotR);
     }
 
     // fill data into file
@@ -612,13 +623,23 @@ void XCOMETConstruction :: ConnectMagnet(XThermalSolver* mag1, XThermalSolver* m
   // connect 1st coil
   int id = mag2->GetProcess()->Id(mshz2,1,mshr2-1);
   double temp = mag2->GetProcess()->GetMaterialEntry(id)->GetTemperature();
-  id = mag1->GetProcess()->Id(0, 1, 2);
+
+  double k = mag2->GetProcess()->GetMaterialEntry(id)->GetConductivity(iPhi);
+  const double l = 50.*cm;
+  double q = mag2->GetProcess()->GetMaterialEntry(id)->GetHeatFlux(iPhi);
+  temp += l * q / k;
+
+  id = mag1->GetProcess()->Id(1, 0, 2);
   mag1->GetProcess()->GetMaterialEntry(id)->SetTemperature(temp);
   
   // connect 2nd coil
-  id = mag1->GetProcess()->Id(1,1,2);
+  id = mag1->GetProcess()->Id(1, 1, 2);
   temp = mag1->GetProcess()->GetMaterialEntry(id)->GetTemperature();
-  id = mag2->GetProcess()->Id(mshz2+1,1, mshr2-1);
+
+  q = mag1->GetProcess()->GetMaterialEntry(id)->GetHeatFlux(iPhi);
+  temp += l * q / k;
+
+  id = mag2->GetProcess()->Id(mshz2, 0, mshr2-1);
   mag2->GetProcess()->GetMaterialEntry(id)->SetTemperature(temp);
 }
 

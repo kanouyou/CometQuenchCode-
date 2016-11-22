@@ -1,4 +1,6 @@
 #include <iostream>
+#include <TString.h>
+
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
 #include "XCOMETConstruction.h"
@@ -17,18 +19,19 @@ int main(int argc, char** argv)
   try {
     comet->SetTime(0.*sec, 80.*sec, 4.e-3*msec);
     //comet->SetDisplayStep(10);
-    comet->SetHotSpot(45/2,1,2);
+    comet->SetOperationTime(90*day);
+    comet->SetHotSpot(10,1,18);
     comet->SetCurrent(2700.*Amp);
     comet->SetDumpResistor(0.*Ohm);
     comet->SetInductance(12.69);
     comet->SetDiode(0.7);
     comet->SetThreshold(0.1);
-    comet->SetDetectTime(0.1*sec);
+    comet->SetDetectTime(1.*sec);
 
-    comet->ConstructCS0();
-    comet->ConstructCS1();
-    comet->ConstructMS1();
-    comet->ConstructMS2();
+    comet->ConstructCS0(Form("%s/161029CS0Track.dat",argv[1]));
+    comet->ConstructCS1(Form("%s/161029CS1Track.dat",argv[1]));
+    comet->ConstructMS1(Form("%s/161029MS1Track.dat",argv[1]));
+    comet->ConstructMS2(Form("%s/161029MS2Track.dat",argv[1]));
     comet->Begin();
     comet->Run();
     comet->End();

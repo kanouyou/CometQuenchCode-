@@ -22,20 +22,23 @@ class XCOMETConstruction : public XQuenchTransient
     /// deconstructor
     ~XCOMETConstruction();
 
+    /// @brief set operation time
+    void SetOperationTime(const double time) { fDay = time; }
+
     /// @brief calculate the coil total resistance
     double GetCoilResistance(XThermalSolver* solver);
 
     /// @brief construct cs0 coil
-    void ConstructCS0();
+    void ConstructCS0(const std::string& radfile);
 
     /// @brief construct cs1 coil
-    void ConstructCS1();
+    void ConstructCS1(const std::string& radfile);
 
     /// @brief construct ms1 coil
-    void ConstructMS1();
+    void ConstructMS1(const std::string& radfile);
 
     /// @brief construct ms1 coil
-    void ConstructMS2();
+    void ConstructMS2(const std::string& radfile);
 
     /// @brief update the resistance of conductor
     /// @detail please use this function after SetMaterial() and the current decay calculation
@@ -56,19 +59,20 @@ class XCOMETConstruction : public XQuenchTransient
 
   protected:
     /// @brief setup conductor size
-    void SetConductor(XCoilHandle* hand);
+    XCoilBase* GetConductor();
 
     /// @brief setup strip size
-    void SetStrip(XCoilHandle* hand);
+    XCoilBase* GetStrip(const double thick=1.*mm);
 
     /// @brief setup shell size
-    void SetShell(XCoilHandle* hand);
+    XCoilBase* GetShell(const double thick=80.*mm);
 
     /// @brief construct magnetic field
     void ConstructField(XFieldHandle* fld);
     
 
   private:
+    double fDay;
     XFieldHandle* fFld;
     XThermalSolver* fCS0;
     XThermalSolver* fCS1;
