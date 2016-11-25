@@ -1,53 +1,52 @@
 #!/usr/bin/env python
 
+import matplotlib.pyplot as plt
 import sys
 import XPostRootLoad as pt
 import XPostOutput
+import XRootFiles
 
 def usage():
-    print "usage: "
-    print " ./demo.py <option> [arguments]"
+    print "usage:"
+    print "      /path/demoforroot -m magnet -g geofile -d datafile"
 
 
-def run(argv):
-    geo = False
-    dat = False
-    info = pt.kTemperature
-    dim = pt.kZ
-
-    for i in range(len(argv)):
-        if argv[i]=="-h" or argv[i]=="--help":
-            usage()
-        elif argv[i]=="-g" or argv[i]=="--geo":
-            geofile = argv[i+1]
-            geo = True
-        elif argv[i]=="-d" or argv[i]=="--data":
-            datfile = argv[i+1]
-            dat = True
-        elif argv[i]=="-t" or argv[i]=="--temp":
-            info = pt.kTemperature
-        elif argv[i]=="-r" or argv[i]=="--rrr":
-            info = pt.kRRR
-        else:
-            raise
-
-    plot = pt.XPost2dPlot(geofile, datfile)
-    plot.SetMatInfo(info)
-    plot.SetDirection(dim)
-    plot.Draw()
-
+def Draw(ax, geofile, datafile, magnet, Tmin, Tmax):
+    plot = pt.XPost2dPlot(geofile, datafile, magnet)
+    plot.SetMatInfo(pt.kTemperature)
+    #plot.SetMatInfo(pt.kVoltage)
+    plot.SetDirection(pt.kZ)
+    plot.SetPhi(1)
+    plot.SetColorMap("nipy_spectral")
+    plot.SetRange(Tmin, Tmax)
+    plot.DrawThis(ax)
+    ax.set_title(magnet)
 
 
 if __name__=="__main__":
-    argv = sys.argv[1:]
+    magnet   = ["CS0", "CS1", "MS1", "MS2"]
+    geofile  = ["geo%s.dat" %magnet[0], "geo%s.dat" %magnet[1], "geo%s.dat" %magnet[2], "geo%s.dat" %magnet[3]]
+    datafile = sys.argv[1]
 
-    #out = XPostOutput.XPostOutput(sys.argv[1], sys.argv[2])
-    #out.Print()
+    rfile = XRootFiles.XRootFiles(datafile)
+    rfile.SetSubDirectory(magnet)
+    Tmax = rfile.FindMaxTemp()
+    Tmin = rfile.FindMinTemp()
 
-    plot = pt.XPost2dPlot(sys.argv[2], sys.argv[3], sys.argv[1])
+    fig, ax = plt.subplots(2, 2, figsize=(12,6))
+
+    for i in range(len(magnet)):
+        Draw(ax[i/2][i%2], geofile[i], datafile, magnet[i], Tmin, Tmax)
+
+    plt.tight_layout()
+    plt.savefig("temp.pdf")
+    plt.show()
+
+    """
+    plot = pt.XPost2dPlot(geofile, datafile, magnet)
     plot.SetMatInfo(pt.kTemperature)
     plot.SetDirection(pt.kZ)
     plot.SetPhi(1)
-    maxi = plot.FindMaxTemp()
     plot.SetRange(4.5, maxi)
     plot.Draw()
+    """

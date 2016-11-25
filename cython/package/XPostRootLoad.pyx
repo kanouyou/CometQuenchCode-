@@ -34,6 +34,7 @@ cpdef enum PosType:
 
 cpdef enum MatType:
     kRRR
+    kVoltage
     kConductivity
     kCapacity
     kField
@@ -155,6 +156,7 @@ cdef class XMatInfo:
     cdef double _C
     cdef double _B
     cdef double _dose
+    cdef double _R
     cdef np.ndarray _k
 
     ## constructor
@@ -165,6 +167,7 @@ cdef class XMatInfo:
         self._C    = 0.
         self._B    = 0.
         self._dose = 0.
+        self._R    = 0.
         self._k    = np.array([0., 0., 0.])
 
     ## setup node id
@@ -206,6 +209,14 @@ cdef class XMatInfo:
     ## return heat capacity
     def GetCapacity(self):
         return self._C
+    
+    ## setup coil resistance
+    def SetResistance(self, double R):
+        self._R = R
+
+    ## return the coil resistance
+    def GetResistance(self):
+        return self._R
 
     ## setup thermal conductivity
     def SetConductivity(self, double kz, double kp, double kr):
@@ -337,16 +348,20 @@ cdef class XMatFileLoad:
 
     ## private
     cdef np.ndarray _mc
+    cdef double _I
 
     ## constructor
     def __init__(self, str filename, str sub):
         thisfile = ROOT.TFile(filename)
         thisfile.cd(sub)
-        thisfile.ls()
+        #thisfile.ls()
         tree = thisfile.Get(sub+"/tree")
         self._mc = np.array([])
 
         self.fillcollect(tree)
+        tree2 = thisfile.Get("head")
+        tree2.GetEntry(0)
+        self._I = tree2.I
 
 
     ## fill the data into collection
@@ -356,6 +371,7 @@ cdef class XMatFileLoad:
             tree.GetEntry(i)
             mat = XMatInfo()
             mat.SetNode( tree.node )
+            mat.SetResistance( tree.R )
             mat.SetTemperature( tree.T )
             mat.SetRRR( tree.RRR )
             mat.SetField( tree.B )
@@ -377,6 +393,11 @@ cdef class XMatFileLoad:
                 return mat
 
 
+    ## return the current
+    def GetCurrent(self):
+        return self._I
+
+
 
 ## class to plot the zr 2d plot
 cdef class XPost2dPlot:
@@ -390,8 +411,10 @@ cdef class XPost2dPlot:
     cdef PosType _direct
     cdef MatType _info
     cdef char* _name
+    cdef char* _color
     cdef double _min
     cdef double _max
+    cdef double _I
 
     ## constructor
     def __init__(self, char* geofile, char* datfile, char* subdir="CS0"):
@@ -399,10 +422,14 @@ cdef class XPost2dPlot:
         self._dset  = np.array([])
         self._geof = XGeoFileLoad(geofile)
         self._matf = XMatFileLoad(datfile, subdir)
+        self._I    = self._matf.GetCurrent()
         self._phi = 1
         self._direct = kZ
         self._info = kConductivity
         self._name = ""
+        self._color = "CMRmap"
+        self._min = 0.
+        self._max = 0.
 
 
     ## fill the geometry info into patches
@@ -439,6 +466,8 @@ cdef class XPost2dPlot:
                     self._dset = np.append( self._dset, matinfo[i].GetTemperature() )
                 elif opt==kDose:
                     self._dset = np.append( self._dset, matinfo[i].GetDose() )
+                elif opt==kVoltage:
+                    self._dset = np.append( self._dset, matinfo[i].GetResistance()*self._I )
                 else:
                     raise
 
@@ -480,14 +509,23 @@ cdef class XPost2dPlot:
             self._name = "Heat Capacity [J/kg/K]"
         elif info==kRRR:
             self._name = "RRR"
+        elif info==kField:
+            self._name = "Magnetic Field [Tesla]"
+        elif info==kVoltage:
+            self._name = "Voltage [V]"
         else:
             print "Warning: there is no this kind of material property."
+
+
+    ## set color map
+    def SetColorMap(self, char* color):
+        self._color = color
 
 
     ## plot geometry with given info
     def Draw(self):
         self.fillpatch(self._phi, self._info, self._direct)
-        p = PatchCollection(self._patch, cmap=matplotlib.cm.gnuplot2, linewidth=0.1)
+        p = PatchCollection(self._patch, cmap=matplotlib.cm.rainbow, linewidth=0.1)
         #p = PatchCollection(self._patch, cmap=matplotlib.cm.jet, linewidth=0.1)
         p.set_array(self._dset)
         
@@ -495,14 +533,43 @@ cdef class XPost2dPlot:
         ax.add_collection(p)
         ax.set_xlim( self._geof.CheckLimits(kZ) )
         ax.set_ylim( self._geof.CheckLimits(kR) )
-        ax.set_xlabel( "Z [mm]", fontsize=20 )
-        ax.set_ylabel( "R [mm]", fontsize=20 )
-        plt.tick_params(axis="both", labelsize=18)
+        ax.set_xlabel( "dZ [mm]", fontsize=13 )
+        ax.set_ylabel( "dR [mm]", fontsize=13 )
+        plt.tick_params(axis="both", labelsize=13)
         cbar = plt.colorbar(p)
-        cbar.set_label("Temperature [K]", fontsize=20)
+        cbar.set_label("Temperature [K]", fontsize=13)
         cbar.set_clim(self._min, self._max)
-        cbar.ax.tick_params(labelsize=18)
+        cbar.ax.tick_params(labelsize=13)
         plt.tight_layout()
         #fig.savefig(save, bbox_inches="tight")
         plt.show()
+
+
+    ## plot geometry with given info
+    def DrawThis(self, ax):
+        cmap = matplotlib.cm.get_cmap(self._color)
+        self.fillpatch(self._phi, self._info, self._direct)
+        p = PatchCollection(self._patch, cmap=cmap, linewidth=0.1)
+        #p = PatchCollection(self._patch, cmap=matplotlib.cm.CMRmap, linewidth=0.1)
+        #p = PatchCollection(self._patch, cmap=matplotlib.cm.jet, linewidth=0.1)
+        p.set_array(self._dset)
+        if self._max!=0. or self._min!=0.:
+            p.set_clim(self._min, self._max)
+        
+        ax.add_collection(p)
+        ax.set_xlim( self._geof.CheckLimits(kZ) )
+        ax.set_ylim( self._geof.CheckLimits(kR) )
+        ax.set_xlabel( "dZ [mm]", fontsize=13 )
+        ax.set_ylabel( "dR [mm]", fontsize=13 )
+        ax.set_ylim([0.,250.])
+        ax.tick_params(axis="both", labelsize=13)
+
+        self.GetColorBar(p, ax)
+
+
+    ## gett color bar
+    def GetColorBar(self, p, ax):
+        cbar = plt.colorbar(p, ax=ax)
+        cbar.set_label(self._name, fontsize=13)
+        cbar.ax.tick_params(labelsize=13)
 
