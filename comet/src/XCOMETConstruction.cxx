@@ -43,10 +43,13 @@ XCOMETConstruction :: ~XCOMETConstruction()
 }
 
 
-void XCOMETConstruction :: ConstructCS0(const std::string& radfile)
+void XCOMETConstruction :: ConstructCS0(const std::string& radfile, const char* tempfile)
 {
   XRadiationHandle* rad = new XRadiationHandle(radfile);
   rad->SetIrrTime(fDay);
+
+  XInitialTemperature* Tinit = new XInitialTemperature;
+  Tinit->Load(tempfile);
 
   const double r = (672.+823.65)/2.*mm;
   const std::string name = "CS0";
@@ -54,7 +57,7 @@ void XCOMETConstruction :: ConstructCS0(const std::string& radfile)
   XCoilHandle* coil = new XCoilHandle();
   coil->SetName(name);
   coil->SetCoilSize(0., 2.*M_PI*r, 0.);
-  coil->SetMesh(15, 4, 19);
+  coil->SetMesh(35, 4, 19);
   coil->SetCoilLayers(9);
   coil->SetCoilTurns(35);
   coil->SetMaterialRatio(7.3, 1, 0.9);
@@ -90,6 +93,7 @@ void XCOMETConstruction :: ConstructCS0(const std::string& radfile)
   fFld->Run();
   pro->SetFieldHandler(fFld);
   pro->SetRadiationHandler(rad);
+  pro->SetInitialTemperature(Tinit);
   
   // uniform RRR and magnetic field
   //pro->SetUniformField(5.0);
@@ -110,10 +114,13 @@ void XCOMETConstruction :: ConstructCS0(const std::string& radfile)
 }
 
 
-void XCOMETConstruction ::ConstructCS1(const std::string& radfile)
+void XCOMETConstruction ::ConstructCS1(const std::string& radfile, const char* tempfile)
 {
   XRadiationHandle* rad = new XRadiationHandle(radfile);
   rad->SetIrrTime(fDay);
+
+  XInitialTemperature* Tinit = new XInitialTemperature;
+  Tinit->Load(tempfile);
 
   const double r = (672.+823.65)/2.*mm;
   const std::string name = "CS1";
@@ -157,6 +164,7 @@ void XCOMETConstruction ::ConstructCS1(const std::string& radfile)
   fFld->Run();
   pro->SetFieldHandler(fFld);
   pro->SetRadiationHandler(rad);
+  pro->SetInitialTemperature(Tinit);
   
   // uniform RRR and magnetic field
   //pro->SetUniformField(5.0);
@@ -177,10 +185,13 @@ void XCOMETConstruction ::ConstructCS1(const std::string& radfile)
 }
 
 
-void XCOMETConstruction ::ConstructMS1(const std::string& radfile)
+void XCOMETConstruction ::ConstructMS1(const std::string& radfile, const char* tempfile)
 {
   XRadiationHandle* rad = new XRadiationHandle(radfile);
   rad->SetIrrTime(fDay);
+
+  XInitialTemperature* Tinit = new XInitialTemperature;
+  Tinit->Load(tempfile);
 
   const double r = (672.+756.25)/2.*mm;
   const std::string name = "MS1";
@@ -188,7 +199,7 @@ void XCOMETConstruction ::ConstructMS1(const std::string& radfile)
   XCoilHandle* coil = new XCoilHandle();
   coil->SetName(name);
   coil->SetCoilSize(0., 2.*M_PI*r, 0.);
-  coil->SetMesh(57, 4, 11);
+  coil->SetMesh(45, 4, 11);
   coil->SetCoilLayers(5);
   coil->SetCoilTurns(285);
   coil->SetMaterialRatio(7.3, 1, 0.9);
@@ -216,6 +227,7 @@ void XCOMETConstruction ::ConstructMS1(const std::string& radfile)
   fFld->Run();
   pro->SetFieldHandler(fFld);
   pro->SetRadiationHandler(rad);
+  pro->SetInitialTemperature(Tinit);
   
   // uniform RRR and magnetic field
   //pro->SetUniformField(4.0);
@@ -236,10 +248,13 @@ void XCOMETConstruction ::ConstructMS1(const std::string& radfile)
 }
 
 
-void XCOMETConstruction ::ConstructMS2(const std::string& radfile)
+void XCOMETConstruction ::ConstructMS2(const std::string& radfile, const char* tempfile)
 {
   XRadiationHandle* rad = new XRadiationHandle(radfile);
   rad->SetIrrTime(fDay);
+
+  XInitialTemperature* Tinit = new XInitialTemperature;
+  Tinit->Load(tempfile);
 
   const double r = (672.+789.95)/2.*mm;
   const std::string name = "MS2";
@@ -247,7 +262,7 @@ void XCOMETConstruction ::ConstructMS2(const std::string& radfile)
   XCoilHandle* coil = new XCoilHandle();
   coil->SetName(name);
   coil->SetCoilSize(0., 2.*M_PI*r, 0.);
-  coil->SetMesh(28, 4, 15);
+  coil->SetMesh(50, 4, 15);
   coil->SetCoilLayers(7);
   coil->SetCoilTurns(140);
   coil->SetMaterialRatio(7.3, 1, 0.9);
@@ -279,6 +294,7 @@ void XCOMETConstruction ::ConstructMS2(const std::string& radfile)
   fFld->Run();
   pro->SetFieldHandler(fFld);
   pro->SetRadiationHandler(rad);
+  pro->SetInitialTemperature(Tinit);
   
   // uniform RRR and magnetic field
   //pro->SetUniformField(3.5);
@@ -303,16 +319,16 @@ void XCOMETConstruction :: ConstructField(XFieldHandle* fld)
 {
   fld->SetCurrent(2700.*Amp);
   fld->AddCoil( "CS0", 857.88*mm, 1038.12*mm, 672.*mm, 823.65*mm );
-  fld->SetMesh( "CS0", 15, 19 );
+  fld->SetMesh( "CS0", 35, 19 );
 
   fld->AddCoil( "CS1", -595.25*mm, 795.25*mm, 672.*mm, 823.65*mm );
   fld->SetMesh( "CS1", 45, 19 );
 
   fld->AddCoil( "MS1", -2121.375*mm, -653.625*mm, 672.*mm, 756.25*mm );
-  fld->SetMesh( "MS1", 57, 11 );
+  fld->SetMesh( "MS1", 45, 11 );
 
   fld->AddCoil( "MS2", -2910.5*mm, -2189.5*mm, 672.*mm, 789.95*mm );
-  fld->SetMesh( "MS2", 28, 15 );
+  fld->SetMesh( "MS2", 50, 15 );
 }
 
 
@@ -500,6 +516,7 @@ void XCOMETConstruction :: Run()
   double qchtime = fTimef;
   bool   quenched = false;
   bool   preqch   = false;
+  double timestep[4];
 
   const int numcdt = GetTotalConductor(fCS0) + GetTotalConductor(fCS1) +
                      GetTotalConductor(fMS1) + GetTotalConductor(fMS2);
@@ -550,7 +567,7 @@ void XCOMETConstruction :: Run()
 
     // set heat generation before quench
     if ( quenched==false )
-      fCS0->GetProcess()->GetMaterialEntry(fCS0->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*12);
+      fCS1->GetProcess()->GetMaterialEntry(fCS1->GetProcess()->Id(fHotZ,fHotPhi,fHotR))->SetHeat(5000.*50);
 
     // 6. solve the thermal equation
     fCS0->Solve(dt);
@@ -579,7 +596,7 @@ void XCOMETConstruction :: Run()
       std::cout << "time: " << time << " [sec], step: " << dt << " [sec], Rtot: "
                 << CoilRes  << " [Ohm], Vtot: " << CoilRes*fCurr << " [V], I: "
                 << fCurr << " [A], Ratio: " << static_cast<double>(qchcdt)/numcdt*100. << " %, ";
-      fCS0->Print(fHotZ, fHotPhi, fHotR);
+      fCS1->Print(fHotZ, fHotPhi, fHotR);
     }
 
     // fill data into file
@@ -602,7 +619,18 @@ void XCOMETConstruction :: Run()
       ocnt ++;
     }
 
-    dt = fMS2->FindTimeStep();
+    // find minimum time step
+    timestep[0] = fCS0->FindTimeStep();
+    timestep[1] = fCS1->FindTimeStep();
+    timestep[2] = fMS1->FindTimeStep();
+    timestep[3] = fMS2->FindTimeStep();
+
+    dt = timestep[0];
+
+    for (int i=1; i<4; i++) {
+      if (timestep[i]<dt)
+        dt = timestep[i];
+    }
     
     time += dt;
     cnt ++;

@@ -29,16 +29,16 @@ class XCOMETConstruction : public XQuenchTransient
     double GetCoilResistance(XThermalSolver* solver);
 
     /// @brief construct cs0 coil
-    void ConstructCS0(const std::string& radfile);
+    void ConstructCS0(const std::string& radfile, const char* tempfile);
 
     /// @brief construct cs1 coil
-    void ConstructCS1(const std::string& radfile);
+    void ConstructCS1(const std::string& radfile, const char* tempfile);
 
     /// @brief construct ms1 coil
-    void ConstructMS1(const std::string& radfile);
+    void ConstructMS1(const std::string& radfile, const char* tempfile);
 
     /// @brief construct ms1 coil
-    void ConstructMS2(const std::string& radfile);
+    void ConstructMS2(const std::string& radfile, const char* tempfile);
 
     /// @brief update the resistance of conductor
     /// @detail please use this function after SetMaterial() and the current decay calculation

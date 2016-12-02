@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
-import matplotlib.pyplot as plt
+import os
 import sys
+sys.path.append("/home/yeyang/Documents/software/CometQuenchCode-/cython")
+import matplotlib.pyplot as plt
 import XPostRootLoad as pt
 import XPostOutput
 import XRootFiles
@@ -17,7 +19,8 @@ def Draw(ax, geofile, datafile, magnet, Tmin, Tmax):
     #plot.SetMatInfo(pt.kVoltage)
     plot.SetDirection(pt.kZ)
     plot.SetPhi(1)
-    plot.SetColorMap("nipy_spectral")
+    #plot.SetColorMap("nipy_spectral")
+    #plot.SetColorMap("rainbow")
     plot.SetRange(Tmin, Tmax)
     plot.DrawThis(ax)
     ax.set_title(magnet)
@@ -33,13 +36,20 @@ if __name__=="__main__":
     Tmax = rfile.FindMaxTemp()
     Tmin = rfile.FindMinTemp()
 
+    path = os.path.abspath(os.getcwd()+"/output")
+    out = XRootFiles.XRootOutput(path)
+    out.SetCoilPosition("CS1", 24, 1, 2)
+    out.ConstructFigure()
+    out.Plot("T")
+    plt.show()
+
     fig, ax = plt.subplots(2, 2, figsize=(12,6))
 
     for i in range(len(magnet)):
         Draw(ax[i/2][i%2], geofile[i], datafile, magnet[i], Tmin, Tmax)
 
     plt.tight_layout()
-    plt.savefig("temp.pdf")
+    #plt.savefig("temp.pdf")
     plt.show()
 
     """

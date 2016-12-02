@@ -561,7 +561,7 @@ cdef class XPost2dPlot:
         ax.set_ylim( self._geof.CheckLimits(kR) )
         ax.set_xlabel( "dZ [mm]", fontsize=13 )
         ax.set_ylabel( "dR [mm]", fontsize=13 )
-        ax.set_ylim([0.,250.])
+        ax.set_ylim([-5.,250.])
         ax.tick_params(axis="both", labelsize=13)
 
         self.GetColorBar(p, ax)

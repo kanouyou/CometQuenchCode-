@@ -14,6 +14,7 @@
 #include "XCoilHandle.hpp"
 #include "XRadiationHandle.hpp"
 #include "XFieldHandle.hpp"
+#include "XInitialTemperature.hpp"
 
 namespace Quench
 { class XProcessManager; }
@@ -39,6 +40,9 @@ class Quench::XProcessManager : public XMeshLoop
 
     /// @brief setup radiation handler
     void SetRadiationHandler(XRadiationHandle* hand);
+
+    /// @brief setup initial temperature handler
+    void SetInitialTemperature(XInitialTemperature* temp);
 
     /// @brief return the coil handler
     XCoilHandle* GetCoilHandler() { return fCoil; }

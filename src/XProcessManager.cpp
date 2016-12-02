@@ -147,6 +147,31 @@ void XProcessManager :: SetRadiationHandler(XRadiationHandle* hand)
 }
 
 
+void XProcessManager :: SetInitialTemperature(XInitialTemperature* temp)
+{
+  int id = 0;
+  int cnt = 0;
+  std::vector<XInitTempContainer*> Tint = temp->GetContainer();
+
+  for (int k=0; k<fMshR+2; k++) {
+    for (int j=0; j<fMshP+2; j++) {
+      for (int i=0; i<fMshZ+2; i++) {
+        if (k>0 && k<fMshR+1 && j>0 && j<fMshP+1 && i>0 && i<fMshZ+1) {
+          id = Id(i, j, k);
+          if (Tint.at(cnt)->GetNodeId()!=id) {
+            QuenchFatal("id from initial temperature profile " << Tint.at(cnt)->GetNodeId() << " is not equal this id " << id << ".");
+            XQuenchExcept except("id from initial temperature profile is not equal.");
+            throw except;
+          }
+          fMC.at( id )->SetTemperature( Tint.at(cnt)->GetTemperature() );
+          cnt++;
+        }
+      }
+    }
+  }
+}
+
+
 void XProcessManager :: SetUniformRRR(const Geometry part, const double RRR)
 {
   std::vector<int> id = fCoil->GetLayerId(part);

@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     comet->SetTime(0.*sec, 80.*sec, 4.e-3*msec);
     //comet->SetDisplayStep(10);
     comet->SetOperationTime(90*day);
-    comet->SetHotSpot(10,1,18);
+    comet->SetHotSpot(24,1,2);
     comet->SetCurrent(2700.*Amp);
     comet->SetDumpResistor(0.*Ohm);
     comet->SetInductance(12.69);
@@ -28,10 +28,10 @@ int main(int argc, char** argv)
     comet->SetThreshold(0.1);
     comet->SetDetectTime(1.*sec);
 
-    comet->ConstructCS0(Form("%s/161029CS0Track.dat",argv[1]));
-    comet->ConstructCS1(Form("%s/161029CS1Track.dat",argv[1]));
-    comet->ConstructMS1(Form("%s/161029MS1Track.dat",argv[1]));
-    comet->ConstructMS2(Form("%s/161029MS2Track.dat",argv[1]));
+    comet->ConstructCS0( Form("%s/phits288/161029CS0Track.dat",argv[1]), Form("%s/tempdis90/cs0.txt",argv[1]) );
+    comet->ConstructCS1( Form("%s/phits288/161029CS1Track.dat",argv[1]), Form("%s/tempdis90/cs1.txt",argv[1]) );
+    comet->ConstructMS1( Form("%s/phits288/161029MS1Track.dat",argv[1]), Form("%s/tempdis90/ms1.txt",argv[1]) );
+    comet->ConstructMS2( Form("%s/phits288/161029MS2Track.dat",argv[1]), Form("%s/tempdis90/ms2.txt",argv[1]) );
     comet->Begin();
     comet->Run();
     comet->End();
