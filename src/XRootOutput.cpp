@@ -106,6 +106,7 @@ void XRootOutput :: Fill(const char* name, XProcessManager* man)
   double k  [3];
   int    id [3];
   double pos[3];
+  double flx[3];
 
   tree->Branch("node", &node, "node/I");
   tree->Branch("id", id, "id[3]/I");
@@ -118,6 +119,7 @@ void XRootOutput :: Fill(const char* name, XProcessManager* man)
   tree->Branch("B", &B, "B/D");
   tree->Branch("R", &R, "R/D");
   tree->Branch("Q", &Q, "Q/D");
+  tree->Branch("q", flx, "q[3]/D");
 
   for (unsigned int i=0; i<man->GetEntries(); i++) {
 
@@ -134,6 +136,10 @@ void XRootOutput :: Fill(const char* name, XProcessManager* man)
     k[0] = man->GetMaterialEntry(i)->GetConductivity(iZ);
     k[1] = man->GetMaterialEntry(i)->GetConductivity(iPhi);
     k[2] = man->GetMaterialEntry(i)->GetConductivity(iR);
+
+    flx[0] = man->GetMaterialEntry(i)->GetHeatFlux(iZ);
+    flx[1] = man->GetMaterialEntry(i)->GetHeatFlux(iPhi);
+    flx[2] = man->GetMaterialEntry(i)->GetHeatFlux(iR);
 
     C = man->GetMaterialEntry(i)->GetCapacity();
     Temp = man->GetMaterialEntry(i)->GetTemperature();

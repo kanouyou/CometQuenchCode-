@@ -16,19 +16,26 @@ XQuenchTransient :: XQuenchTransient()
       fHotZ(1),
       fHotPhi(1),
       fHotR(1),
+      fHotSpotHeat(5000.*100.),
+      fMagConnect(NULL),
+      fShellConnect(NULL),
       XTransientLoop()
 {}
 
 
 XQuenchTransient :: ~XQuenchTransient()
-{}
+{
+  if (fMagConnect) delete [] fMagConnect;
+  if (fShellConnect) delete [] fShellConnect;
+}
 
 
-void XQuenchTransient :: SetHotSpot(const int z, const int phi, const int r)
+void XQuenchTransient :: SetHotSpot(const int z, const int phi, const int r, const double q)
 {
   fHotZ = z;
   fHotPhi = phi;
   fHotR = r;
+  fHotSpotHeat = q;
 
   QuenchInfo(" set hot spot on (" << z << ", " << phi << ", " << r << ")");
 }
@@ -85,8 +92,20 @@ void XQuenchTransient :: SetDiode(const double V)
 }
 
 
+double XQuenchTransient :: GetDiodeVoltage(const double I) const 
+{
+  const double Is = 1e-12;
+  const double Vt = 0.026;
+
+  const double V = Vt * log( I/Is + 1 );
+  return V;
+}
+
+
 double XQuenchTransient :: CalCurrentDecay(const double preI, const double res, const double dt)
 {
+  fDiode = GetDiodeVoltage(preI);
+
   double I = (preI*fInduct - fDiode*dt) / (fInduct + dt*(fDumpRes+res));
   return I;
 }

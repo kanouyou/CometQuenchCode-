@@ -311,7 +311,7 @@ void XThermalSolver :: SetConductorPhi() {
   int id_edge = 0;
   double T = 0.;
 
-  for (int k=0; k<fMshR+1; k++) {
+  for (int k=0; k<fMshR+2; k++) {
     for (int i=0; i<fMshZ+2; i++) {
       id_bdy  = fProcess->Id(i,0,k);
       id_edge = fProcess->Id(i,fMshP,k);
@@ -320,15 +320,16 @@ void XThermalSolver :: SetConductorPhi() {
       id_bdy  = fProcess->Id(i,fMshP+1,k);
       id_edge = fProcess->Id(i,1,k);
       Connect(id_edge, id_bdy);
+
       // leave the first and last turn
-      if ( i>1 && i<fMshZ) {
+      if ( i>2 && i<fMshZ && fProcess->GetDimensionEntry(id_bdy)->GetGeometry()==kConductor ) {
         id_bdy  = fProcess->Id(i,0,k);
         id_edge = fProcess->Id(i-1,fMshP,k);    // privous turn
         T = fProcess->GetMaterialEntry(id_edge)->GetTemperature();
         fProcess->GetMaterialEntry(id_bdy)->SetTemperature(T);
 
-        id_bdy  = fProcess->Id(i,fMshP+1,k);
-        id_edge = fProcess->Id(i+1,1,k);
+        id_bdy  = fProcess->Id(i-1,fMshP+1,k);
+        id_edge = fProcess->Id(i,1,k);
         Connect(id_edge, id_bdy);
       }
     }

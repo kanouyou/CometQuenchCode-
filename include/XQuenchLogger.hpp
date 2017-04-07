@@ -73,6 +73,7 @@ class Quench::XQuenchLogger
 
 
 /// @def a macro to handle the output of error message
+/*
 #ifndef _QUENCH_OUTPUT_ERROR
 #define _QUENCH_OUTPUT_ERROR(level, message)                               \
     do {                                                                   \
@@ -80,6 +81,16 @@ class Quench::XQuenchLogger
       log->GetLogStream(level) << message << "  "                          \
           << " ||    file: " << __FILE__                                   \
           << " - line: " << __LINE__                                       \
+          << std::setprecision(6) << std::setw(0)                          \
+          << std::setfill(' ')    << std::endl;                            \
+    } while(0)
+#endif
+*/
+#ifndef _QUENCH_OUTPUT_ERROR
+#define _QUENCH_OUTPUT_ERROR(level, message)                               \
+    do {                                                                   \
+      XQuenchLogger* log = XQuenchLogger::GetInstance();                   \
+      log->GetLogStream(level) << message << "  "                          \
           << std::setprecision(6) << std::setw(0)                          \
           << std::setfill(' ')    << std::endl;                            \
     } while(0)

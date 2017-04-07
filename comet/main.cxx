@@ -22,11 +22,11 @@ int main(int argc, char** argv)
     comet->SetOperationTime(90*day);
     comet->SetHotSpot(24,1,2);
     comet->SetCurrent(2700.*Amp);
-    comet->SetDumpResistor(0.*Ohm);
+    comet->SetDumpResistor(0.185*Ohm);
     comet->SetInductance(12.69);
-    comet->SetDiode(0.7);
+    //comet->SetDiode(0.7);
     comet->SetThreshold(0.1);
-    comet->SetDetectTime(1.*sec);
+    comet->SetDetectTime(0.1*sec);
 
     comet->ConstructCS0( Form("%s/phits288/161029CS0Track.dat",argv[1]), Form("%s/tempdis90/cs0.txt",argv[1]) );
     comet->ConstructCS1( Form("%s/phits288/161029CS1Track.dat",argv[1]), Form("%s/tempdis90/cs1.txt",argv[1]) );

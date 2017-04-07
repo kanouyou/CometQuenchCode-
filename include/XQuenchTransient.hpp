@@ -19,7 +19,7 @@ class XQuenchTransient : public XTransientLoop
     ~XQuenchTransient();
 
     /// @brief setup the hot spot and heat generation
-    void SetHotSpot(const int z, const int phi, const int r);
+    void SetHotSpot(const int z, const int phi, const int r, const double q=5000*100.);
 
     /// @brief setup dump resistor resistance
     void SetDumpResistor(const double R);
@@ -65,6 +65,9 @@ class XQuenchTransient : public XTransientLoop
     /// @brief return the diode turn on voltage
     double GetDiode() const { return fDiode; }
 
+    /// @brief return the diode voltage from the given current
+    double GetDiodeVoltage(const double I) const;
+
     /// @brief calculate the current decay
     double CalCurrentDecay(const double preI, const double res, const double dt);
 
@@ -98,6 +101,9 @@ class XQuenchTransient : public XTransientLoop
     int    fHotZ;
     int    fHotPhi;
     int    fHotR;
+    double fHotSpotHeat;
+    double* fMagConnect;
+    double* fShellConnect;
 };
 
 #endif

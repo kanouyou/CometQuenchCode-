@@ -110,7 +110,7 @@ double XMatAluminium :: calcapacity(const double T) const
   else if (T>=sp2)
     C = p3[0] * pow(T,p3[1]) * exp(p3[2]*T) * exp(p3[3]/T) * 4.186e+3;
   else {
-    QuenchError( XQuenchLogger::ERROR, "Temperature: " << T << " is out of range." );
+    QuenchError( XQuenchLogger::ERROR, "Temperature: " << T << " is out of range for capacity of Al." );
     XQuenchExcept except("Temperature is out of range!");
     throw except;
   }

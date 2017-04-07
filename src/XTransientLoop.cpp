@@ -50,6 +50,8 @@ void XTransientLoop :: Run()
   const double Tcool = 4.5*K;
   int cnt = 0;
 
+  //double print_t = 0.1;
+
   while (time<fTimef) {
 
     //fSolver->GetProcess()->SetMaterial();

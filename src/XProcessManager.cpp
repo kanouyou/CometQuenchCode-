@@ -7,6 +7,7 @@
 #include "XMatNbTi.hpp"
 #include "XMatKapton.hpp"
 #include "XMatG10.hpp"
+#include "XMatAl5083.hpp"
 
 #include "XQuenchExcept.hpp"
 #include "XQuenchLogger.hpp"
@@ -75,10 +76,12 @@ void XProcessManager :: SetFieldHandler(XFieldHandle* hand)
   for (int k=1; k<fMshR+1; k++) {
     for (int j=1; j<fMshP+1; j++) {
       for (int i=1; i<fMshZ+1; i++) {
-        Bz   = hand->GetFieldEntry(i-1, k-1)->GetField().at(0);
-        Br   = hand->GetFieldEntry(i-1, k-1)->GetField().at(1);
-        Btot = sqrt( pow(Bz,2) + pow(Br,2) );
-        fMC.at( Id(i,j,k) )->SetField( Btot );
+        if (fDC.at( Id(i,j,k) )->GetGeometry()!=kShell ) {
+          Bz   = hand->GetFieldEntry(i-1, k-1)->GetField().at(0);
+          Br   = hand->GetFieldEntry(i-1, k-1)->GetField().at(1);
+          Btot = sqrt( pow(Bz,2) + pow(Br,2) );
+          fMC.at( Id(i,j,k) )->SetField( Btot );
+        }
       }
     }
   }
@@ -541,11 +544,13 @@ void XProcessManager :: SetStripMat(const int id, const XCoilBase* strip, const 
 
 void XProcessManager :: SetShellMat(const int id, const XCoilBase* shell, const double T, const double RRR, const double B)
 {
-  XMatAluminium al;
+  //XMatAluminium al;
   //XMatKapton    kap;
+  XMatAl5083 al;
   XMatG10 ins;
 
-  al.SetMaterialProperty(T, RRR, B);
+  //al.SetMaterialProperty(T, RRR, B);
+  al.SetTemperature(T);
   ins.SetTemperature(T);
 
   // setup density

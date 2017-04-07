@@ -54,7 +54,8 @@ class XCOMETConstruction : public XQuenchTransient
     virtual void End();
 
     /// @brief connect two magnets
-    void ConnectMagnet(XThermalSolver* mag1, XThermalSolver* mag2);
+    void ConnectMagnet(XThermalSolver* mag1, XThermalSolver* mag2, const double l);
+    void ConnectShell(XThermalSolver* mag1, XThermalSolver* mag2, const double l);
 
 
   protected:
